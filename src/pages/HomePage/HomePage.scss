@@ -1,0 +1,19 @@
+.homepage {
+    display: flex;
+    flex-direction: row;
+    background-color: black;
+    margin-top: -8px;
+    margin-left: -8px;
+    height: 110%;
+  }
+  
+  .homepage__navWraper {
+    position: relative;
+    width: 240px;
+    border-right: #212121 solid 1px;
+  }
+  
+  .homepage__timeline {
+    margin-left: 50px;
+    flex: 1;
+  }
