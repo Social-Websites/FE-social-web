@@ -31,7 +31,8 @@
   
   .follow__button {
     color: #0095f6;
-    font-weight: bold;
+    font-weight: 550;
+    font-size: 12px;
     background: 0;
     border: 0;
     margin-right: 5px;
@@ -45,4 +46,9 @@
   .username {
     font-weight: 600;
     font-size: 14px;
+    color:white;
+    margin-top: 5px;
+  }
+  .avatar{
+    margin-right: 5px;
   }

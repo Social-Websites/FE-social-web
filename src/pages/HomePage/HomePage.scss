@@ -1,19 +1,22 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: black;
+}
 .homepage {
     display: flex;
     flex-direction: row;
     background-color: black;
-    margin-top: -8px;
-    margin-left: -8px;
-    height: 110%;
+    height: 100%;
   }
   
   .homepage__navWraper {
     position: relative;
     width: 240px;
-    border-right: #212121 solid 1px;
   }
   
   .homepage__timeline {
-    margin-left: 50px;
+    margin-left: 170px;
     flex: 1;
   }
