@@ -4,6 +4,7 @@ import Profile from '../pages/Profile';
 const publicRoutes = [
     { path: '/', component: HomePage },
     { path: '/profile', component: Profile },
+    //{ path: '/accounts/login', component: Profile },
 ]
 // Private Routes
 const privateRoutes = [];
