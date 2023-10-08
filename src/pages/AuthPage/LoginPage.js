@@ -11,20 +11,6 @@ const cx = classNames.bind(styles);
 
 
 const LoginPage = () => {
-    const [isUsernameClassAdd, setIsUsernameClassAdd] = useState(false);
-    const [isPasswordClassAdd, setIsPasswordClassAdd] = useState(false);
-
-    // const handleInputClass = (id, isValid) => {
-    //     console.log(isValid);
-    //     if(id === "username"){
-    //         setIsUsernameClassAdd(isValid);
-    //     }
-
-    //     if(id === "password"){
-    //         setIsPasswordClassAdd(isValid);
-    //     }
-    // }
-
     const [formState, inputHandler] = useForm({
         username: {
             value: '',
@@ -50,7 +36,7 @@ const LoginPage = () => {
                             <div className={cx("input--margin")}>
                                 <div className={cx("input--container")}>                                                                       
                                         <Input className={cx("input--user")}
-                                        labelClass={cx("input--label", {"on-input": isUsernameClassAdd})}
+                                        labelClass={cx("input--label")}
                                         spanClass={cx("input--span")}
                                         element="input" 
                                         id="username" 
@@ -69,7 +55,7 @@ const LoginPage = () => {
                             <div className={cx("input--margin")}>
                                 <div className={cx("input--container")}>                                                                       
                                         <Input className={cx("input--user")}
-                                        labelClass={cx("input--label", {"on-input": isPasswordClassAdd})}
+                                        labelClass={cx("input--label")}
                                         spanClass={cx("input--span")}
                                         element="input" 
                                         id="password" 

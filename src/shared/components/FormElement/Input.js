@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Input.scss";
 
@@ -25,7 +25,13 @@ const inputReducer = (state, action) => {
 };
 
 const Input = props => {
-    const [inputState, dispatch] = useReducer(inputReducer, { value: props.value || '', isTouched: false, isValid: props.valid || false })
+    const [inputState, dispatch] = useReducer(inputReducer, { 
+        value: props.value || '', 
+        isTouched: false, 
+        isValid: props.valid || false 
+    });
+
+    const [isInputTouched, setInputTouched] = useState(false);
 
     const { id, onInput } = props;
     const { value, isValid } = inputState;
@@ -35,7 +41,9 @@ const Input = props => {
     }, [id, value, isValid, onInput]);
 
     const changeHandler = event => {
-        dispatch({ type: 'CHANGE', val: event.target.value, validators: props.validators });
+        const inputValue = event.target.value;
+        dispatch({ type: 'CHANGE', val: inputValue, validators: props.validators });
+        setInputTouched(inputValue.trim() !== '');
     };
 
     const touchHandler = () => {
@@ -48,7 +56,9 @@ const Input = props => {
         (<input id={props.id} type={props.type} className={props.className} placeholder={props.placeholder} aria-label={props.ariaLabel} aria-required={props.ariaRequired} autoCapitalize={props.autocapitalize} maxLength={props.maxlength} onChange={changeHandler} onBlur={touchHandler} value={inputState.value} />)
         : (<textarea id={props.id} rows={props.rows || 3} className={props.className} onChange={changeHandler} onBlur={touchHandler} value={inputState.value} />);
 
-    return <label className={props.labelClass}>
+    const labelClassName = cx(props.labelClass, { "on-input": isInputTouched });    
+
+    return <label className={labelClassName}>
             <span className={props.spanClass}>{props.ariaLabel}</span>
             {element}
         </label>
