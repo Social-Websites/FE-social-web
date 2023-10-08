@@ -426,13 +426,28 @@ p{
     }
 }
 
-.on-input {
-    span {
-        transform: scale(calc(10/12)) translateY(-10px);
-    }
+.lock-icon{
+    background-repeat: no-repeat;
+    background-position: -130px 0;
+    height: 96px;
+    width: 96px;
+    background-image: url(https://static.cdninstagram.com/rsrc.php/v3/y5/r/TJztmXpWTmS.png);
+}
 
-    input {
-        font-size: 14px;
-        padding: 14px 0 2px 8px !important;
+
+.or{
+    &--text{
+        flex-direction: column;
+        box-sizing: border-box;
+        display: flex;
+        flex-shrink: 0;
+        font-weight: 600;
+        color: rgb(115, 115, 115);
+        align-items: stretch;
+        font-size: .8125rem;
+        position: relative;
+        line-height: 1.1538;
+        flex-grow: 0;
+        vertical-align: baseline;
     }
 }

@@ -53,3 +53,14 @@ $form-input-font: inherit;
         }
     }
 }
+
+.on-input {
+    span {
+        transform: scale(calc(10/12)) translateY(-10px);
+    }
+
+    input {
+        font-size: 14px;
+        padding: 14px 0 2px 8px !important;
+    }
+}
