@@ -1,0 +1,55 @@
+$form-background: #f8f8f8;
+$form-focus-background: #ebebeb;
+$form-border-color: #ccc;
+$form-focus-border-color: #510077;
+$form-invalid-color: red;
+$form-invalid-background: #ffd1d1;
+$form-margin: 1rem 0;
+$form-label-font-weight: bold;
+$form-label-margin-bottom: 0.5rem;
+$form-input-padding: 0.15rem 0.25rem;
+$form-input-font: inherit;
+
+.form-control {
+    margin: $form-margin;
+
+    label,
+    input,
+    textarea {
+        display: block;
+    }
+
+    label {
+        font-weight: $form-label-font-weight;
+        margin-bottom: $form-label-margin-bottom;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        font: $form-input-font;
+        border: 1px solid $form-border-color;
+        background: $form-background;
+        padding: $form-input-padding;
+
+        &:focus {
+            outline: none;
+            background: $form-focus-background;
+            border-color: $form-focus-border-color;
+        }
+    }
+
+    &--invalid {
+
+        label,
+        p {
+            color: $form-invalid-color;
+        }
+
+        input,
+        textarea {
+            border-color: $form-invalid-color;
+            background: $form-invalid-background;
+        }
+    }
+}

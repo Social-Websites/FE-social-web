@@ -1,10 +1,13 @@
 import React from 'react';
 
-import './Card.css';
+import styles from './Card.scss';
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(styles);
 
 const Card = props => {
   return (
-    <div className={`card ${props.className}`} style={props.style}>
+    <div className={cx("card", props.className)} style={props.style}>
       {props.children}
     </div>
   );
