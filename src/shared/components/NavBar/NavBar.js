@@ -8,7 +8,7 @@ import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import DensityMediumOutlinedIcon from '@mui/icons-material/DensityMediumOutlined';
 import { Avatar } from "@mui/material";
 //import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +26,10 @@ function NavBar() {
 //     signOut(auth);
 //   };
   const [open, setOpen] = useState(false);
+
+
+  
+
   return (
     <div style={{display:"flex"}}>
       <div className={cx("sidenav")}>
@@ -61,7 +65,7 @@ function NavBar() {
             <span>Notifications</span>
           </button>
           <button className={cx("sidenav__button")}>
-            <AddCircleOutlineIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            <AddBoxOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
             <span>Create</span>
           </button>
           <button className={cx("sidenav__button")}>
@@ -81,8 +85,8 @@ function NavBar() {
         </div>
       </div>
       <div style={{marginLeft:"241px", height: "100%"}}>
-        {open && (
-          <div className={cx("open")}>
+        
+          <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
             {/* {notifications.map((n) => displayNotification(n))} */}
             <div className={cx("open__title")}>
               <span >Search</span>
@@ -90,11 +94,20 @@ function NavBar() {
             <div className={cx("open__input")}>
               <input type="text"  placeholder="Search"/>
             </div>
-            <div className={cx("open__content")} style={{color: "white", margin: "12px 24px 8px 24px", fontWeight: "600"}}>
-              Recent
+            <div className={cx("open__content")} style={{paddingTop: "12px"}}>
+              <span> Recent </span>
+              <div className={cx("open__user")}>
+                <span className={cx("open__user_avatar")}>
+                  <Avatar>R</Avatar>
+                </span>
+                <div className={cx("open__user__info")}>
+                  <span className={cx("open__username")}>redian_</span>
+                  <span className={cx("open__relation")}>New to Instagram</span>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+       
       </div>
     </div>
   );
