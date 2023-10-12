@@ -4,8 +4,6 @@ import styles from "./Input.scss";
 
 import { validate } from "../../util/validators";
 
-const cx = classNames.bind(styles);
-
 const inputReducer = (state, action) => {
     switch (action.type) {
         case 'CHANGE':

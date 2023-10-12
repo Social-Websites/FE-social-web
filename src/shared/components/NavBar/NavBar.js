@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import classNames from 'classnames/bind';
 import styles from "./NavBar.scss";
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -69,7 +69,7 @@ function NavBar() {
             <span>Create</span>
           </button>
           <button className={cx("sidenav__button")}>
-            <Avatar className={cx("sidenav__icon")} style={{width: "24px",height: "24px", margin: "3px"}}>
+            <Avatar className={cx("sidenav__icon")} style={{width: "27px",height: "27px", margin: "0px"}}>
               A
             </Avatar>
             <span>
@@ -85,29 +85,27 @@ function NavBar() {
         </div>
       </div>
       <div style={{marginLeft:"241px", height: "100%"}}>
-        
-          <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
-            {/* {notifications.map((n) => displayNotification(n))} */}
-            <div className={cx("open__title")}>
-              <span >Search</span>
-            </div>
-            <div className={cx("open__input")}>
-              <input type="text"  placeholder="Search"/>
-            </div>
-            <div className={cx("open__content")} style={{paddingTop: "12px"}}>
-              <span> Recent </span>
-              <div className={cx("open__user")}>
-                <span className={cx("open__user_avatar")}>
-                  <Avatar>R</Avatar>
-                </span>
-                <div className={cx("open__user__info")}>
-                  <span className={cx("open__username")}>redian_</span>
-                  <span className={cx("open__relation")}>New to Instagram</span>
-                </div>
+        <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
+          {/* {notifications.map((n) => displayNotification(n))} */}
+          <div className={cx("open__title")}>
+            <span >Search</span>
+          </div>
+          <div className={cx("open__input")}>
+            <input type="text"  placeholder="Search"/>
+          </div>
+          <div className={cx("open__content")} style={{paddingTop: "12px"}}>
+            <span> Recent </span>
+            <div className={cx("open__user")}>
+              <span className={cx("open__user_avatar")}>
+                <Avatar>R</Avatar>
+              </span>
+              <div className={cx("open__user__info")}>
+                <span className={cx("open__username")}>redian_</span>
+                <span className={cx("open__relation")}>New to Instagram</span>
               </div>
             </div>
           </div>
-       
+        </div>
       </div>
     </div>
   );

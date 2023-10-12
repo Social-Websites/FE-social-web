@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar } from "@mui/material";
 import classNames from 'classnames/bind';
-import styles from "./Profile.scss";
+import styles from "./Profile.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import GridOnIcon from '@mui/icons-material/GridOn';
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -37,7 +37,7 @@ function Profile() {
                 <a className={cx("follow")}>38 following</a>
               </div>
               <div className={cx("profile__user__3")}> 
-                <span>Nguyen Khac Duong Đần</span>
+                <span>Nguyen Khac Duong</span>
               </div>
             </div>
           </div>
