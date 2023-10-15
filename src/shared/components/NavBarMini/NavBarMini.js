@@ -1,7 +1,8 @@
 import React from "react";
 import { useState, useRef } from "react";
 import classNames from 'classnames/bind';
-import styles from "./NavBar.scss";
+import styles from "./NavBarMini.module.scss";
+import InstagramIcon from '@mui/icons-material/Instagram';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
@@ -23,7 +24,7 @@ import WestIcon from '@mui/icons-material/West';
 
 const cx = classNames.bind(styles)
 
-function NavBar(props) {
+function NavBarMini() {
 //   const user = useSelector((state) => state.data.user.user);
 //   const dispatch = useDispatch();
 //   const handelLogout = () => {
@@ -136,58 +137,47 @@ function NavBar(props) {
   return (
     <div style={{display:"flex"}}>
       <div className={cx("sidenav")}>
-        <img
-          className={cx("sidenav__logo")}
-          src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
-          alt="Instagram Logo"
-        />
+        <div style={{height: "120px", display: "flex", justifyContent: "center", alignItems:"center"}}>
+          <button className={cx("sidenav__button")} >
+            <InstagramIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+          </button>
+        </div>
 
         <div className={cx("sidenav__buttons")}>
           <button className={cx("sidenav__button")}>
             <HomeOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Home</span>
           </button>
           <button className={cx("sidenav__button")} onClick={() => setOpen(!open)}>
-            <SearchIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Search</span>
+            <SearchIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px", marginLeft: "3px"}}/>
           </button>
           <button className={cx("sidenav__button")}>
             <ExploreOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Explore</span>
           </button>
           <button className={cx("sidenav__button")}>
             <MovieOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Reels</span>
           </button>
           <button className={cx("sidenav__button")}>
             <ChatOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Messages</span>
           </button>
           <button className={cx("sidenav__button")}>
             <FavoriteBorderIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Notifications</span>
           </button>
           <button className={cx("sidenav__button")} onClick={toggleModal}>
             <AddBoxOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span>Create</span>
           </button>
           <button className={cx("sidenav__button")}>
             <Avatar className={cx("sidenav__icon")} style={{width: "24px",height: "24px", margin: "3px"}}>
               A
             </Avatar>
-            <span>
-              Duongw 
-            </span>
           </button>
         </div>
         <div className={cx("sidenav__more")}>
           <button className={cx("sidenav__button")}>
             <DensityMediumOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span className={cx("sidenav__buttonText")}>More</span>
           </button>
         </div>
       </div>
-      <div style={{marginLeft:"241px", height: "100%"}}>
+      <div style={{marginLeft:"81px", height: "100%"}}>
         
           <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
             {/* {notifications.map((n) => displayNotification(n))} */}
@@ -295,4 +285,4 @@ function NavBar(props) {
   );
 }
 
-export default NavBar;
+export default NavBarMini;

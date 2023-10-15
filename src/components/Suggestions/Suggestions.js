@@ -13,7 +13,7 @@ function Suggestions() {
         <div className={cx("suggestions__username")}>
           <div className={cx("username__left")}>
             <span className={cx("avatar")}>
-              <Avatar>R</Avatar>
+              <Avatar style={{ position: "inherit" }}>R</Avatar>
             </span>
             <div className={cx("username__info")}>
               <span className={cx("username")}>redian_</span>
@@ -26,7 +26,7 @@ function Suggestions() {
         <div className={cx("suggestions__username")}>
           <div className={cx("username__left")}>
             <span className={cx("avatar")}>
-              <Avatar>R</Avatar>
+              <Avatar style={{ position: "inherit" }}>R</Avatar>
             </span>
             <div className={cx("username__info")}>
               <span className={cx("username")}>redian_</span>
@@ -39,7 +39,7 @@ function Suggestions() {
         <div className={cx("suggestions__username")}>
           <div className={cx("username__left")}>
             <span className={cx("avatar")}>
-              <Avatar>R</Avatar>
+              <Avatar style={{ position: "inherit" }}>R</Avatar>
             </span>
             <div className={cx("username__info")}>
               <span className={cx("username")}>redian_</span>
@@ -52,7 +52,7 @@ function Suggestions() {
         <div className={cx("suggestions__username")}>
           <div className={cx("username__left")}>
             <span className={cx("avatar")}>
-              <Avatar>R</Avatar>
+              <Avatar style={{ position: "inherit" }}>R</Avatar>
             </span>
             <div className={cx("username__info")}>
               <span className={cx("username")}>redian_</span>

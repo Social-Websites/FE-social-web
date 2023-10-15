@@ -15,7 +15,7 @@ function Post({ user, postImage, likes, timestamp }) {
     <div className={cx('post')}>
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
-          <Avatar style={{ marginRight: "10px" }}>
+          <Avatar style={{ marginRight: "10px", position: "inherit" }}>
             {user.charAt(0).toUpperCase()}
           </Avatar>{" "}
           {user}2 •   <span>{timestamp}</span>
@@ -23,7 +23,7 @@ function Post({ user, postImage, likes, timestamp }) {
         <MoreHorizIcon />
       </div>
       <div className={cx("post__image")}>
-        <img src={postImage} alt="Post Image" />
+        <img src={postImage} alt="img" />
       </div>
       <div className={cx("post__footer")}>
         <div className={cx("post__footerIcons")}>
