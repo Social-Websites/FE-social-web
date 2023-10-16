@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useRef } from "react";
 import classNames from 'classnames/bind';
 import styles from "./NavBar.scss";
+import InstagramIcon from '@mui/icons-material/Instagram';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
@@ -47,31 +48,35 @@ function NavBar(props) {
 
   function showNextImage() {
     setImageIndex(index => {
-      if (index === images.length - 1) {
+      if (index === images.length - 2) {
         setIsLastImage(true);
         setIsFirstImage(false);
-        return 0;
+        console.log(index);
+        return images.length - 1;
       }
       else {
         setIsLastImage(false);
         setIsFirstImage(false);
+        console.log(index);
+        return index + 1
       }
-      return index + 1
     })
   }
 
   function showPrevImage() {
     setImageIndex(index => {
-      if (index === 0) {
+      if (index === 1) {
         setIsLastImage(false);
         setIsFirstImage(true)
-        return images.length - 1
+        console.log(index);
+        return 0;
       }
       else {
         setIsLastImage(false);
         setIsFirstImage(false);
+        console.log(index);
+        return index - 1;
       }
-      return index - 1
     })
   }
 
@@ -135,60 +140,88 @@ function NavBar(props) {
 
   return (
     <div style={{display:"flex"}}>
-      <div className={cx("sidenav")}>
+      <div className={cx("sidenav")} style={open ? { width: "80px" } : null }>
+        {open ? (
+          <div style={{height: "120px", display: "flex", justifyContent: "center", alignItems:"center"}}>
+            <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+              <InstagramIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            </button>
+          </div>
+        ) : (
+          <div style={{height: "120px", display: "flex",  alignItems:"center"}}>
         <img
           className={cx("sidenav__logo")}
           src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
           alt="Instagram Logo"
         />
+        </div>
+        )}
+        
 
         <div className={cx("sidenav__buttons")}>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null } >
             <HomeOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Home</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")} onClick={() => setOpen(!open)}>
+          <button className={cx("sidenav__button")} onClick={() => setOpen(!open)} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <SearchIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Search</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <ExploreOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Explore</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <MovieOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Reels</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <ChatOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Messages</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <FavoriteBorderIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Notifications</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")} onClick={toggleModal}>
+          <button className={cx("sidenav__button")} onClick={toggleModal} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
             <AddBoxOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+            {open ? null : (
             <span>Create</span>
+            )}
           </button>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null }>
             <Avatar className={cx("sidenav__icon")} style={{width: "24px",height: "24px", margin: "3px"}}>
               A
             </Avatar>
+            {open ? null : (
             <span>
               Duongw 
             </span>
+            )}
           </button>
         </div>
         <div className={cx("sidenav__more")}>
-          <button className={cx("sidenav__button")}>
+          <button className={cx("sidenav__button")} style={open ? { width: "24%", margin: "5px 10px 5px 10px" } : null }>
             <DensityMediumOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            <span className={cx("sidenav__buttonText")}>More</span>
+            {open ? null : (
+              <span className={cx("sidenav__buttonText")}>More</span>
+            )}
           </button>
         </div>
       </div>
-      <div style={{marginLeft:"241px", height: "100%"}}>
-        
+      <div style={{marginLeft:"81px", height: "100%"}}>
           <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
             {/* {notifications.map((n) => displayNotification(n))} */}
             <div className={cx("open__title")}>
@@ -231,8 +264,8 @@ function NavBar(props) {
               </span>
             </div>
             <div className={cx("modal-main")}  style={ isDragging ? {backgroundColor: "black"} : null}>
-              <div className="container " style={{width: "100%", borderRadius: "0px 0px 10px 10px", display: "flex", backgroundColor: "black"}}> 
-                <div className="image" style={{width: "100%", display: "flex", overflow: "hidden"}}>
+              <div className={cx("container")} style={{width: "100%", borderRadius: "0px 0px 10px 10px", display: "flex", backgroundColor: "black"}}> 
+                <div className={cx("image")} style={{width: "100%", display: "flex", overflow: "hidden"}}>
                   {images.map((images, index) => (
                     <img classname={cx("img-slider")} style={{width: "100%", transform: `translateX(-${100 * imageIndex}%)`, 
                     objectFit: "contain",
@@ -242,11 +275,12 @@ function NavBar(props) {
                     flexGrow: "0",
                     borderRadius: "0px 0px 10px 10px"}} aria-hidden={imageIndex !== index} src={images.url} alt={images.name}  /> 
                   ))}
+                  {/* <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/> */}
                   {isFirstImage === true ? (null) :
                   (
                   <button
                     onClick={showPrevImage}
-                    className="img-slider-btn"
+                    className={cx("img-slider-btn")}
                     style={{ left: 0 }}
                     aria-label="View Previous Image"
                   >
@@ -257,14 +291,15 @@ function NavBar(props) {
                   (
                   <button
                     onClick={showNextImage}
-                    className="img-slider-btn"
-                    style={{ right: 0 }}
+                    className={cx("img-slider-btn")}
+                    style={{ right: "0px" }}
                     aria-label="View Next Image"
                   >
                     <ArrowForwardIosIcon aria-hidden />
                   </button>
                   )}
                 </div>
+                
               </div>
             </div>
           </div>) :

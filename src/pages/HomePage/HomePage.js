@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from 'classnames/bind';
 import styles from "./HomePage.scss";
-import Sidenav from "../../shared/components/NavBarMini";
+import Sidenav from "../../shared/components/NavBar";
 import Timeline from "../../components/TimeLine";
 
 const cx = classNames.bind(styles);

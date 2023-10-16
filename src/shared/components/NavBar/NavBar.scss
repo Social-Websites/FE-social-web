@@ -7,6 +7,7 @@
   height: 100%;
   width: 240px;
   border-right: #212121 solid 1px;
+  transition: width 1s ease; /* Hiệu ứng chuyển đổi mượt mà */
 }
 
 .sidenav__logo {
@@ -233,20 +234,21 @@
           flex-shrink: 0;
           flex-grow: 0;
         }
+        .img-slider-btn {
+          all: unset;
+          display: block;
+          position: absolute;
+          top:  0;
+          bottom: 0;
+          padding: 1rem;
+          cursor: pointer;
+          transition: background-color 100ms ease-in-out;
+        }
       }
     }
   
     
-    .img-slider-btn {
-      all: unset;
-      display: block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      padding: 1rem;
-      cursor: pointer;
-      transition: background-color 100ms ease-in-out;
-    }
+    
   }
   .modal-image{
     display: flex;

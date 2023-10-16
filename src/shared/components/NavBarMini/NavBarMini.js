@@ -48,31 +48,35 @@ function NavBarMini() {
 
   function showNextImage() {
     setImageIndex(index => {
-      if (index === images.length - 1) {
+      if (index === images.length - 2) {
         setIsLastImage(true);
         setIsFirstImage(false);
-        return 0;
+        console.log(index);
+        return images.length - 1;
       }
       else {
         setIsLastImage(false);
         setIsFirstImage(false);
+        console.log(index);
+        return index + 1
       }
-      return index + 1
     })
   }
 
   function showPrevImage() {
     setImageIndex(index => {
-      if (index === 0) {
+      if (index === 1) {
         setIsLastImage(false);
         setIsFirstImage(true)
-        return images.length - 1
+        console.log(index);
+        return 0;
       }
       else {
         setIsLastImage(false);
         setIsFirstImage(false);
+        console.log(index);
+        return index - 1;
       }
-      return index - 1
     })
   }
 
@@ -178,8 +182,7 @@ function NavBarMini() {
         </div>
       </div>
       <div style={{marginLeft:"81px", height: "100%"}}>
-        
-          <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
+      <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
             {/* {notifications.map((n) => displayNotification(n))} */}
             <div className={cx("open__title")}>
               <span >Search</span>
@@ -221,8 +224,8 @@ function NavBarMini() {
               </span>
             </div>
             <div className={cx("modal-main")}  style={ isDragging ? {backgroundColor: "black"} : null}>
-              <div className="container " style={{width: "100%", borderRadius: "0px 0px 10px 10px", display: "flex", backgroundColor: "black"}}> 
-                <div className="image" style={{width: "100%", display: "flex", overflow: "hidden"}}>
+              <div className={cx("container")} style={{width: "100%", borderRadius: "0px 0px 10px 10px", display: "flex", backgroundColor: "black"}}> 
+                <div className={cx("image")} style={{width: "100%", display: "flex", overflow: "hidden"}}>
                   {images.map((images, index) => (
                     <img classname={cx("img-slider")} style={{width: "100%", transform: `translateX(-${100 * imageIndex}%)`, 
                     objectFit: "contain",
@@ -232,11 +235,12 @@ function NavBarMini() {
                     flexGrow: "0",
                     borderRadius: "0px 0px 10px 10px"}} aria-hidden={imageIndex !== index} src={images.url} alt={images.name}  /> 
                   ))}
+                  {/* <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/> */}
                   {isFirstImage === true ? (null) :
                   (
                   <button
                     onClick={showPrevImage}
-                    className="img-slider-btn"
+                    className={cx("img-slider-btn")}
                     style={{ left: 0 }}
                     aria-label="View Previous Image"
                   >
@@ -247,14 +251,15 @@ function NavBarMini() {
                   (
                   <button
                     onClick={showNextImage}
-                    className="img-slider-btn"
-                    style={{ right: 0 }}
+                    className={cx("img-slider-btn")}
+                    style={{ right: "0px" }}
                     aria-label="View Next Image"
                   >
                     <ArrowForwardIosIcon aria-hidden />
                   </button>
                   )}
                 </div>
+                
               </div>
             </div>
           </div>) :
