@@ -24,7 +24,7 @@ import WestIcon from '@mui/icons-material/West';
 
 const cx = classNames.bind(styles)
 
-function NavBar(props) {
+function NavBar() {
 //   const user = useSelector((state) => state.data.user.user);
 //   const dispatch = useDispatch();
 //   const handelLogout = () => {
@@ -275,7 +275,7 @@ function NavBar(props) {
                     flexGrow: "0",
                     borderRadius: "0px 0px 10px 10px"}} aria-hidden={imageIndex !== index} src={images.url} alt={images.name}  /> 
                   ))}
-                  {/* <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/> */}
+                  <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/>
                   {isFirstImage === true ? (null) :
                   (
                   <button
