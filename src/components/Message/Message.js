@@ -1,5 +1,8 @@
 import React, { useContext, useEffect, useRef } from "react";
 import style from "./Message.module.scss"
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(style)
 
 function Message({ message }) {
 //   const { currentUser } = useContext(AuthContext);
@@ -15,18 +18,17 @@ function Message({ message }) {
     <div
     //   ref={ref}
     //   className={`message ${message.senderId === currentUser.uid && "owner"}`}
-      className={`message owner`}
+      className={cx("message")}
     >
-      <div className="messageInfo">
+      <div className={cx("messageInfo")}>
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN-sWjSJJHyK65RzMLdZFVWDA2W2GH8Nbb8_bfkHBzEPrZ2VweYb0d9kfjLKTw786q6EA&usqp=CAU"
           alt=""
         />
-        <span>just now</span>
       </div>
-      <div className="messageContent">
+      <div className={cx("messageContent")}>
         <p>{message.text}</p>
-        {message.img && <img src={message.img} alt="" />}
+        {/* {message.img && <img src={message.img} alt="" />} */}
       </div>
     </div>
   );

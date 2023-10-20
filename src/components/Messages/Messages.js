@@ -9,7 +9,8 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(style)
 
 function Messages () {
-const [messages, setMessages] = useState([]);
+const [messages, setMessages] = useState([{text: "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"},{text: "hello"},{text: "hello"}
+,{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"}]);
 //   const { data } = useContext(ChatContext);
 
 //   useEffect(() => {
