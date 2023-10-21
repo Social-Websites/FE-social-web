@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useRef } from "react";
 import classNames from 'classnames/bind';
-import styles from "./NavBar.scss";
+import styles from "./NavBarMini.module.scss";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,7 +24,7 @@ import WestIcon from '@mui/icons-material/West';
 
 const cx = classNames.bind(styles)
 
-function NavBar() {
+function NavBarMini() {
 //   const user = useSelector((state) => state.data.user.user);
 //   const dispatch = useDispatch();
 //   const handelLogout = () => {
@@ -140,89 +140,49 @@ function NavBar() {
 
   return (
     <div style={{display:"flex"}}>
-      <div className={cx("sidenav")} style={open ? { width: "80px" } : null }>
-        {open ? (
-          <div style={{height: "120px", display: "flex", justifyContent: "center", alignItems:"center"}}>
-            <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
-              <InstagramIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            </button>
-          </div>
-        ) : (
-          <div style={{height: "120px", display: "flex",  alignItems:"center"}}>
-        <img
-          className={cx("sidenav__logo")}
-          src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
-          alt="Instagram Logo"
-        />
+      <div className={cx("sidenav")}>
+        <div style={{height: "120px", display: "flex", justifyContent: "center", alignItems:"center"}}>
+          <button className={cx("sidenav__button")} >
+            <InstagramIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
+          </button>
         </div>
-        )}
-        
 
         <div className={cx("sidenav__buttons")}>
-          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null } >
+          <button className={cx("sidenav__button")}>
             <HomeOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Home</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} onClick={() => setOpen(!open)} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
-            <SearchIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Search</span>
-            )}
+          <button className={cx("sidenav__button")} onClick={() => setOpen(!open)}>
+            <SearchIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px", marginLeft: "3px"}}/>
           </button>
-          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <ExploreOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Explore</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <MovieOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Reels</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <ChatOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Messages</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <FavoriteBorderIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Notifications</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} onClick={toggleModal} style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")} onClick={toggleModal}>
             <AddBoxOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-            <span>Create</span>
-            )}
           </button>
-          <button className={cx("sidenav__button")} style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <Avatar className={cx("sidenav__icon")} style={{width: "24px",height: "24px", margin: "3px"}}>
               A
             </Avatar>
-            {open ? null : (
-            <span>
-              Duongw 
-            </span>
-            )}
           </button>
         </div>
         <div className={cx("sidenav__more")}>
-          <button className={cx("sidenav__button")} style={open ? { width: "24%", margin: "5px 10px 5px 10px" } : null }>
+          <button className={cx("sidenav__button")}>
             <DensityMediumOutlinedIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px"}}/>
-            {open ? null : (
-              <span className={cx("sidenav__buttonText")}>More</span>
-            )}
           </button>
         </div>
       </div>
       <div style={{marginLeft:"81px", height: "100%"}}>
-          <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
+      <div className={cx("open")} style={open ? { transform: "translateX(0%)" } : null}>
             {/* {notifications.map((n) => displayNotification(n))} */}
             <div className={cx("open__title")}>
               <span >Search</span>
@@ -275,7 +235,7 @@ function NavBar() {
                     flexGrow: "0",
                     borderRadius: "0px 0px 10px 10px"}} aria-hidden={imageIndex !== index} src={images.url} alt={images.name}  /> 
                   ))}
-                  <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/>
+                  {/* <CloseIcon className={cx("sidenav__icon")} style={{width: "27px",height: "27px",color: "white", margin: "12px 30px", position: "absolute", right: "0", cursor: "pointer" }}/> */}
                   {isFirstImage === true ? (null) :
                   (
                   <button
@@ -330,4 +290,4 @@ function NavBar() {
   );
 }
 
-export default NavBar;
+export default NavBarMini;

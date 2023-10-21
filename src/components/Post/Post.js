@@ -15,7 +15,7 @@ function Post({ user, postImage, likes, timestamp }) {
     <div className={cx('post')}>
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
-          <Avatar style={{ marginRight: "10px" }}>
+          <Avatar style={{ marginRight: "10px", position: "inherit" }}>
             {user.charAt(0).toUpperCase()}
           </Avatar>{" "}
           {user}2 •   <span>{timestamp}</span>
@@ -23,17 +23,25 @@ function Post({ user, postImage, likes, timestamp }) {
         <MoreHorizIcon />
       </div>
       <div className={cx("post__image")}>
-        <img src={postImage} alt="Post Image" />
+        <img src={postImage} alt="img" />
       </div>
       <div className={cx("post__footer")}>
         <div className={cx("post__footerIcons")}>
           <div className={cx("post__iconsMain")}>
-            <FavoriteBorderIcon className={cx("postIcon")} />
-            <ChatBubbleOutlineIcon className={cx("postIcon")} />
-            <TelegramIcon className={cx("postIcon")} />
+            <div className={cx("postIcon")}> 
+              <FavoriteBorderIcon />
+            </div>
+            <div className={cx("postIcon")}> 
+              <ChatBubbleOutlineIcon />
+            </div>
+            <div className={cx("postIcon")}> 
+              <TelegramIcon />
+            </div>
           </div>
           <div className={cx("post__iconSave")}>
-            <BookmarkBorderIcon className={cx("postIcon")} />
+            <div className={cx("postIcon")} style={{padding: "7px 0px 7px 7px"}}> 
+              <BookmarkBorderIcon />
+            </div>
           </div>
         </div>
         {likes} likes

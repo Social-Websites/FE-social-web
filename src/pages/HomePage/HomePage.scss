@@ -13,10 +13,12 @@ html, body {
   
   .homepage__navWraper {
     position: relative;
-    width: 240px;
+    width:240px;
   }
   
   .homepage__timeline {
-    margin-left: 170px;
     flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }

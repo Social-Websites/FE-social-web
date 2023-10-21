@@ -13,7 +13,7 @@ function HomePage() {
         <Sidenav />
       </div>
       <div className={cx("homepage__timeline")}>
-        <Timeline />
+        <Timeline style={{width: "90%"}}/>
       </div>
     </div>
   );

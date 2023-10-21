@@ -3,6 +3,7 @@
     flex-direction: row;
     height: 100%;
     background-color: black;
+    width: 90%;
   }
   
   .timeline__left {
@@ -11,7 +12,6 @@
   
   .timeline__right {
     flex: 0.3;
+    margin-left: 50px;
   }
   
-  .timeline__posts {
-  }
