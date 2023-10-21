@@ -15,8 +15,7 @@ html, body {
   }
   .profile__right{
     height: 100%;
-    width: 100%;
-    margin-left: 50px;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -24,7 +23,8 @@ html, body {
   .profile__content {
     
     height: 774px;
-    width: 100%;
+    width: 85%;
+    padding: 30px 20px;
     
     .profile__header{
       display: flex;
@@ -136,12 +136,12 @@ html, body {
       flex-wrap: wrap;
     }
     .profile__post{
-      width: 33%;
-      margin: 1.5px;
+      width: 32.75%;
+      margin: 0.27%;
     }
     .profile__post >img{
       width: 100%;
-      flex-basis: 33%;
+      flex-basis: 33.3%;
     }
   }
   

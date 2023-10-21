@@ -13,9 +13,12 @@ html, body {
   
   .homepage__navWraper {
     position: relative;
+    width:240px;
   }
   
   .homepage__timeline {
-    margin-left: 200px;
     flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
