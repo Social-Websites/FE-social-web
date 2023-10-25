@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   Button,
@@ -27,10 +27,13 @@ import {
   red,
 } from "@mui/material/colors";
 import UserOverview from "./UserOverview";
+import useHttpClient from "../../../../shared/hook/http-hook";
 
 const cx = classNames.bind(styles);
 
 const DashboardBody = () => {
+  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+
   const displayData = [
     {
       label: "Người dùng mới",
