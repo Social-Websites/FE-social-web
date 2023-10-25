@@ -38,6 +38,10 @@ html, body {
             .chatInfo__user_avatar{
                 padding:6px;
             }
+            .chatInfo__user_avatar> img {
+                border-radius: 50%;
+                object-fit: cover;
+            }
             .chatInfo__user__info {
                 display: flex;
                 flex-direction: column;

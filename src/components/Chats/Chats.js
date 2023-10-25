@@ -1,13 +1,31 @@
-
-import { Avatar } from "@mui/material";
 import classNames from 'classnames/bind';
-import React from "react";
+import {useState, useEffect , React } from "react";
 import styles from "./Chats.scss";
+import ConversationChat from "./ConversationChat/ConversationChat";
+import * as conversationService from '../../service/conversationService';
 
 
-const cx = classNames.bind(styles)
-
+const cx = classNames.bind(styles);
+const uId="6537933675b948b32d19d38c";
 function Chats() {
+
+    const [conversation, setConversation] = useState([])
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await conversationService.getUserConversations(uId);
+                setConversation(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    
     return (
         <div className={cx("chats")} >
             {/* {notifications.map((n) => displayNotification(n))} */}
@@ -21,123 +39,14 @@ function Chats() {
                 Messages
             </div>
             <div className={cx("chats__content")} >
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
-                <div className={cx("chats__user")}>
-                    <span className={cx("chats__user_avatar")}>
-                        <Avatar>R</Avatar>
-                    </span>
-                    <div className={cx("chats__user__info")}>
-                        <span className={cx("chats__username")}>redian_</span>
-                        <span className={cx("chats__relation")}>New to Instagram</span>
-                    </div>
-                </div>
+                {conversation.map((con) => (
+                    <ConversationChat 
+                        name={con.name}
+                        img={con.img}
+                        lastMsg={con.lastMsg}  
+                        key={con._id} 
+                    />
+                ))}
             </div>
         </div>
     )
