@@ -1,0 +1,38 @@
+.chats__user{
+    display: flex;
+    padding: 8px 24px;
+    
+    .chats__user_avatar{
+        width: 44px;
+        height: 44px;
+        margin-right: 12px;
+    }
+    .chats__user_avatar > img {
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .chats__user__info {
+        display: flex;
+        flex-direction: column;
+        margin-left: 7px;
+        justify-content: center;
+        .chats__relation {
+            color: #A8A8A8;
+            font-weight: 400;
+            font-size: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .chats__username {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin-bottom: 5px;
+        }
+    }
+}
+.chats__user:hover {
+cursor: pointer;
+background-color: rgba(255, 255, 255, 0.128);
+}
