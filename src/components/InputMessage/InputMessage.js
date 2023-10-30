@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 import SendIcon from '@mui/icons-material/Send';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import { StateContext } from "../../context/StateContext";
-import * as messageService from "../../service/messageService"
+import * as messageService from "../../services/messageService"
 
 
 const cx = classNames.bind(style);
