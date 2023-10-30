@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Message from "../Message";
 import style from "./Messages.module.scss"
 import classNames from 'classnames/bind';
-import * as messageService from '../../service/messageService';
+import * as messageService from '../../services/messageService';
 import { StateContext } from "../../context/StateContext"
 
 const cx = classNames.bind(style)
