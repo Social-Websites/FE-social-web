@@ -65,14 +65,44 @@ html, body {
             }
         }
     
-          .chatIcons {
+        .chatIcons {
             display: flex;
             gap: 10px;
-    
+
             img {
-              height: 24px;
-              cursor: pointer;
+                height: 24px;
+                cursor: pointer;
             }
-          }
+        }
+
+        .chatpage__messages__main{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 93.5%;
+            border-radius: 0px 0px 10px 10px;
+            .chatpage__messages__image{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .chatpage__messages__logo{
+                  width: 100%;
+                  height: 100px;
+                  color: white;
+                }
+              }
+            
+              .chatpage__messages__text{
+                color: white;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 10px;
+                font-size: 20px;
+                font-weight: 5500;
+                font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              }
+        }
     }
 }

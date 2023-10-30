@@ -40,16 +40,34 @@
     }
   }
 
-  .owner {
-    flex-direction: row-reverse;
+}
 
-    .messageContent {
-      align-items: flex-end;
-      p {
-        background-color: #8da4f1;
-        color: white;
-        border-radius: 10px 0px 10px 10px;
-      }
+.you {
+  display: flex;
+  margin-top: 20px;
+  justify-content: end;
+
+  .messageContent {
+    max-width: 42%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    p {
+      background-color: #3797f0;
+      color: white;
+      white-space: pre-line;
+      word-wrap: break-word;
+      padding: 10px 15px;
+      border-radius: 50px;
+      max-width: max-content;
+      margin:0;
+      margin-top: 5px
+    }
+
+    img {
+      width: 50%;
     }
   }
+
 }
