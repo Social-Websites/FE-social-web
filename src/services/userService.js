@@ -1,12 +1,12 @@
 import * as httprequest from "../shared/util/httprequest";
 
-export const getUser = async () => {
+export const getUser = async (sendRequest) => {
   try {
-    const response = await httprequest.get(`/users/getuser`);
-    return response;
-  } catch (error) {
-    console.log("Lỗi lấy thong tin user:", error);
-    throw new Error("Đã xảy ra lỗi lấy thong tin user");
+    const response = await sendRequest("/users/getuser");
+    return response?.data.user;
+  } catch (err) {
+    console.log("Lỗi lấy thong tin user:", err);
+    throw err;
   }
 };
 

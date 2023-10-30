@@ -12,7 +12,7 @@ import FilledInput from "@mui/material/FilledInput";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { login } from "../../services/userService";
+import { getUser, login } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook";
 import useAuth from "../../shared/hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, dispatch } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,6 +97,9 @@ const LoginPage = () => {
       const accessToken = response?.accessToken;
 
       setAuth({ accessToken });
+      const user = await getUser(privateRequest);
+      dispatch({ type: "SET_USER", payload: user });
+
       navigate(from, { replace: true });
       clearError();
     } catch (err) {}
