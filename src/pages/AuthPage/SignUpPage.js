@@ -125,9 +125,12 @@ const SignUpPage = () => {
 
     try {
       const response = await signUp(formData, sendRequest);
-      navigate(from, { replace: true });
+      if (response) navigate(from, { replace: true });
+
       clearError();
-    } catch (err) {}
+    } catch (err) {
+      setFormValid(err?.message);
+    }
   };
 
   return (
