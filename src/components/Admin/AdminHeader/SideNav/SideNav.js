@@ -6,7 +6,11 @@ import SideNavAdminData from "./SideNavData";
 
 const cx = classNames.bind(styles);
 
-const SideNavAdmin = ({ mobileOpen, handleDrawerToggle }) => {
+const SideNavAdmin = ({
+  mobileOpen,
+  handleDrawerToggle,
+  handleDrawerClose,
+}) => {
   return (
     <Box
       component="nav"
@@ -30,7 +34,7 @@ const SideNavAdmin = ({ mobileOpen, handleDrawerToggle }) => {
           },
         }}
       >
-        <SideNavAdminData handleDrawerClose={handleDrawerToggle} />
+        <SideNavAdminData handleDrawerClose={handleDrawerClose} />
       </Drawer>
       <Drawer
         variant="permanent"
@@ -44,7 +48,7 @@ const SideNavAdmin = ({ mobileOpen, handleDrawerToggle }) => {
         }}
         open
       >
-        <SideNavAdminData handleDrawerClose={handleDrawerToggle} />
+        <SideNavAdminData handleDrawerClose={handleDrawerClose} />
       </Drawer>
     </Box>
   );

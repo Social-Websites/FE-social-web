@@ -18,12 +18,17 @@ const HeaderAdmin = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleDrawerClose = () => {
+    setMobileOpen(false);
+  };
+
   return (
     <div>
       <NavBarAdmin handleDrawerToggle={handleDrawerToggle} />
       <SideNavAdmin
         mobileOpen={mobileOpen}
         handleDrawerToggle={handleDrawerToggle}
+        handleDrawerClose={handleDrawerClose}
       />
       <Box className={cx("wrapper")}>
         <Routes>

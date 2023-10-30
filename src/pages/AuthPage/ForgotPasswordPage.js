@@ -1,87 +1,126 @@
 import React, { useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
-import Input from "../../shared/components/FormElement/Input";
-import Card from "../../shared/components/UIElement/Card";
-import { useForm } from "../../shared/hook/form-hook";
-import { VALIDATOR_REQUIRE } from "../../shared/util/validators";
-import Button from "../../shared/components/FormElement/Button";
+import { Button, Paper, TextField } from "@mui/material";
+import useAuth from "../../shared/hook/auth-hook";
+import { useLocation, useNavigate } from "react-router-dom";
+
 const cx = classNames.bind(styles);
 
-
-
 const ForgotPasswordPage = () => {
-    const [formState, inputHandler] = useForm({
-        username: {
-            value: '',
-            isValid: false
-        },
-        password: {
-            value: '',
-            isValid: false
-        }
-    }, false);
+  //const { setAuth } = useAuth();
 
-    return <div className={cx("back-ground")}>
-        <div className={cx("main")}>
-            <Card className={cx("center-screen")}>
-                <div className={cx("logo--container")}>
-                    <span className={cx("lock-icon")}></span>
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/accounts/login";
+
+  const [forgotPassForm, setForgotPassForm] = useState({ forgotAccInput: "" });
+
+  const [forgotAccError, setForgotAccError] = useState(false);
+
+  const onBlurHandler = () => {
+    const { forgotAccInput } = forgotPassForm;
+    if (!forgotAccInput || forgotAccInput.length < 5) {
+      setForgotAccError(true);
+      return;
+    }
+    setForgotAccError(false);
+  };
+
+  const changeHandler = (e) => {
+    setForgotPassForm((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {};
+
+  return (
+    <div className={cx("back-ground")}>
+      <div className={cx("main")}>
+        <Paper elevation={0} square className={cx("center-screen")}>
+          <div className={cx("logo--container")}>
+            <span className={cx("lock-icon")}></span>
+          </div>
+          <div className={cx("logo--container")}>
+            <span dir="auto" style={{ fontWeight: 600 }}>
+              Bạn gặp sự cố khi đăng nhập?
+            </span>
+          </div>
+          <div className={cx("form--container")}>
+            <form className={cx("form--main")}>
+              <div className={cx("form--separate")}>
+                <div className={cx("input--margin")}>
+                  <div className={cx("input--container")}>
+                    <TextField
+                      error={forgotAccError}
+                      id="forgotAccInput"
+                      label="Email hoặc tên đăng nhập"
+                      variant="filled"
+                      fullWidth={true}
+                      size="small"
+                      onChange={changeHandler}
+                      onBlur={onBlurHandler}
+                    />
+                  </div>
                 </div>
-                <div className={cx("logo--container")}>
-                    <span dir="auto" style={{fontWeight:600}}>Bạn gặp sự cố khi đăng nhập?</span>
+
+                <div className={cx("button--container")}>
+                  <Button
+                    onClick={handleSubmit}
+                    fullWidth
+                    size="small"
+                    variant="contained"
+                    sx={{ bgcolor: "#03a9f4" }}
+                  >
+                    <div className={cx("button--text")}>
+                      Gửi liên kết lấy lại mật khẩu
+                    </div>
+                  </Button>
                 </div>
-                <div className={cx("form--container")}>
-                    <form className={cx("form--main")}>
-                        <div className={cx("form--separate")}>
-                            <div className={cx("input--margin")}>
-                                <div className={cx("input--container")}>                                                                       
-                                        <Input className={cx("input--user")}
-                                        labelClass={cx("input--label")}
-                                        spanClass={cx("input--span")}
-                                        element="input" 
-                                        id="username" 
-                                        type="text" 
-                                        ariaLabel="Email, điện thoại hoặc tên người dùng" 
-                                        ariaRequired="true" 
-                                        autocapitalize="off" 
-                                        maxlength="75" 
-                                        validators={[VALIDATOR_REQUIRE()]} 
-                                        errorText="Vui lòng nhập tên tài khoản!" 
-                                        onInput={inputHandler} />
-                                    
-                                </div>
-                            </div>
-                           
-                            <div className={cx("button--container")}>                         
-                            <Button className={cx("button--login")} disabled={!formState.isValid} >
-                                <div className={cx("button--text")}>
-                                    Gửi liên kết lấy lại mật khẩu
-                                </div>
-                            </Button>
-                            </div>
-                            <div className={cx("button--container")}>                                                                       
-                                        <div style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>                                           
-                                            <div className={cx("or--text")}>HOẶC</div>
-                                        </div>
-                                    
-                                </div>
-                        </div>
-                        <Button className={cx("forgot--link")} href="/accounts/signup/" role="link" tabIndex="0">
-                            <span className={cx("forgot--text")} dir="auto">Tạo tài khoản mới!</span>
-                        </Button>
-                    </form>
+                <div className={cx("button--container")}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <div className={cx("or--text")}>HOẶC</div>
+                  </div>
                 </div>
-            </Card>
-            <Card className={cx("center-screen")}>
-                <span className={cx("signup--container")} dir="auto">                   
-                    <Button className={cx("forgot--link")} href="/accounts/login/" role="link" tabIndex="0">
-                        <span className={cx("forgot--text")} dir="auto">Quay về trang đăng nhập</span>
-                    </Button>                   
+              </div>
+              <Button
+                className={cx("forgot--link")}
+                href="/accounts/signup/"
+                role="link"
+                tabIndex={0}
+              >
+                <span className={cx("forgot--text")} dir="auto">
+                  Tạo tài khoản mới!
                 </span>
-            </Card>
-        </div>
+              </Button>
+            </form>
+          </div>
+        </Paper>
+        <Paper elevation={0} square className={cx("center-screen")}>
+          <span className={cx("signup--container")} dir="auto">
+            <Button
+              className={cx("forgot--link")}
+              href="/accounts/login/"
+              role="link"
+              tabIndex={0}
+            >
+              <span className={cx("forgot--text")} dir="auto">
+                Quay về trang đăng nhập
+              </span>
+            </Button>
+          </span>
+        </Paper>
+      </div>
     </div>
+  );
 };
 
 export default ForgotPasswordPage;
