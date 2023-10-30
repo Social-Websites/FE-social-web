@@ -47,6 +47,53 @@ const useHttpClient = (privateCall = false) => {
     setError(null);
   };
 
+  const GetReq = (url, headers = {}) => {
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          return await sendRequest(url, headers);
+        } catch (err) {}
+      };
+      fetchData();
+    }, [sendRequest]);
+  };
+
+  const PostReq = (url, body, headers = {}) => {
+    const PostData = async () => {
+      try {
+        return await sendRequest(url, "POST", JSON.stringify(body), headers);
+      } catch (err) {}
+    };
+    PostData();
+  };
+
+  const PutReq = (url, body, headers = {}) => {
+    const PutData = async () => {
+      try {
+        return await sendRequest(url, "PUT", JSON.stringify(body), headers);
+      } catch (err) {}
+    };
+    PutData();
+  };
+
+  const PatchReq = (url, body, headers = {}) => {
+    const PatchData = async () => {
+      try {
+        return await sendRequest(url, "PATCH", JSON.stringify(body), headers);
+      } catch (err) {}
+    };
+    PatchData();
+  };
+
+  const DeleteReq = (url, headers = {}) => {
+    const DeleteData = async () => {
+      try {
+        return await sendRequest(url, "DELETE", headers);
+      } catch (err) {}
+    };
+    DeleteData();
+  };
+
   useEffect(() => {
     return () => {
       activeHttpRequests.current.forEach((abortCtrl) => abortCtrl.abort());
@@ -57,7 +104,11 @@ const useHttpClient = (privateCall = false) => {
     isLoading,
     error,
     clearError,
-    sendRequest,
+    GetReq,
+    PostReq,
+    PutReq,
+    PatchReq,
+    DeleteReq,
   };
 };
 

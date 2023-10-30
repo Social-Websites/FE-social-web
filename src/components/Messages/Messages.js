@@ -5,25 +5,27 @@ import React, { useContext, useEffect, useState } from "react";
 import Message from "../Message";
 import style from "./Messages.module.scss"
 import classNames from 'classnames/bind';
+import * as messageService from '../../service/messageService';
+import { StateContext } from "../../context/StateContext"
 
 const cx = classNames.bind(style)
 
 function Messages () {
-const [messages, setMessages] = useState([{text: "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"},{text: "hello"},{text: "hello"}
-,{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"},{text: "hello"}]);
-//   const { data } = useContext(ChatContext);
+  const { messages,currentChat, dispatch } = useContext(StateContext);
 
-//   useEffect(() => {
-//     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
-//       doc.exists() && setMessages(doc.data().messages);
-//     });
+  
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const data = await messageService.getMessages(currentChat._id);
+            dispatch({type: "SET_MESSAGES", payload: data})
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-//     return () => {
-//       unSub();
-//     };
-//   }, [data.chatId]);
-
-//   console.log(messages)
+    fetchData();
+  }, [dispatch]);
 
   return (
     <div className={cx("messages")}>

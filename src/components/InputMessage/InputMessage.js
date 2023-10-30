@@ -1,12 +1,14 @@
-import React, { useContext, useState } from "react";
-import style from "./InputMessage.module.scss"
+import React, { useContext, useState, useRef } from "react";
+import style from "./InputMessage.module.scss";
 import classNames from 'classnames/bind';
+import SendIcon from '@mui/icons-material/Send';
+import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
+import { StateContext } from "../../context/StateContext";
+import * as messageService from "../../service/messageService"
 
-const cx = classNames.bind(style)
-// import Img from "../img/img.png";
-// import Attach from "../img/attach.png";
-// import { AuthContext } from "../context/AuthContext";
-// import { ChatContext } from "../context/ChatContext";
+
+const cx = classNames.bind(style);
+
 // import {
 //   arrayUnion,
 //   doc,
@@ -19,82 +21,52 @@ const cx = classNames.bind(style)
 // import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 function InputMessage () {
-//   const [text, setText] = useState("");
-//   const [img, setImg] = useState(null);
+  const text = useRef("");
+  const [img, setImg] = useState([]);
 
-//   const { currentUser } = useContext(AuthContext);
-//   const { data } = useContext(ChatContext);
+  const  {currentChat, socket, dispatch}  = useContext(StateContext);
+  const uId="6537933675b948b32d19d38c";
 
-//   const handleSend = async () => {
-//     if (img) {
-//       const storageRef = ref(storage, uuid());
+  const handleSendMessage = async () => {
+    try{
+      const newMessage = {
+        conversationId: currentChat._id,
+        sender_id: uId,
+        content: text.current.value,
+        // media: img,
+      };
+      const result = await messageService.sendMessage(newMessage);
+      socket.current.emit("send-msg", newMessage)
+      dispatch({type: "ADD_MESSAGE", payload: newMessage,
+        fromSelf: true,
+      })
+      if (result !== null) {
+        text.current.value = "";
+        setImg([]);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+};
 
-//       const uploadTask = uploadBytesResumable(storageRef, img);
-
-//       uploadTask.on(
-//         (error) => {
-//           //TODO:Handle Error
-//         },
-//         () => {
-//           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-//             await updateDoc(doc(db, "chats", data.chatId), {
-//               messages: arrayUnion({
-//                 id: uuid(),
-//                 text,
-//                 senderId: currentUser.uid,
-//                 date: Timestamp.now(),
-//                 img: downloadURL,
-//               }),
-//             });
-//           });
-//         }
-//       );
-//     } else {
-//       await updateDoc(doc(db, "chats", data.chatId), {
-//         messages: arrayUnion({
-//           id: uuid(),
-//           text,
-//           senderId: currentUser.uid,
-//           date: Timestamp.now(),
-//         }),
-//       });
-//     }
-
-//     await updateDoc(doc(db, "userChats", currentUser.uid), {
-//       [data.chatId + ".lastMessage"]: {
-//         text,
-//       },
-//       [data.chatId + ".date"]: serverTimestamp(),
-//     });
-
-//     await updateDoc(doc(db, "userChats", data.user.uid), {
-//       [data.chatId + ".lastMessage"]: {
-//         text,
-//       },
-//       [data.chatId + ".date"]: serverTimestamp(),
-//     });
-
-//     setText("");
-//     setImg(null);
-//   };
   return (
     <div style={{height:"75px", display: "flex", alignItems: "center", justifyContent: "center"}}>
         <div className={cx("input")}>
             <input
                 type="text"
                 placeholder="Type something..."
+                ref={text}
             />
             <div className={cx("send")}>
                 <input
-                type="file"
-                style={{ display: "none" }}
-                id="file"
-                //   onChange={(e) => setImg(e.target.files[0])}
+                  type="file"
+                  style={{ display: "none" }}
+                  id="file"
+                  onChange={(e) => setImg(e.target.files[0])}
                 />
-                <label htmlFor="file">
-                {/* <img src={Img} alt="" /> */}
-                </label>
+                <PhotoOutlinedIcon htmlFor="file" style={{color: "white"}}/>
             </div>
+            <SendIcon type="submit" style={{color: "white"}} onClick={handleSendMessage}/>
         </div>
     </div>
   );

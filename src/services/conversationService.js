@@ -1,11 +1,11 @@
 import * as httprequest from '../shared/util/httprequest';
 
-export const getUserConversations = async (userId) => {
+export const getUserConversations = async (conversationId) => {
     try {
-        const response = await httprequest.get(`/conversation/${userId}`);
+        const response = await httprequest.get(`/conversation/${conversationId}`);
         return response;
     } catch (error) {
-        console.log('Lỗi lấy danh sách conversation:', error);
-        throw new Error('Đã xảy ra lỗi lấy danh sách Chat');
+        console.log('Lỗi lấy danh sách message:', error);
+        throw new Error('Đã xảy ra lỗi lấy danh sách message');
     }
 };
