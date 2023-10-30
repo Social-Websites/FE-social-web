@@ -26,7 +26,8 @@ const LoginPage = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
-  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+  const { isLoading, error, clearError, publicRequest, privateRequest } =
+    useHttpClient();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -92,9 +93,9 @@ const LoginPage = () => {
     setFormValid(null);
 
     try {
-      const response = await login(formData, sendRequest);
+      const response = await login(formData, publicRequest);
       const accessToken = response?.accessToken;
-      console.log(accessToken);
+
       setAuth({ accessToken });
       navigate(from, { replace: true });
       clearError();

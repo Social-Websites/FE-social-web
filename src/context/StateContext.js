@@ -1,8 +1,8 @@
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 import StateReducer from "./StateReducer";
 
 const INITIAL_STATE = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: null,
   isFetching: false,
   error: false,
   currentChat: null,
@@ -10,19 +10,17 @@ const INITIAL_STATE = {
   socket: undefined,
 };
 
-
 export const StateContext = createContext(INITIAL_STATE);
 
 export const StateContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(StateReducer, INITIAL_STATE);
-  
-//   useEffect(()=>{
-//     localStorage.setItem("user", JSON.stringify(state.user))
-//   },[state.user])
-  
+  const [auth, setAuth] = useState({});
+
   return (
     <StateContext.Provider
       value={{
+        auth,
+        setAuth,
         user: state.user,
         isFetching: state.isFetching,
         error: state.error,

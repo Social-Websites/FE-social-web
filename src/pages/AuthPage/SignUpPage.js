@@ -22,7 +22,8 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 const SignUpPage = () => {
   const { setAuth } = useAuth();
-  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+  const { isLoading, error, clearError, publicRequest, privateRequest } =
+    useHttpClient();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -124,7 +125,7 @@ const SignUpPage = () => {
     setFormValid(null);
 
     try {
-      const response = await signUp(formData, sendRequest);
+      const response = await signUp(formData, publicRequest);
       if (response) navigate(from, { replace: true });
 
       clearError();

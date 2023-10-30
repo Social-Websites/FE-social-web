@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import useAuth from "./auth-hook";
 import axios from "axios";
 
@@ -20,52 +20,49 @@ const axiosPrivate = axios.create({
   },
 });
 
-const useAxiosInstance = (privateCall = false) => {
+const useAxiosInstance = () => {
   const { auth, setAuth } = useAuth();
-  const refresh = async () => {
+
+  const refresh = useCallback(async () => {
     const response = await axiosPublic("/auth/refresh");
 
     setAuth((prev) => {
       return { ...prev, accessToken: response.accessToken };
     });
     return response.accessToken;
-  };
-
-  const axiosInstance = privateCall ? axiosPrivate : axiosPublic;
+  }, []);
 
   useEffect(() => {
-    if (privateCall) {
-      const requestIntercept = axiosInstance.interceptors.request.use(
-        (config) => {
-          if (!config.headers["Authorization"]) {
-            config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
-          }
-          return config;
-        },
-        (err) => Promise.reject(err)
-      );
-
-      const responseIntercept = axiosInstance.interceptors.response.use(
-        (response) => response,
-        async (err) => {
-          const prevRequest = err?.config;
-          if (err?.response?.status === 403 && !prevRequest?.sent) {
-            prevRequest.sent = true;
-            const newAccessToken = await refresh();
-            prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-            return axiosInstance(prevRequest);
-          }
+    const requestIntercept = axiosPrivate.interceptors.request.use(
+      (config) => {
+        if (!config.headers["Authorization"]) {
+          config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
         }
-      );
+        return config;
+      },
+      (err) => Promise.reject(err)
+    );
 
-      return () => {
-        axiosInstance.interceptors.request.eject(requestIntercept);
-        axiosInstance.interceptors.response.eject(responseIntercept);
-      };
-    }
+    const responseIntercept = axiosPrivate.interceptors.response.use(
+      (response) => response,
+      async (err) => {
+        const prevRequest = err?.config;
+        if (err?.response?.status === 403 && !prevRequest?.sent) {
+          prevRequest.sent = true;
+          const newAccessToken = await refresh();
+          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return axiosPrivate(prevRequest);
+        }
+      }
+    );
+
+    return () => {
+      axiosPrivate.interceptors.request.eject(requestIntercept);
+      axiosPrivate.interceptors.response.eject(responseIntercept);
+    };
   }, [auth, refresh]);
 
-  return axiosInstance;
+  return { axiosPublic, axiosPrivate };
 };
 
 export default useAxiosInstance;

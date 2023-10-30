@@ -1,11 +1,11 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
-import useAuth from "../shared/hook/auth-hook";
+import useAuth from "../hook/auth-hook";
 
 const RequireAuth = ({ admin = false }) => {
   const { auth } = useAuth();
   const location = useLocation();
 
-  console.log(auth);
+  //console.log(auth);
 
   if (admin && auth?.admin) {
     if (auth?.accessToken) return <Outlet />;

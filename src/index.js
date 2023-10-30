@@ -1,22 +1,18 @@
-<<<<<<< Updated upstream
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-=======
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { StateContextProvider } from './context/StateContext';
->>>>>>> Stashed changes
+import { StateContextProvider } from "./context/StateContext";
+import { BrowserRouter as Router } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <StateContextProvider>
-      <App />
-    </StateContextProvider>
+    <Router>
+      <StateContextProvider>
+        <App />
+      </StateContextProvider>
+    </Router>
   </React.StrictMode>
 );
 
