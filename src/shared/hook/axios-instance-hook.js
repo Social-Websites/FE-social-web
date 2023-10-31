@@ -1,15 +1,7 @@
 import { useCallback, useEffect } from "react";
 import useAuth from "./auth-hook";
 import axios from "axios";
-
-const axiosPublic = axios.create({
-  baseURL: process.env.REACT_APP_BASE_URL,
-
-  withCredentials: true,
-  validateStatus: (status) => {
-    return status < 500; // Resolve only if the status code is less than 500
-  },
-});
+import { axiosPublic } from "./public-axios";
 
 const axiosPrivate = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
@@ -62,7 +54,7 @@ const useAxiosInstance = () => {
     };
   }, [auth, refresh]);
 
-  return { axiosPublic, axiosPrivate };
+  return axiosPrivate;
 };
 
 export default useAxiosInstance;

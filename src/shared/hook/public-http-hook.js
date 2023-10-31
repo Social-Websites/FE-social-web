@@ -1,21 +1,19 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import useAxiosInstance from "./axios-instance-hook";
+import { axiosPublic } from "./public-axios";
 
-const usePrivateHttpClient = () => {
-  const axiosPrivate = useAxiosInstance();
-
-  const [isPrivateLoading, setIsPrivateLoading] = useState(false);
-  const [privateError, setPrivateError] = useState();
+const useHttpClient = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
   const activeHttpRequests = useRef([]);
 
-  const privateRequest = useCallback(
+  const publicRequest = useCallback(
     async (url, method = "GET", body = null, options = {}) => {
-      setIsPrivateLoading(true);
+      setIsLoading(true);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
       try {
-        const response = await axiosPrivate({
+        const response = await axiosPublic({
           method,
           url,
           data: body,
@@ -27,24 +25,24 @@ const usePrivateHttpClient = () => {
           (reqCtrl) => reqCtrl !== httpAbortCtrl
         );
 
-        if (response?.status >= 400) {
+        if (response.status >= 400) {
           // Xử lý lỗi khi status code trên 400
           throw new Error(response.data.message);
         }
 
-        setIsPrivateLoading(false);
+        setIsLoading(false);
         return response;
       } catch (err) {
-        setPrivateError(err.message);
-        setIsPrivateLoading(false);
+        setError(err.message);
+        setIsLoading(false);
         throw err;
       }
     },
     []
   );
 
-  const clearPrivateError = () => {
-    setPrivateError(null);
+  const clearError = () => {
+    setError(null);
   };
 
   useEffect(() => {
@@ -54,11 +52,11 @@ const usePrivateHttpClient = () => {
   }, []);
 
   return {
-    isPrivateLoading,
-    privateError,
-    clearPrivateError,
-    privateRequest,
+    isLoading,
+    error,
+    clearError,
+    publicRequest,
   };
 };
 
-export default usePrivateHttpClient;
+export default useHttpClient;

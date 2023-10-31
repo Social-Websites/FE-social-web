@@ -13,9 +13,10 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { getUser, login } from "../../services/userService";
-import useHttpClient from "../../shared/hook/http-hook";
+import useHttpClient from "../../shared/hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
+import usePrivateHttpClient from "../../shared/hook/http-hook";
 
 const cx = classNames.bind(styles);
 
@@ -26,8 +27,7 @@ const LoginPage = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
-  const { isLoading, error, clearError, publicRequest, privateRequest } =
-    useHttpClient();
+  const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -97,8 +97,6 @@ const LoginPage = () => {
       const accessToken = response?.accessToken;
 
       setAuth({ accessToken });
-      const user = await getUser(privateRequest);
-      getUserLogin(user);
 
       navigate(from, { replace: true });
       clearError();
