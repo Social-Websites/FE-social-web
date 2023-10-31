@@ -20,7 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const { setAuth, dispatch } = useAuth();
+  const { setAuth, getUserLogin } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,7 +98,7 @@ const LoginPage = () => {
 
       setAuth({ accessToken });
       const user = await getUser(privateRequest);
-      dispatch({ type: "SET_USER", payload: user });
+      getUserLogin(user);
 
       navigate(from, { replace: true });
       clearError();
