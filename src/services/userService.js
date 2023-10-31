@@ -3,7 +3,6 @@ import * as httprequest from "../shared/util/httprequest";
 export const getUser = async (sendRequest) => {
   try {
     const response = await sendRequest("/users/getuser");
-    console.log("lấy được nè");
     return response?.data.user;
   } catch (err) {
     console.log("Lỗi lấy thong tin user:", err);

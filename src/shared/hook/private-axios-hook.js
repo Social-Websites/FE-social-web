@@ -6,21 +6,19 @@ import { axiosPublic } from "./public-axios";
 const axiosPrivate = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
 
-  withCredentials: true,
+  withCredentials: false,
   validateStatus: (status) => {
     return status < 500; // Resolve only if the status code is less than 500
   },
 });
 
 const useAxiosInstance = () => {
-  const { auth, setAuth } = useAuth();
+  const { auth, setAuthLogin } = useAuth();
 
   const refresh = useCallback(async () => {
     const response = await axiosPublic("/auth/refresh");
 
-    setAuth((prev) => {
-      return { ...prev, accessToken: response.accessToken };
-    });
+    setAuthLogin(response.accessToken);
     return response.accessToken;
   }, []);
 
@@ -28,7 +26,7 @@ const useAxiosInstance = () => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
         if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
+          config.headers["Authorization"] = `Bearer ${auth}`;
         }
         return config;
       },

@@ -1,15 +1,21 @@
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
-import { LoginFailure, LoginSuccess } from "../../context/StateAction";
+import { LoginFailure, setAuth, setUser } from "../../context/StateAction";
 
 const useAuth = () => {
-  const { auth, setAuth, dispatch } = useContext(StateContext);
-  const getUserLogin = (user) => {
-    if (user) dispatch(LoginSuccess(user));
+  const { auth, user, dispatch } = useContext(StateContext);
+
+  const setAuthLogin = (accessToken) => {
+    if (accessToken) dispatch(setAuth(accessToken));
     else dispatch(LoginFailure());
   };
 
-  return { auth, setAuth, getUserLogin };
+  const setUserLogin = (user) => {
+    if (user) dispatch(setUser(user));
+    else dispatch(LoginFailure());
+  };
+
+  return { auth, user, setAuthLogin, setUserLogin };
 };
 
 export default useAuth;

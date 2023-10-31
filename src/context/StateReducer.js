@@ -62,6 +62,11 @@ const StateReducer = (state, action) => {
         ...state,
         user: action.payload,
       };
+    case "SET_AUTH":
+      return {
+        ...state,
+        auth: action.payload,
+      };
 
     default:
       return state;

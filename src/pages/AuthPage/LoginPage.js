@@ -16,16 +16,16 @@ import { getUser, login } from "../../services/userService";
 import useHttpClient from "../../shared/hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
-import usePrivateHttpClient from "../../shared/hook/http-hook";
+import usePrivateHttpClient from "../../shared/hook/private-http-hook";
 
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const { setAuth, getUserLogin } = useAuth();
+  const { setAuthLogin } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const from = "/redirect";
 
   const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
@@ -95,11 +95,10 @@ const LoginPage = () => {
     try {
       const response = await login(formData, publicRequest);
       const accessToken = response?.accessToken;
+      setAuthLogin(accessToken);
 
-      setAuth({ accessToken });
-
-      navigate(from, { replace: true });
       clearError();
+      navigate(from, { replace: true });
     } catch (err) {}
   };
 

@@ -182,6 +182,9 @@ function NavBar() {
 
         <div className={cx("sidenav__buttons")}>
           <button
+            onClick={() => {
+              navigate("/", { replace: true });
+            }}
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >
@@ -203,6 +206,9 @@ function NavBar() {
             {open ? null : <span>Search</span>}
           </button>
           <button
+            onClick={() => {
+              navigate("/group", { replace: true });
+            }}
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >
@@ -255,6 +261,9 @@ function NavBar() {
             {open ? null : <span>Create</span>}
           </button>
           <button
+            onClick={() => {
+              navigate("/profile", { replace: true });
+            }}
             className={cx("sidenav__button")}
             style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null}
           >

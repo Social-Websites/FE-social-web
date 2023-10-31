@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { signUp } from "../../services/userService";
-import useHttpClient from "../../shared/hook/http-hook";
+import useHttpClient from "../../shared/hook/private-http-hook";
 import useAuth from "../../shared/hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
@@ -21,7 +21,7 @@ const cx = classNames.bind(styles);
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 const SignUpPage = () => {
-  const { setAuth } = useAuth();
+  const { setAuthLogin } = useAuth();
   const { isLoading, error, clearError, publicRequest, privateRequest } =
     useHttpClient();
 
