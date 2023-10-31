@@ -15,8 +15,10 @@ const GetUserPage = () => {
       try {
         const response = await getUser(privateRequest);
         setUserLogin(response);
-        if (response) {
+        if (response && !isLoading) {
           navigate("/", { replace: true });
+        } else {
+          navigate("/accounts/login", { replace: true });
         }
         console.log(user);
       } catch (err) {
@@ -26,7 +28,7 @@ const GetUserPage = () => {
     console.log(auth);
     fetchUser();
   }, [auth]);
-  return <div></div>;
+  return <div>NESTME</div>;
 };
 
 export default GetUserPage;

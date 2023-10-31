@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { signUp } from "../../services/userService";
-import useHttpClient from "../../shared/hook/private-http-hook";
+import useHttpClient from "../../shared/hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
@@ -21,13 +21,21 @@ const cx = classNames.bind(styles);
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 const SignUpPage = () => {
-  const { setAuthLogin } = useAuth();
-  const { isLoading, error, clearError, publicRequest, privateRequest } =
-    useHttpClient();
+  // const { setAuthLogin } = useAuth();
+  const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/accounts/login";
+  const from = "/accounts/login";
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () =>
+    setShowPassword((showPassword) => !showPassword);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const [formData, setFormData] = useState({
     email: "",
@@ -91,15 +99,6 @@ const SignUpPage = () => {
       [e.target.id]: e.target.value,
     }));
     validateInput(e);
-  };
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () =>
-    setShowPassword((showPassword) => !showPassword);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
   };
 
   const handleSubmit = async (e) => {
