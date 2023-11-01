@@ -27,7 +27,7 @@ import {
   red,
 } from "@mui/material/colors";
 import UserOverview from "./UserOverview";
-import useHttpClient from "../../../../shared/hook/private-http-hook";
+import useHttpClient from "../../../../shared/hook/http-hook/public-http-hook";
 
 const cx = classNames.bind(styles);
 

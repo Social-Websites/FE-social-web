@@ -13,8 +13,8 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { signUp } from "../../services/userService";
-import useHttpClient from "../../shared/hook/public-http-hook";
-import useAuth from "../../shared/hook/auth-hook";
+import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
+import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 

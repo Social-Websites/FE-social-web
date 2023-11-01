@@ -10,6 +10,7 @@ import { privateRoutes, publicRoutes, adminRoutes } from "./routes";
 //import { DefaultLayout } from './Layout';
 import { ToastContainer } from "react-toastify";
 import RequireAuth from "./shared/components/RequireAuth";
+import PersistLogin from "./components/Auth/PersistLogin";
 
 function App() {
   return (
@@ -37,59 +38,61 @@ function App() {
             />
           );
         })}
-        <Route element={<RequireAuth />}>
-          {privateRoutes.map((route, index) => {
-            const Page = route.component;
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth />}>
+            {privateRoutes.map((route, index) => {
+              const Page = route.component;
 
-            //   let Layout;
+              //   let Layout;
 
-            //   if (route.layout) {
-            //       Layout = route.layout;
-            //   } else if (route.layout === null) {
-            //       Layout = Fragment;
-            //   }
+              //   if (route.layout) {
+              //       Layout = route.layout;
+              //   } else if (route.layout === null) {
+              //       Layout = Fragment;
+              //   }
 
-            return (
-              <Route
-                key={index}
-                path={route.path}
-                element={
-                  //   <AuthWrapper>
-                  //   <Layout>
-                  <Page />
-                  //   </Layout>
-                  //   </AuthWrapper>
-                }
-              />
-            );
-          })}
-        </Route>
-        <Route element={<RequireAuth admin={true} />}>
-          {adminRoutes.map((route, index) => {
-            const Page = route.component;
+              return (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={
+                    //   <AuthWrapper>
+                    //   <Layout>
+                    <Page />
+                    //   </Layout>
+                    //   </AuthWrapper>
+                  }
+                />
+              );
+            })}
+          </Route>
+          <Route element={<RequireAuth admin={true} />}>
+            {adminRoutes.map((route, index) => {
+              const Page = route.component;
 
-            //   let Layout;
+              //   let Layout;
 
-            //   if (route.layout) {
-            //       Layout = route.layout;
-            //   } else if (route.layout === null) {
-            //       Layout = Fragment;
-            //   }
+              //   if (route.layout) {
+              //       Layout = route.layout;
+              //   } else if (route.layout === null) {
+              //       Layout = Fragment;
+              //   }
 
-            return (
-              <Route
-                key={index}
-                path={route.path}
-                element={
-                  //   <AuthWrapper>
-                  //   <Layout>
-                  <Page />
-                  //   </Layout>
-                  //   </AuthWrapper>
-                }
-              />
-            );
-          })}
+              return (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={
+                    //   <AuthWrapper>
+                    //   <Layout>
+                    <Page />
+                    //   </Layout>
+                    //   </AuthWrapper>
+                  }
+                />
+              );
+            })}
+          </Route>
         </Route>
       </Routes>
       <ToastContainer

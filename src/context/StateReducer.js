@@ -67,6 +67,11 @@ const StateReducer = (state, action) => {
         ...state,
         auth: action.payload,
       };
+    case "SET_PERSIST":
+      return {
+        ...state,
+        persist: action.payload,
+      };
 
     default:
       return state;

@@ -45,3 +45,7 @@ export const setAuth = (accessToken) => ({
   type: "SET_AUTH",
   payload: accessToken,
 });
+export const setPersist = (persist = true) => ({
+  type: "SET_PERSIST",
+  payload: persist,
+});

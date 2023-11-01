@@ -12,16 +12,15 @@ import FilledInput from "@mui/material/FilledInput";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { getUser, login } from "../../services/userService";
-import useHttpClient from "../../shared/hook/public-http-hook";
-import useAuth from "../../shared/hook/auth-hook";
+import { login } from "../../services/userService";
+import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
+import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
-import usePrivateHttpClient from "../../shared/hook/private-http-hook";
 
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const { setAuthLogin } = useAuth();
+  const { persist, setAuthLogin, setPersistLogin } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -96,7 +95,7 @@ const LoginPage = () => {
       const response = await login(formData, publicRequest);
       const accessToken = response?.accessToken;
       setAuthLogin(accessToken);
-
+      setPersistLogin();
       clearError();
       navigate(from, { replace: true });
     } catch (err) {}

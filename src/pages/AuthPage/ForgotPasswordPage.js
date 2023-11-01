@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
 import { Button, Paper, TextField } from "@mui/material";
-import useAuth from "../../shared/hook/auth-hook";
+import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);

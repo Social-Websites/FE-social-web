@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import usePrivateHttpClient from "../../shared/hook/private-http-hook";
+import usePrivateHttpClient from "../../shared/hook/http-hook/private-axios-hook";
 import { getUser } from "../../services/userService";
-import useAuth from "../../shared/hook/auth-hook";
+import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useNavigate } from "react-router-dom";
 
 const GetUserPage = () => {

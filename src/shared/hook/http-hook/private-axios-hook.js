@@ -1,7 +1,7 @@
-import { useCallback, useEffect } from "react";
-import useAuth from "./auth-hook";
+import { useEffect } from "react";
+import useAuth from "../auth-hook/auth-hook";
 import axios from "axios";
-import { axiosPublic } from "./public-axios";
+import useRefreshToken from "./refresh-token";
 
 const axiosPrivate = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
@@ -13,14 +13,8 @@ const axiosPrivate = axios.create({
 });
 
 const useAxiosInstance = () => {
-  const { auth, setAuthLogin } = useAuth();
-
-  const refresh = useCallback(async () => {
-    const response = await axiosPublic("/auth/refresh");
-
-    setAuthLogin(response.accessToken);
-    return response.accessToken;
-  }, []);
+  const { refresh } = useRefreshToken();
+  const { auth } = useAuth();
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
