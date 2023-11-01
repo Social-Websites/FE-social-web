@@ -18,7 +18,7 @@ const useHttpClient = () => {
           url,
           data: body,
           options,
-          signal: httpAbortCtrl.signal,
+          signal: activeHttpRequests.current.signal,
         });
 
         activeHttpRequests.current = activeHttpRequests.current.filter(

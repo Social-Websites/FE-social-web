@@ -4,16 +4,23 @@ import useHttpClient from "./public-http-hook";
 
 const useRefreshToken = () => {
   const { isLoading, error, clearError, publicRequest } = useHttpClient();
-  const { setAuthLogin } = useAuth();
+  const { auth, setAuth, persist } = useAuth();
 
-  const refresh = useCallback(async () => {
+  const refresh = async () => {
     const response = await publicRequest("/auth/refresh");
 
-    setAuthLogin(response.data.accessToken);
+    setAuth((prev) => {
+      console.log(prev);
+      console.log(response.data.accessToken);
+      return {
+        ...prev,
+        accessToken: response.data.accessToken,
+      };
+    });
 
     return response.data.accessToken;
-  }, []);
-  return { isLoading, error, clearError, refresh };
+  };
+  return { isLoading, error, clearError, auth, persist, refresh };
 };
 
 export default useRefreshToken;

@@ -8,9 +8,9 @@ const RequireAuth = ({ admin = false }) => {
   console.log(user);
 
   if (admin && user?.admin) {
-    if (auth) return <Outlet />;
+    if (auth?.accessToken) return <Outlet />;
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
-  } else if (auth) {
+  } else if (auth?.accessToken) {
     return <Outlet />;
   } else {
     return <Navigate to="/accounts/login" state={{ from: location }} replace />;

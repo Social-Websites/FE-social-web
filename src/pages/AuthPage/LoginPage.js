@@ -12,19 +12,20 @@ import FilledInput from "@mui/material/FilledInput";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { login } from "../../services/userService";
+import { getUser, login } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
+import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const { persist, setAuthLogin, setPersistLogin } = useAuth();
+  const { auth, persist, setAuth, setPersistLogin } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = "/redirect";
+  const from = "/";
 
   const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
@@ -94,8 +95,9 @@ const LoginPage = () => {
     try {
       const response = await login(formData, publicRequest);
       const accessToken = response?.accessToken;
-      setAuthLogin(accessToken);
+      setAuth({ accessToken });
       setPersistLogin();
+
       clearError();
       navigate(from, { replace: true });
     } catch (err) {}

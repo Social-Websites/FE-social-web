@@ -4,8 +4,7 @@ import useRefreshToken from "../../shared/hook/http-hook/refresh-token";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 
 const PersistLogin = () => {
-  const { isLoading, refresh } = useRefreshToken();
-  const { auth, persist } = useAuth();
+  const { isLoading, auth, persist, refresh } = useRefreshToken();
 
   useEffect(() => {
     const verifyRefreshToken = async () => {
@@ -13,17 +12,17 @@ const PersistLogin = () => {
         await refresh();
       } catch (err) {
         console.log(err);
-      } finally {
-        isMounted && setIsLoading(false);
       }
     };
 
-    if (!auth) verifyRefreshToken();
-  }, []);
+    if (!auth.accessToken) {
+      verifyRefreshToken();
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     console.log(`loading: ${isLoading}`);
-    console.log(`aT: ${JSON.stringify(auth)}`);
+    console.log(`aT: ${auth.accessToken}`);
   }, [isLoading]);
 
   return (

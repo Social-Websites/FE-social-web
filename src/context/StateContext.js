@@ -3,7 +3,6 @@ import StateReducer from "./StateReducer";
 
 const INITIAL_STATE = {
   persist: JSON.parse(localStorage.getItem("persist") || false),
-  auth: null,
   user: null,
   isFetching: false,
   error: false,
@@ -16,6 +15,7 @@ export const StateContext = createContext(INITIAL_STATE);
 
 export const StateContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(StateReducer, INITIAL_STATE);
+  const [auth, setAuth] = useState({});
 
   useEffect(() => {
     localStorage.setItem("persist", state.persist);
@@ -25,7 +25,7 @@ export const StateContextProvider = ({ children }) => {
     <StateContext.Provider
       value={{
         persist: state.persist,
-        auth: state.auth,
+        auth: auth,
         user: state.user,
         isFetching: state.isFetching,
         error: state.error,
@@ -33,6 +33,7 @@ export const StateContextProvider = ({ children }) => {
         messages: state.messages,
         socket: state.socket,
         dispatch,
+        setAuth,
       }}
     >
       {children}
