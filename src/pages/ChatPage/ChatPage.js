@@ -10,24 +10,31 @@ import { StateContext } from "../../context/StateContext"
 import {io} from "socket.io-client";
 
 const cx = classNames.bind(styles);
-const uId = "6537933675b948b32d19d38c";
 
 function ChatPage() {
-    const { currentChat, dispatch } = useContext(StateContext);
+    const { user, currentChat, dispatch } = useContext(StateContext);
     const socket = useRef();
     const [socketEvent, setSocketEvent] = useState(false);
-
+    
     useEffect(()=>{
-        if(uId){
-            socket.current = io("http://localhost:3000");
-            socket.current.emit("add-user", uId);
+        if(user){
+            socket.current = io("http://localhost:5000");
+            console.log(socket);
+            socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
+                console.log(
+                    `You connected with socket`,
+                    Date().split("G")[0]
+                  );
+              }); // sự kiện mở kết nối socket
+            socket.current.emit("add-user", user._id);
             dispatch({type: "SET_SOCKET", payload: socket});
         }
-    }, [uId])
+    }, [user])
 
     useEffect(()=>{
         if(socket.current && !socketEvent){
             socket.current.on("msg-recieve", (data)=>{
+                console.log(data);
                 dispatch({
                     type: "ADD_MESSAGE",
                     payload: data
@@ -35,7 +42,7 @@ function ChatPage() {
             })
             setSocketEvent(true)
         }
-    }, [socket.current])
+    }, [socket.current]);
     
     return (
         <div className={cx("chatpage")}>

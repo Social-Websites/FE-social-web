@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useRef } from "react";
 import style from "./Message.module.scss"
 import classNames from 'classnames/bind';
+import { StateContext } from "../../context/StateContext"
 
 
 const cx = classNames.bind(style)
 
 function Message({ message }) {
-  const uId="6537933675b948b32d19d38c";
+
+  const { user } = useContext(StateContext);
 
   const ref = useRef();
 
@@ -18,9 +20,9 @@ function Message({ message }) {
   return (
     <div
       ref={ref}
-      className={message.sender_id === uId ? cx("you") : cx("message") }
+      className={message.sender_id === user._id ? cx("you") : cx("message") }
     >
-      {message.sender_id === uId ? null : (
+      {message.sender_id === user._id ? null : (
         <div className={cx("messageInfo")}>
           <img
             src={message.img}
