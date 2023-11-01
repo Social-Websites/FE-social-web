@@ -14,25 +14,12 @@ const cx = classNames.bind(styles);
 function HomePage() {
   const navigate = useNavigate();
   const { logout } = useLogout();
-
-  const { auth, user, setUserLogin } = useAuth();
-  const { isLoading, error, clearError, privateRequest } =
-    usePrivateHttpClient();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await getUser(privateRequest);
-        setUserLogin(response);
+    console.log(user);
+  }, [user]);
 
-        console.log(user);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    console.log(auth?.accessToken);
-    fetchUser();
-  }, [auth.accessToken]);
   const signOut = async () => {
     await logout();
 

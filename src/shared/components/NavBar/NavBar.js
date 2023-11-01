@@ -22,10 +22,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { signOut } from "firebase/auth";
 // import { logoutUser } from "../features/userSlice";
 // import { auth } from "../firebase";
-import { StateContext } from "../../../context/StateContext"
-
-
-  
+import { StateContext } from "../../../context/StateContext";
 
 const cx = classNames.bind(styles);
 
@@ -40,7 +37,6 @@ function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
-  console.log(auth);
 
   const [open, setOpen] = useState(false);
   const [modal, setModal] = useState(false);

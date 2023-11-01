@@ -4,7 +4,9 @@ import useRefreshToken from "../../shared/hook/http-hook/refresh-token";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 
 const PersistLogin = () => {
-  const { isLoading, auth, persist, refresh } = useRefreshToken();
+  const [isLoad, setIsLoad] = useState(true);
+  const refresh = useRefreshToken();
+  const { auth, persist } = useAuth();
 
   useEffect(() => {
     const verifyRefreshToken = async () => {
@@ -12,22 +14,20 @@ const PersistLogin = () => {
         await refresh();
       } catch (err) {
         console.log(err);
+      } finally {
+        setIsLoad(false);
       }
     };
 
-    if (!auth.accessToken) {
-      verifyRefreshToken();
-    }
-  }, [isLoading]);
+    !auth?.accessToken ? verifyRefreshToken() : setIsLoad(false);
+  }, []);
 
   useEffect(() => {
-    console.log(`loading: ${isLoading}`);
-    console.log(`aT: ${auth.accessToken}`);
-  }, [isLoading]);
+    console.log(`loading: ${isLoad}`);
+    console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
+  }, [isLoad]);
 
-  return (
-    <>{!persist ? <Outlet /> : isLoading ? <p>Loading...</p> : <Outlet />}</>
-  );
+  return <>{!persist ? <Outlet /> : isLoad ? <p>Loading...</p> : <Outlet />}</>;
 };
 
 export default PersistLogin;

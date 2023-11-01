@@ -1,11 +1,30 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hook/auth-hook/auth-hook";
+import { getUser } from "../../services/userService";
+import { useEffect } from "react";
+import usePrivateHttpClient from "../hook/http-hook/private-http-hook";
 
 const RequireAuth = ({ admin = false }) => {
-  const { auth, user } = useAuth();
+  const { auth, user, setUserLogin } = useAuth();
   const location = useLocation();
+  const { isLoading, error, clearError, privateRequest } =
+    usePrivateHttpClient();
 
-  console.log(user);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getUser(privateRequest);
+
+        setUserLogin(response);
+
+        console.log("user: ", user);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetchUser();
+  }, [auth.accessToken]);
 
   if (admin && user?.admin) {
     if (auth?.accessToken) return <Outlet />;
