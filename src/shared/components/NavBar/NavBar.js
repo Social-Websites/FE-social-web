@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./NavBar.scss";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -22,6 +22,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { signOut } from "firebase/auth";
 // import { logoutUser } from "../features/userSlice";
 // import { auth } from "../firebase";
+import { StateContext } from "../../../context/StateContext"
+
+
+  
 
 const cx = classNames.bind(styles);
 
@@ -32,9 +36,11 @@ function NavBar() {
   //     dispatch(logoutUser());
   //     signOut(auth);
   //   };
+  const { auth, user } = useContext(StateContext);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+  console.log(auth);
 
   const [open, setOpen] = useState(false);
   const [modal, setModal] = useState(false);
@@ -273,7 +279,7 @@ function NavBar() {
             >
               A
             </Avatar>
-            {open ? null : <span>Duongw</span>}
+            {open ? null : <span>{user?.username}</span>}
           </button>
         </div>
         <div className={cx("sidenav__more")}>

@@ -1,14 +1,14 @@
 import classNames from 'classnames/bind';
 import {React } from "react";
 import styles from "./ConversationChat.module.scss";
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { StateContext } from "../../../context/StateContext";
 
 
 const cx = classNames.bind(styles)
 
 function ConversationChat({c}) {
-    const { currentChat, dispatch } = useContext(StateContext);
+    const { dispatch } = useContext(StateContext);
 
     const handleClick = () => {
         dispatch({ type: "CURRENT_CHAT", payload: c });

@@ -11,7 +11,7 @@ import { StateContext } from "../../context/StateContext"
 const cx = classNames.bind(style)
 
 function Messages () {
-  const { messages,currentChat, dispatch } = useContext(StateContext);
+  const { messages, currentChat, dispatch } = useContext(StateContext);
 
   
   useEffect(() => {
