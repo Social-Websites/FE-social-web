@@ -24,7 +24,7 @@ function Chats() {
         };
 
         fetchData();
-    }, []);
+    }, [user]);
 
     
     return (

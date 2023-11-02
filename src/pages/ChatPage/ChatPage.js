@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState, useLayoutEffect} from "react";
 import classNames from 'classnames/bind';
 import styles from "./ChatPage.scss";
 import Sidenav from "../../shared/components/NavBarMini";
@@ -15,6 +15,30 @@ function ChatPage() {
     const { user, currentChat, dispatch } = useContext(StateContext);
     const socket = useRef();
     const [socketEvent, setSocketEvent] = useState(false);
+    const containerRef = useRef(null);
+    const inputRef = useRef(null);
+    const [remainingHeight, setRemainingHeight] = useState(0);
+    const [isSelectedFile, setIsSelectedFile] = useState(0);
+
+  const handleIsSelectedFile = (height) => {
+    setIsSelectedFile(height);
+  };
+    
+    useLayoutEffect(() => {
+        setTimeout(() => {
+            if (containerRef.current && inputRef.current) {
+                const containerHeight = containerRef.current?.clientHeight || 0
+                console.log(containerRef.current.clientHeight)
+                const inputHeight = inputRef.current?.clientHeight || 0;
+                console.log(inputRef.current.clientHeight)
+                const chatInfoHeight = document.getElementById("chatInfo")?.clientHeight || 0;
+                console.log(chatInfoHeight)
+                let remainingHeight;
+                remainingHeight = containerHeight - inputHeight - chatInfoHeight - 30 ; //-padding messages + bottom:10px
+                setRemainingHeight(remainingHeight);
+            }
+    }, 0);
+    }, [inputRef.current, isSelectedFile]);
     
     useEffect(()=>{
         if(user){
@@ -53,8 +77,8 @@ function ChatPage() {
                 <Chats />
             </div>
             {currentChat?  
-            (<div className={cx("chatpage__messages")}>
-            <div className={cx("chatInfo")}>
+            (<div className={cx("chatpage__messages")} ref={containerRef}>
+            <div className={cx("chatInfo")} id="chatInfo">
                 <div className={cx("chatInfo__user")}>
                     <span className={cx("chatInfo__user_avatar")}>
                         <img
@@ -70,8 +94,10 @@ function ChatPage() {
                 </div>
             </div>
             
-            <Messages />
-            <Input style={{bottom: 0}}/>
+            <Messages style={{height: remainingHeight}}/>
+            <div ref={inputRef}>
+            <Input onSelectedFile={handleIsSelectedFile}/>
+            </div>
         </div>) : (<div className={cx("chatpage__messages")}>
             <div className={cx("chatpage__messages__main")}>
                 <div>
