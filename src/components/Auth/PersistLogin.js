@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useRefreshToken from "../../shared/hook/http-hook/refresh-token";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
+import WelcomPage from "../../pages/AuthPage/WelcomPage";
 
 const PersistLogin = () => {
   const [isLoad, setIsLoad] = useState(true);
@@ -27,7 +28,7 @@ const PersistLogin = () => {
     console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
   }, [isLoad]);
 
-  return <>{!persist ? <Outlet /> : isLoad ? <p>Loading...</p> : <Outlet />}</>;
+  return <>{!persist ? <Outlet /> : isLoad ? <WelcomPage /> : <Outlet />}</>;
 };
 
 export default PersistLogin;

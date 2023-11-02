@@ -2,18 +2,36 @@ import HomePage from "../pages/HomePage";
 import Profile from "../pages/Profile";
 import Chat from "../pages/ChatPage";
 import GroupPage from "../pages/GroupPage";
-import LoginPage from "../pages/AuthPage/LoginPage";
-import SignUpPage from "../pages/AuthPage/SignUpPage";
-import ForgotPasswordPage from "../pages/AuthPage/ForgotPasswordPage";
+import LoginPage from "../components/Auth/LoginPage";
+import SignUpPage from "../components/Auth/SignUpPage";
+import ForgotPasswordPage from "../components/Auth/ForgotPasswordPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
-import GetUserPage from "../pages/AuthPage/GetUserPage";
+
+import AuthPage from "../pages/AuthPage";
+import DashboardBody from "../components/Admin/AdminBody/Dashboard/Dashboard";
+import UsersManage from "../components/Admin/AdminBody/UsersManager/Users";
+import PostsManage from "../components/Admin/AdminBody/PostsManager/Posts";
 // public Routes
 const publicRoutes = [
-  { path: "/accounts/login", component: LoginPage },
-  { path: "/accounts/signup", component: SignUpPage },
-  { path: "/accounts/password/reset", component: ForgotPasswordPage },
-  { path: "/redirect", component: GetUserPage },
-  { path: "/administrator/*", component: AdminPage },
+  {
+    path: "/accounts/*",
+    layout: AuthPage,
+    components: [
+      { path: "login", component: LoginPage },
+      { path: "signup", component: SignUpPage },
+      { path: "password/reset", component: ForgotPasswordPage },
+    ],
+  },
+
+  {
+    path: "/administrator/*",
+    layout: AdminPage,
+    components: [
+      { path: "dashboard", component: DashboardBody },
+      { path: "users", component: UsersManage },
+      { path: "posts", component: PostsManage },
+    ],
+  },
 ];
 // Private Routes
 const privateRoutes = [

@@ -10,12 +10,16 @@ const RequireAuth = ({ admin = false }) => {
   const { isLoading, error, clearError, privateRequest } =
     usePrivateHttpClient();
 
+  let userAuth;
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await getUser(privateRequest);
 
         setUserLogin(response);
+
+        userAuth = response;
 
         console.log("user: ", user);
       } catch (err) {
@@ -26,7 +30,7 @@ const RequireAuth = ({ admin = false }) => {
     fetchUser();
   }, [auth.accessToken]);
 
-  if (admin && user?.admin) {
+  if (admin && userAuth?.admin) {
     if (auth?.accessToken) return <Outlet />;
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   } else if (auth?.accessToken) {

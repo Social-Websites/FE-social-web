@@ -17,7 +17,7 @@ function HomePage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log(user);
+    console.log("user homepage: ", user);
   }, [user]);
 
   const signOut = async () => {
