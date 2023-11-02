@@ -32,8 +32,18 @@ function Message({ message }) {
       )}
       
       <div className={cx("messageContent")}>
-        <p>{message.content}</p>
-        {/* {message.img && <img src={message.img} alt="" />} */}
+        {message.content? (<p>{message.content}</p>):null}
+        
+        {message.media && 
+          message.media.map(((m) => (
+            <img src={m} alt="" style={{
+              width: "100%",
+              borderRadius: "10px",
+              maxHeight:"300px",
+              border: "#212121 solid 1px",
+            }} />
+          )))
+        }
       </div>
     </div>
   );

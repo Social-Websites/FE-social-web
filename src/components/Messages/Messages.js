@@ -10,7 +10,7 @@ import { StateContext } from "../../context/StateContext"
 
 const cx = classNames.bind(style)
 
-function Messages () {
+function Messages ({style}) {
   const { messages, currentChat, dispatch } = useContext(StateContext);
 
   
@@ -28,7 +28,7 @@ function Messages () {
   }, [dispatch]);
 
   return (
-    <div className={cx("messages")}>
+    <div className={cx("messages")} style={style}>
       {messages.map((m) => (
         <Message message={m} key={m.id} />
       ))}

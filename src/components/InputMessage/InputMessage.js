@@ -4,18 +4,23 @@ import classNames from 'classnames/bind';
 import EmojiPicker from 'emoji-picker-react';
 import SendIcon from '@mui/icons-material/Send';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import CloseIcon from '@mui/icons-material/Close';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import { StateContext } from "../../context/StateContext";
 import * as messageService from "../../services/messageService"
+import { storage, ref, getDownloadURL, uploadBytesResumable } from "../../config/firebase";
 
 
 const cx = classNames.bind(style);
 
-function InputMessage () {
+function InputMessage ({onSelectedFile}) {
   const [text, setText] = useState("");
   const [img, setImg] = useState([]);
   const [emojiPicker, setEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+  
 
   const  {user, currentChat, socket, dispatch}  = useContext(StateContext);
 
@@ -43,31 +48,142 @@ function InputMessage () {
   }
 
   const handleSendMessage = async () => {
+    // const promises = [];
+    const promises = img.map((image) => {
+      const storageRef  = ref(storage,`images/${image.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image.file);
+      // promises.push(uploadTask);
+      // console.log(promises);
+      return new Promise((resolve, reject) => {
+        uploadTask.on('state_changed', 
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setProgress(progress);
+          },
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+          () => {
+            console.log("Toi r");
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url) => {
+              console.log(url);
+              // setUrls((prevState) => [...prevState, url]);
+              resolve(url);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+          }
+        );
+      });
+    });
+    
     try{
-      const newMessage = {
-        conversationId: currentChat._id,
-        recieve_ids: currentChat.userIds,
-        sender_id: user._id,
-        img: user.profile_picture,
-        content: text,
-        // media: img,
-      };
-      const result = await messageService.sendMessage(newMessage);
-      socket.current.emit("send-msg", newMessage)
-      dispatch({type: "ADD_MESSAGE", payload: newMessage,
-        fromSelf: true,
-      })
-      if (result !== null) {
-        setText("") ;
-        setImg([]);
+      const urls = await Promise.allSettled(promises)
+      const urlStrings = urls.map((url) => url.value.toString());
+        try{
+            const newMessage = {
+            conversationId: currentChat._id,
+            recieve_ids: currentChat.userIds,
+            sender_id: user._id,
+            img: user.profile_picture,
+            content: text,
+            media: urlStrings,
+          };
+          const result =  messageService.sendMessage(newMessage);
+          socket.current.emit("send-msg", newMessage)
+          dispatch({type: "ADD_MESSAGE", payload: newMessage,
+            fromSelf: true,
+          })
+          if (result !== null) {
+            setText("") ;
+            setImg([]);
+          }
+        } catch (err) {
+          console.log(err);
+        }
       }
-    } catch (err) {
+      
+     catch (err) {
       console.log(err);
     }
-};
+    await ReturnHeight();
+  };
+
+  function selectFiles() {
+    fileInputRef.current.click();
+  }
+  async function onFileSelect(event) {
+    const files = event.target.files;
+    if (files.length === 0) return;
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].type.split("/")[0] !== "image") continue;
+      if (!img.some((e) => e.name === files[i].name)) {
+        setImg((prevImages) => [
+          ...prevImages,
+          {
+            name: files[i].name,
+            url: URL.createObjectURL(files[i]),
+            file: files[i],
+          },
+        ]);
+      }
+    
+    await ReturnHeight();
+      
+    }
+  }
+
+  async function ReturnHeight() {
+    let isSelectedFile = 4;
+    console.log(img.length)
+    if(img.length % 12 === 0  || img.length === 1){
+      isSelectedFile = 3 ;
+    }
+    else if(img.length % 11 === 0){
+      isSelectedFile = 2 ;
+    }
+    onSelectedFile(isSelectedFile);
+  }
+  async function deleteImage(index) {
+    setImg((prevImages) => prevImages.filter((_, i) => i !== index));
+    await ReturnHeight();
+  }
 
   return (
-    <div style={{height:"75px", display: "flex", alignItems: "center", justifyContent: "center"}}>
+    <div className={cx("input__message")} style={{height:"auto", marginBottom: "10px"}}>
+      {img.length > 0 ? (<div className={cx("images")} style={{height:"auto", display: "flex", flexWrap: "wrap", alignItems: "center"}}>
+        {img.map((images, index) => (
+          <div key={index} className={cx("image-wrapper")} >
+            <img
+              style={{
+                maxWidth: "48px",
+                maxHeight: "48px",
+                height: "auto",
+                borderRadius: "10px 10px 10px 10px",
+              }}
+              src={images.url}
+              alt={images.name}
+            />
+            <CloseIcon type="submit" style={{ 
+              width: "15px",
+              height: "15px",
+              color: "white", 
+              position: "relative", 
+              top: "-25px", right: "10px",
+              borderRadius: "50%",
+              border: "white solid 1.5px",
+            }} 
+              onClick={() => deleteImage(index)}/>
+          </div>
+          ))}
+          <progress value={progress} max="100" />
+      </div>) : null}
+      
+      <div style={{height:"auto", display: "flex", alignItems: "center", justifyContent: "center"}}>
         <div className={cx("input")} id="emoji-open" ref={emojiPickerRef}> 
           <SentimentSatisfiedAltIcon type="submit" style={{color: "white"}} onClick={handleEmojiModal}/>
           {emojiPicker && <div style={{position: "absolute", bottom: 75}}>
@@ -82,13 +198,19 @@ function InputMessage () {
           <div className={cx("send")}>
               <input
                 type="file"
+                multiple
                 style={{ display: "none" }}
                 id="file"
-                onChange={(e) => setImg(e.target.files[0])}
+                ref={fileInputRef}
+                onChange={onFileSelect}
               />
-              <PhotoOutlinedIcon htmlFor="file" style={{color: "white"}}/>
+              <PhotoOutlinedIcon 
+                role="button"
+                onClick={selectFiles} 
+                style={{color: "white"}}/>
           </div>
           <SendIcon type="submit" style={{color: "white"}} onClick={handleSendMessage}/>
+        </div>
       </div>
     </div>
   );

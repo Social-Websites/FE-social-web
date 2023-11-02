@@ -35,9 +35,11 @@
       margin-top: 5px
     }
 
-    img {
-      width: 50%;
-    }
+    
+  }
+  .messageContent > img {
+    width: 100%;
+    border-radius: 10px;
   }
 
 }
