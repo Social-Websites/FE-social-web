@@ -16,17 +16,6 @@ const ForgotPasswordPage = () => {
 
   const [forgotPassForm, setForgotPassForm] = useState({ forgotAccInput: "" });
 
-  const [forgotAccError, setForgotAccError] = useState(false);
-
-  const onBlurHandler = () => {
-    const { forgotAccInput } = forgotPassForm;
-    if (!forgotAccInput || forgotAccInput.length < 5) {
-      setForgotAccError(true);
-      return;
-    }
-    setForgotAccError(false);
-  };
-
   const changeHandler = (e) => {
     setForgotPassForm((prev) => ({
       ...prev,
@@ -53,14 +42,12 @@ const ForgotPasswordPage = () => {
               <div className={cx("input--margin")}>
                 <div className={cx("input--container")}>
                   <TextField
-                    error={forgotAccError}
                     id="forgotAccInput"
                     label="Email hoặc tên đăng nhập"
                     variant="filled"
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
-                    onBlur={onBlurHandler}
                   />
                 </div>
               </div>

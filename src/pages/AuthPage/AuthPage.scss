@@ -31,3 +31,10 @@ p {
   border-top-right-radius: 0;
   flex-grow: 1;
 }
+
+.logo__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Đảm bảo logo chiếm toàn bộ chiều cao của màn hình */
+}

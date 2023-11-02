@@ -6,7 +6,7 @@ import LoginPage from "../components/Auth/LoginPage";
 import SignUpPage from "../components/Auth/SignUpPage";
 import ForgotPasswordPage from "../components/Auth/ForgotPasswordPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
-
+import OtpForm from "../components/Auth/OptForm";
 import AuthPage from "../pages/AuthPage";
 import DashboardBody from "../components/Admin/AdminBody/Dashboard/Dashboard";
 import UsersManage from "../components/Admin/AdminBody/UsersManager/Users";
@@ -20,6 +20,7 @@ const publicRoutes = [
       { path: "login", component: LoginPage },
       { path: "signup", component: SignUpPage },
       { path: "password/reset", component: ForgotPasswordPage },
+      { path: "otp", component: OtpForm },
     ],
   },
 

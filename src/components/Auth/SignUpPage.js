@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
 import TextField from "@mui/material/TextField";
@@ -50,48 +50,56 @@ const SignUpPage = () => {
     usernameError: false,
     passwordError: false,
   });
+
+  const [isTouched, setIsTouched] = useState({
+    email: false,
+    fullname: false,
+    username: false,
+    password: false,
+  });
+
+  useEffect(() => {
+    return validateInput();
+  }, [
+    formData.email,
+    formData.fullname,
+    formData.username,
+    formData.password,
+    isTouched,
+  ]);
+
   const [formValid, setFormValid] = useState();
 
-  const validateInput = (e) => {
-    let valid = false;
-    switch (e.target.id) {
-      case "email":
-        valid = EMAIL_REGEX.test(formData.email);
-        setInputError((prev) => ({
-          ...prev,
-          emailError: !valid,
-        }));
-        break;
-      case "fullname":
-        valid = !formData.fullname || formData.fullname.length < 5;
-        setInputError((prev) => ({
-          ...prev,
-          fullnameError: valid,
-        }));
-        break;
-      case "username":
-        valid =
-          !formData.username ||
+  const validateInput = () => {
+    setInputError((prev) => ({
+      ...prev,
+      emailError: isTouched.email && !EMAIL_REGEX.test(formData.email),
+    }));
+
+    setInputError((prev) => ({
+      ...prev,
+      fullnameError:
+        isTouched.fullname &&
+        (!formData.fullname || formData.fullname.length < 5),
+    }));
+
+    setInputError((prev) => ({
+      ...prev,
+      usernameError:
+        isTouched.username &&
+        (!formData.username ||
           formData.username.length < 5 ||
-          formData.username.length > 15;
-        setInputError((prev) => ({
-          ...prev,
-          usernameError: valid,
-        }));
-        break;
-      case "password":
-        valid =
-          !formData.password ||
+          formData.username.length > 15),
+    }));
+
+    setInputError((prev) => ({
+      ...prev,
+      passwordError:
+        isTouched.password &&
+        (!formData.password ||
           formData.password.length < 5 ||
-          formData.password.length > 20;
-        setInputError((prev) => ({
-          ...prev,
-          passwordError: valid,
-        }));
-        break;
-      default:
-        setFormValid(null);
-    }
+          formData.password.length > 20),
+    }));
   };
 
   const changeHandler = (e) => {
@@ -99,7 +107,10 @@ const SignUpPage = () => {
       ...prev,
       [e.target.id]: e.target.value,
     }));
-    validateInput(e);
+    setIsTouched((prev) => ({
+      ...prev,
+      [e.target.id]: true,
+    }));
   };
 
   const handleSubmit = async (e) => {

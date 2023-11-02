@@ -1,11 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
-import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { getUser } from "../../services/userService";
-import useAuth from "../../shared/hook/auth-hook/auth-hook";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import classNames from "classnames/bind";
+import styles from "./AuthPage.scss";
+import LogoComponent from "../../shared/components/Logo/LogoComponent";
+
+const cx = classNames.bind(styles);
 
 const WelcomPage = () => {
-  return <div>NESTME</div>;
+  return (
+    <div className={cx("logo__container")}>
+      <LogoComponent />
+    </div>
+  );
 };
 
 export default WelcomPage;

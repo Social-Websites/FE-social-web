@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
 import TextField from "@mui/material/TextField";
@@ -45,28 +45,28 @@ const LoginPage = () => {
     usernameError: false,
     passwordError: false,
   });
+
+  const [isTouched, setIsTouched] = useState({
+    username: false,
+    password: false,
+  });
+
+  useEffect(() => {
+    return validateInput();
+  }, [formData.username, formData.password, isTouched]);
+
   const [formValid, setFormValid] = useState();
 
-  const validateInput = (e) => {
-    let valid = false;
-    switch (e.target.id) {
-      case "username":
-        valid = !formData.username;
-        setInputError((prev) => ({
-          ...prev,
-          usernameError: valid,
-        }));
-        break;
-      case "password":
-        valid = !formData.password;
-        setInputError((prev) => ({
-          ...prev,
-          passwordError: valid,
-        }));
-        break;
-      default:
-        setFormValid(null);
-    }
+  const validateInput = () => {
+    setInputError((prev) => ({
+      ...prev,
+      usernameError: isTouched.username && !formData.username,
+    }));
+
+    setInputError((prev) => ({
+      ...prev,
+      passwordError: isTouched.password && !formData.password,
+    }));
   };
 
   const changeHandler = (e) => {
@@ -74,7 +74,10 @@ const LoginPage = () => {
       ...prev,
       [e.target.id]: e.target.value,
     }));
-    validateInput(e);
+    setIsTouched((prev) => ({
+      ...prev,
+      [e.target.id]: true,
+    }));
   };
 
   const handleSubmit = async (e) => {
