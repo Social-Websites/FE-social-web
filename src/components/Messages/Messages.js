@@ -3,25 +3,24 @@ import React, { useContext, useEffect, useState } from "react";
 // import { db } from "../firebase";
 // import { doc, onSnapshot } from "firebase/firestore";
 import Message from "../Message";
-import style from "./Messages.module.scss"
-import classNames from 'classnames/bind';
-import * as messageService from '../../services/messageService';
-import { StateContext } from "../../context/StateContext"
+import style from "./Messages.module.scss";
+import classNames from "classnames/bind";
+import * as messageService from "../../services/messageService";
+import { StateContext } from "../../context/StateContext";
 
-const cx = classNames.bind(style)
+const cx = classNames.bind(style);
 
-function Messages ({style}) {
+function Messages({ style }) {
   const { messages, currentChat, dispatch } = useContext(StateContext);
 
-  
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const data = await messageService.getMessages(currentChat._id);
-            dispatch({type: "SET_MESSAGES", payload: data})
-        } catch (error) {
-            console.error(error);
-        }
+      try {
+        const data = await messageService.getMessages(currentChat._id);
+        dispatch({ type: "SET_MESSAGES", payload: data });
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchData();
@@ -34,6 +33,6 @@ function Messages ({style}) {
       ))}
     </div>
   );
-};
+}
 
 export default Messages;

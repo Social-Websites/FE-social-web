@@ -13,18 +13,12 @@ const cx = classNames.bind(styles);
 
 function HomePage() {
   const navigate = useNavigate();
-  const { logout } = useLogout();
+
   const { user } = useAuth();
 
   useEffect(() => {
     console.log("user homepage: ", user);
   }, [user]);
-
-  const signOut = async () => {
-    await logout();
-
-    navigate("/accounts/login");
-  };
 
   return (
     <div className={cx("homepage")}>

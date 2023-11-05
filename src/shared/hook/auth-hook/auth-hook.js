@@ -4,15 +4,21 @@ import {
   LoginFailure,
   setUser,
   setPersist,
+  setRegisInfo,
+  setOtpToken,
 } from "../../../context/StateAction";
 
 const useAuth = () => {
-  const { auth, user, persist, dispatch, setAuth } = useContext(StateContext);
+  const { auth, regisInfo, otpToken, user, persist, dispatch, setAuth } =
+    useContext(StateContext);
 
-  // const setAuthLogin = (accessToken) => {
-  //   if (accessToken) dispatch(setAuth(accessToken));
-  //   else dispatch(LoginFailure());
-  // };
+  const setRegisterInfo = (regisInfo) => {
+    if (regisInfo) dispatch(setRegisInfo(regisInfo));
+  };
+
+  const setOtp = (otpToken) => {
+    if (otpToken) dispatch(setOtpToken(otpToken));
+  };
 
   const setUserLogin = (user) => {
     if (user) dispatch(setUser(user));
@@ -23,7 +29,18 @@ const useAuth = () => {
     dispatch(setPersist(persist));
   };
 
-  return { auth, user, persist, setAuth, setUserLogin, setPersistLogin };
+  return {
+    auth,
+    regisInfo,
+    otpToken,
+    user,
+    persist,
+    setAuth,
+    setOtp,
+    setUserLogin,
+    setRegisterInfo,
+    setPersistLogin,
+  };
 };
 
 export default useAuth;

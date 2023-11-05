@@ -1,29 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
-import { Button, Paper, TextField } from "@mui/material";
+import { Alert, Button, Paper, TextField } from "@mui/material";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
+import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
+import { forgotPassword } from "../../services/userService";
 
 const cx = classNames.bind(styles);
 
 const ForgotPasswordPage = () => {
   //const { setAuth } = useAuth();
 
+  const { isLoading, error, clearError, publicRequest } = useHttpClient();
+
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/accounts/login";
 
-  const [forgotPassForm, setForgotPassForm] = useState({ forgotAccInput: "" });
+  const [forgotPassForm, setForgotPassForm] = useState({ usernameOrEmail: "" });
+  const [inputError, setInputError] = useState({
+    usernameOrEmailErorr: false,
+  });
+
+  const [isTouched, setIsTouched] = useState({
+    usernameOrEmail: false,
+  });
+
+  useEffect(() => {
+    return validateInput();
+  }, [forgotPassForm.usernameOrEmail, isTouched]);
+
+  const [formValid, setFormValid] = useState();
+  const [formSuccess, setFormSuccess] = useState();
+
+  const validateInput = () => {
+    setInputError((prev) => ({
+      ...prev,
+      usernameOrEmailError:
+        isTouched.usernameOrEmail && !forgotPassForm.usernameOrEmail,
+    }));
+  };
 
   const changeHandler = (e) => {
     setForgotPassForm((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
+    setIsTouched((prev) => ({
+      ...prev,
+      [e.target.id]: true,
+    }));
   };
 
-  const handleSubmit = async (e) => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (inputError.usernameOrEmailError || !forgotPassForm.usernameOrEmail) {
+      setFormValid("Trường không được bỏ trống!");
+      return;
+    }
+
+    setFormValid(null);
+
+    try {
+      const response = await forgotPassword(forgotPassForm, publicRequest);
+      console.log(response.message);
+      if (response.message) {
+        setFormSuccess(response.message);
+      }
+    } catch (err) {}
+  };
 
   return (
     <div className={cx("main")}>
@@ -40,9 +87,12 @@ const ForgotPasswordPage = () => {
           <form className={cx("form--main")}>
             <div className={cx("form--separate")}>
               <div className={cx("input--margin")}>
+                {formSuccess && <Alert severity="success">{formSuccess}</Alert>}
+              </div>
+              <div className={cx("input--margin")}>
                 <div className={cx("input--container")}>
                   <TextField
-                    id="forgotAccInput"
+                    id="usernameOrEmail"
                     label="Email hoặc tên đăng nhập"
                     variant="filled"
                     fullWidth={true}
@@ -64,6 +114,13 @@ const ForgotPasswordPage = () => {
                     Gửi liên kết lấy lại mật khẩu
                   </div>
                 </Button>
+              </div>
+              <div className={cx("input--margin")}>
+                {formValid && !error ? (
+                  <Alert severity="error">{formValid}</Alert>
+                ) : (
+                  error && <Alert severity="error">{error}</Alert>
+                )}
               </div>
               <div className={cx("button--container")}>
                 <div

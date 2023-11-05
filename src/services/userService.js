@@ -27,7 +27,57 @@ export const signUp = async (signUpForm, sendRequest) => {
       headers: { "Content-Type": "application/json" },
     });
     if (response.status !== 201) throw new Error(response?.data?.message);
-    return true;
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getOtpSignUp = async (username, email, sendRequest) => {
+  try {
+    const response = await sendRequest(`/auth/signup/${username}/${email}`);
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const forgotPassword = async (usernameOrEmail, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      "/auth/forgot-password",
+      "post",
+      usernameOrEmail,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const verifyResetUrl = async (resetToken, sendRequest) => {
+  try {
+    const response = await sendRequest(`/auth/reset-password/${resetToken}`);
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const resetPassword = async (resetData, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      "/auth/reset-password",
+      "patch",
+      resetData,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response?.data;
   } catch (err) {
     throw err;
   }

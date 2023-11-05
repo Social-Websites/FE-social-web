@@ -3,6 +3,8 @@ import StateReducer from "./StateReducer";
 
 const INITIAL_STATE = {
   persist: JSON.parse(localStorage.getItem("persist") || false),
+  regisInfo: null,
+  otpToken: null,
   user: null,
   isFetching: false,
   error: false,
@@ -25,6 +27,8 @@ export const StateContextProvider = ({ children }) => {
     <StateContext.Provider
       value={{
         persist: state.persist,
+        regisInfo: state.regisInfo,
+        otpToken: state.otpToken,
         auth: auth,
         user: state.user,
         isFetching: state.isFetching,

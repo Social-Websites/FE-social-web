@@ -6,13 +6,24 @@ import LoginPage from "../components/Auth/LoginPage";
 import SignUpPage from "../components/Auth/SignUpPage";
 import ForgotPasswordPage from "../components/Auth/ForgotPasswordPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
-import OtpForm from "../components/Auth/OptForm";
+import OtpForm from "../components/Auth/OtpForm";
 import AuthPage from "../pages/AuthPage";
 import DashboardBody from "../components/Admin/AdminBody/Dashboard/Dashboard";
 import UsersManage from "../components/Admin/AdminBody/UsersManager/Users";
 import PostsManage from "../components/Admin/AdminBody/PostsManager/Posts";
+import Error404Page from "../pages/AuthPage/Error404Page";
+import UnauthorizedPage from "../pages/AuthPage/UnauthorizedPage";
+import ResetPasswordForm from "../components/Auth/ResetPasswordForm";
 // public Routes
 const publicRoutes = [
+  {
+    path: "/error/*",
+    layout: AuthPage,
+    components: [
+      { path: "unauthorized", component: UnauthorizedPage },
+      { path: "404-error", component: Error404Page },
+    ],
+  },
   {
     path: "/accounts/*",
     layout: AuthPage,
@@ -21,6 +32,7 @@ const publicRoutes = [
       { path: "signup", component: SignUpPage },
       { path: "password/reset", component: ForgotPasswordPage },
       { path: "otp", component: OtpForm },
+      { path: "reset-password/:token", component: ResetPasswordForm },
     ],
   },
 

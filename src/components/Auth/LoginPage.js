@@ -97,11 +97,13 @@ const LoginPage = () => {
     try {
       const response = await login(formData, publicRequest);
       const accessToken = response?.accessToken;
-      setAuth({ accessToken });
-      setPersistLogin();
-
-      clearError();
-      navigate(from, { replace: true });
+      if (accessToken) {
+        setAuth({ accessToken });
+        setPersistLogin();
+        navigate(from, { replace: true });
+        clearError();
+      }
+      setFormValid("Đăng nhập lỗi, vui lòng thử lại!");
     } catch (err) {}
   };
 

@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { logoutUser } from "../features/userSlice";
 // import { auth } from "../firebase";
 import { StateContext } from "../../../context/StateContext";
+import useLogout from "../../hook/auth-hook/logout-hook";
 
 const cx = classNames.bind(styles);
 
@@ -33,7 +34,8 @@ function NavBar() {
   //     dispatch(logoutUser());
   //     signOut(auth);
   //   };
-  const { auth, user } = useContext(StateContext);
+  const { user } = useContext(StateContext);
+  const { logout } = useLogout();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -146,6 +148,12 @@ function NavBar() {
     navigate("/chat", { replace: true });
   };
 
+  const signOut = async () => {
+    await logout();
+
+    navigate("/accounts/login");
+  };
+
   return (
     <div style={{ display: "flex" }}>
       <div className={cx("sidenav")} style={open ? { width: "80px" } : null}>
@@ -221,6 +229,7 @@ function NavBar() {
             {open ? null : <span>Explore</span>}
           </button>
           <button
+            onClick={signOut}
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >

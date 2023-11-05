@@ -49,3 +49,11 @@ export const setPersist = (persist = true) => ({
   type: "SET_PERSIST",
   payload: persist,
 });
+export const setRegisInfo = (regisInfo) => ({
+  type: "SET_REGIS_INFO",
+  payload: regisInfo,
+});
+export const setOtpToken = (otpToken) => ({
+  type: "SET_OTP_TOKEN",
+  payload: otpToken,
+});

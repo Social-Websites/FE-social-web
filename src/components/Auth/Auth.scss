@@ -84,7 +84,7 @@
   &--separate {
     overflow-x: hidden;
     overflow-y: hidden;
-    margin-top: 24px;
+
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-top-left-radius: 0;
@@ -116,7 +116,7 @@
       width: 100% !important;
       height: 38px !important;
       color: black;
-      margin: 5px 0.1rem;
+
       border-radius: 4px;
       border: 1px solid black;
     }
@@ -342,7 +342,7 @@
 .signup {
   &--container {
     line-height: 18px;
-    --base-line-clamp-line-height: 18px;
+
     font-size: 14px;
     overflow-y: visible;
     font-weight: 400;
@@ -364,7 +364,6 @@
   &--question {
     color: rgb(0, 0, 0);
     font-size: 14px;
-    margin: 15px;
     text-align: center;
   }
 

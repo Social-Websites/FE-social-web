@@ -12,7 +12,7 @@ import FilledInput from "@mui/material/FilledInput";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { signUp } from "../../services/userService";
+import { getOtpSignUp } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -22,12 +22,12 @@ const cx = classNames.bind(styles);
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 const SignUpPage = () => {
-  // const { setAuthLogin } = useAuth();
+  const { setOtp, setRegisterInfo } = useAuth();
   const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = "/accounts/login";
+  const from = "/accounts/otp";
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -136,13 +136,18 @@ const SignUpPage = () => {
     setFormValid(null);
 
     try {
-      const response = await signUp(formData, publicRequest);
-      if (response) navigate(from, { replace: true });
-
-      clearError();
-    } catch (err) {
-      setFormValid(err?.message);
-    }
+      const response = await getOtpSignUp(
+        formData.username,
+        formData.email,
+        publicRequest
+      );
+      console.log(response.otpToken);
+      if (response.otpToken) {
+        setOtp(response.otpToken);
+        setRegisterInfo(formData);
+        navigate(from, { replace: true });
+      }
+    } catch (err) {}
   };
 
   return (

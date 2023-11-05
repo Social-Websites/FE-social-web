@@ -12,7 +12,7 @@ const AuthPage = () => {
   const from = location?.pathname || "/accounts";
 
   useEffect(() => {
-    if (from === "/accounts") navigate("./login");
+    if (from === "/accounts" || from === "/accounts/") navigate("./login");
   }, []);
 
   return (

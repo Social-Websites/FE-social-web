@@ -72,6 +72,16 @@ const StateReducer = (state, action) => {
         ...state,
         persist: action.payload,
       };
+    case "SET_REGIS_INFO":
+      return {
+        ...state,
+        regisInfo: action.payload,
+      };
+    case "SET_OTP_TOKEN":
+      return {
+        ...state,
+        otpToken: action.payload,
+      };
 
     default:
       return state;
