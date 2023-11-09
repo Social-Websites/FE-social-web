@@ -1,7 +1,7 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hook/auth-hook/auth-hook";
 import { getUser } from "../../services/userService";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import usePrivateHttpClient from "../hook/http-hook/private-http-hook";
 
 const RequireAuth = ({ admin = false }) => {
@@ -10,24 +10,31 @@ const RequireAuth = ({ admin = false }) => {
   const { isLoading, error, clearError, privateRequest } =
     usePrivateHttpClient();
 
+  const effectRan = useRef(false);
+
   let userAuth;
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await getUser(privateRequest);
+    if (effectRan.current === true || process.env.NODE_ENV !== "development") {
+      const fetchUser = async () => {
+        try {
+          const response = await getUser(privateRequest);
 
-        setUserLogin(response);
+          setUserLogin(response);
 
-        userAuth = response;
+          userAuth = response;
 
-        console.log("user: ", user);
-      } catch (err) {
-        console.log(err.message);
-      }
+          console.log("user: ", userAuth);
+        } catch (err) {
+          console.log(err.message);
+        }
+      };
+      fetchUser();
+    }
+
+    return () => {
+      effectRan.current = true;
     };
-
-    fetchUser();
   }, [auth.accessToken]);
 
   if (admin && userAuth?.admin) {

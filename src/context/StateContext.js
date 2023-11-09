@@ -20,7 +20,8 @@ export const StateContextProvider = ({ children }) => {
   const [auth, setAuth] = useState({});
 
   useEffect(() => {
-    localStorage.setItem("persist", state.persist);
+    console.log(state.persist);
+    localStorage.setItem("persist", state.persist ? true : false);
   }, [state.persist]);
 
   return (

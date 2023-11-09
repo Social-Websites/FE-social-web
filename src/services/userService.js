@@ -2,10 +2,20 @@ import * as httprequest from "../shared/util/httprequest";
 
 export const getUser = async (sendRequest) => {
   try {
-    const response = await sendRequest("/users/getuser");
+    const response = await sendRequest("/users/auth-user");
     return response?.data.user;
   } catch (err) {
     console.log("Lỗi lấy thong tin user:", err);
+    throw err;
+  }
+};
+
+export const getUserByUsername = async (username, sendRequest) => {
+  try {
+    const response = await sendRequest(`/users/${username}`);
+    return response?.data.user;
+  } catch (err) {
+    console.log("Lỗi lấy thông tin người khác:", err);
     throw err;
   }
 };

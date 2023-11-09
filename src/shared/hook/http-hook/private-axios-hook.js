@@ -12,7 +12,7 @@ const axiosPrivate = axios.create({
   },
 });
 
-const useAxiosInstance = () => {
+const useAxiosPrivate = () => {
   const { refresh } = useRefreshToken();
   const { auth } = useAuth();
 
@@ -49,4 +49,4 @@ const useAxiosInstance = () => {
   return axiosPrivate;
 };
 
-export default useAxiosInstance;
+export default useAxiosPrivate;

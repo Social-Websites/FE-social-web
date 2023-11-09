@@ -49,7 +49,7 @@ const publicRoutes = [
 // Private Routes
 const privateRoutes = [
   { path: "/", component: HomePage },
-  { path: "/profile", component: Profile },
+  { path: "/:username", component: Profile },
   { path: "/chat", component: Chat },
   { path: "/group", component: GroupPage },
 ];

@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import useAxiosInstance from "./private-axios-hook";
+import useAxiosPrivate from "./private-axios-hook";
 
 const usePrivateHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
-  const axiosPrivate = useAxiosInstance();
+  const axiosPrivate = useAxiosPrivate();
 
   const activePrivateHttpRequests = useRef([]);
 

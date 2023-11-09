@@ -19,7 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+const EMAIL_REGEX = /^[a-z0-9.-]+@[a-z.]+\.[a-z]{2,4}$/;
 
 const SignUpPage = () => {
   const { setOtp, setRegisterInfo } = useAuth();
