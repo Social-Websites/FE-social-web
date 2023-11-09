@@ -52,6 +52,11 @@ const StateReducer = (state, action) => {
         ...state,
         messages: action.payload,
       };
+    case "IS_LOADING_MESSAGES":
+      return {
+        ...state,
+        isLoadingMsg: action.payload,
+      };
     case "ADD_MESSAGE":
       return {
         ...state,

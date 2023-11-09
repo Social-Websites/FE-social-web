@@ -12,12 +12,12 @@ import {io} from "socket.io-client";
 const cx = classNames.bind(styles);
 
 function ChatPage() {
-    const { user, currentChat, dispatch } = useContext(StateContext);
+    const { user, currentChat, isLoadingMsg, dispatch } = useContext(StateContext);
     const socket = useRef();
-    const [socketEvent, setSocketEvent] = useState(false);
+    const [ isOnline , setIsOnline] = useState(false);
     const containerRef = useRef(null);
     const inputRef = useRef(null);
-    const [remainingHeight, setRemainingHeight] = useState(0);
+    const [remainingHeight, setRemainingHeight] = useState(619);
     const [isSelectedFile, setIsSelectedFile] = useState(0);
 
   const handleIsSelectedFile = (height) => {
@@ -53,18 +53,30 @@ function ChatPage() {
             socket.current.emit("add-user", user._id);
             dispatch({type: "SET_SOCKET", payload: socket});
         }
-    }, [user])
+    }, [user]);
 
-    useEffect(()=>{
-        if(socket.current && !socketEvent){
-            socket.current.on("msg-recieve", (data)=>{
-                console.log(data);
-                dispatch({
-                    type: "ADD_MESSAGE",
-                    payload: data
-                })
-            })
-            setSocketEvent(true)
+
+    useEffect(() => {
+        if(currentChat){
+            setIsOnline(currentChat.online);
+            socket.current.on("getOnlineUser", (data) => {
+                console.log(data)
+                if(currentChat.userIds == data.user_id){
+                    setIsOnline(true);
+                }
+            });
+        }
+    }, [socket.current]);
+
+    useEffect(() => {
+        if(currentChat){
+            setIsOnline(currentChat.online);
+            socket.current.on("getOfflineUser", (data) => {
+                console.log(data)
+                if(currentChat.userIds == data.user_id){
+                    setIsOnline(false);
+                }
+            });
         }
     }, [socket.current]);
     
@@ -76,35 +88,47 @@ function ChatPage() {
             <div className={cx("chatpage__sideBar")}>
                 <Chats />
             </div>
+            
             {currentChat?  
-            (<div className={cx("chatpage__messages")} ref={containerRef}>
+            ( <div className={cx("chatpage__messages")} ref={containerRef}> 
+            {!isLoadingMsg? (
             <div className={cx("chatInfo")} id="chatInfo">
                 <div className={cx("chatInfo__user")}>
-                    <span className={cx("chatInfo__user_avatar")}>
+                    <div className={cx("chatInfo__user_avatar")}>
                         <img
                             style={{width: "44px",height: "44px"}}
                             src={currentChat?.img}
                             alt=""
                         />
-                    </span>
+                        {isOnline ? (<span></span>):null}
+                    </div>
                     <div className={cx("chatInfo__user__info")}>
                         <span className={cx("chatInfo__username")}>{currentChat?.name}</span>
                         <span className={cx("chatInfo__relation")}>New to Instagram</span>
                     </div>
                 </div>
-            </div>
+            </div>): (<div className={cx("chatpage__messages__main")}>
+                <div>
+                    <div className={cx("chatpage__messages__image")}>
+                      <ChatOutlinedIcon className={cx("skeleton chatpage__messages__logo ")} />
+                    </div>
+                    <div className={cx("chatpage__messages__text")}> <span className={cx("skeleton")}>Your Messages</span></div>
+                    <div className={cx("chatpage__messages__text")}> <span className={cx("skeleton")} style={{color: "#A8A8A8", fontSize: "14px"}} >Send private photos and messages to a friend or group</span></div>
+                </div>
+            </div>)}
             
-            <Messages style={{height: remainingHeight}}/>
-            <div ref={inputRef}>
-            <Input onSelectedFile={handleIsSelectedFile}/>
+            <Messages style={isLoadingMsg? {display: "none"} : {height: remainingHeight}}/>
+            <div ref={inputRef} style={isLoadingMsg? {display: "none"} : null} >
+            <Input onSelectedFile={handleIsSelectedFile} />
             </div>
         </div>) : (<div className={cx("chatpage__messages")}>
             <div className={cx("chatpage__messages__main")}>
                 <div>
                     <div className={cx("chatpage__messages__image")}>
-                      <ChatOutlinedIcon className={cx("chatpage__messages__logo")} />
+                      <ChatOutlinedIcon className={cx("chatpage__messages__logo ")} />
                     </div>
-                    <div className={cx("chatpage__messages__text")} >Drop photos and videos here</div>
+                    <div className={cx("chatpage__messages__text")}> <span>Your Messages</span></div>
+                    <div className={cx("chatpage__messages__text")}> <span style={{color: "#A8A8A8", fontSize: "14px"}} >Send private photos and messages to a friend or group</span></div>
                 </div>
             </div>
         </div>)}
