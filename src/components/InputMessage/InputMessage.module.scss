@@ -29,11 +29,11 @@
     padding: 10px 10px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    // justify-content: space-between;
 
     
     input {
-        width: 80%;
+        flex: 1;
         border: none;
         outline: none;
         background-color: black;

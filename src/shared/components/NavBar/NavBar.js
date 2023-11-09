@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import WestIcon from "@mui/icons-material/West";
 import { useLocation, useNavigate } from "react-router-dom";
 //import { useDispatch, useSelector } from "react-redux";
@@ -50,6 +51,7 @@ function NavBar() {
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
+  const [isTitlePost, setIsTitlePost] = useState(false);
   const fileInputRef = useRef(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
@@ -106,13 +108,21 @@ function NavBar() {
       }
     }
     setIsDropping(true);
-    if (images.length > 1) {
+    if (files.length > 1) {
       setIsLastImage(false);
+    }
+    else{
+      setIsLastImage(true);
     }
   }
 
   function deleteImage(index) {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setImageIndex((index) => {return index - 1;})
+    window.alert(images.length);
+    if(images.length == 1){
+      setIsDropping(false);
+    }
   }
 
   function onDragOver(event) {
@@ -143,6 +153,11 @@ function NavBar() {
     }
     setIsDropping(true);
   }
+
+  const handelReturnCreatPost = () => {
+    setIsDropping(false);
+    setImages([]);
+  };
 
   const messageOnClick = () => {
     navigate("/chat", { replace: true });
@@ -360,11 +375,12 @@ function NavBar() {
                   <WestIcon
                     className={cx("sidenav__icon")}
                     style={{ width: "27px", height: "27px", cursor: "pointer" }}
+                    onClick={()=>handelReturnCreatPost()}
                   />
                 </div>
-                <div style={{ width: "86%" }}>Crop</div>
+                <div style={{ width: "86%" }}>Create new post</div>
                 <span className={cx("header-next")} style={{ width: "7%" }}>
-                  Next
+                  Create
                 </span>
               </div>
               <div
@@ -389,11 +405,22 @@ function NavBar() {
                     }}
                   >
                     {images.map((images, index) => (
-                      <img
-                        classname={cx("img-slider")}
+                      <div 
+                        classname={cx("img-slider")}  
                         style={{
                           width: "100%",
                           transform: `translateX(-${100 * imageIndex}%)`,
+                          transition: "transform 0.2s",
+                          display: "flex",
+                          flexShrink: "0",
+                          flexGrow: "0",
+                          borderRadius: "0px 0px 0px 10px",
+                        }}
+                        aria-hidden={imageIndex !== index}
+                      >
+                        <img
+                        style={{
+                          width: "100%",
                           objectFit: "contain",
                           height: "auto",
                           display: "block",
@@ -401,49 +428,77 @@ function NavBar() {
                           flexGrow: "0",
                           borderRadius: "0px 0px 10px 10px",
                         }}
-                        aria-hidden={imageIndex !== index}
-                        src={images.url}
-                        alt={images.name}
-                      />
+                          src={images.url}
+                          alt={images.name}
+                        />
+                        <CloseIcon
+                          className={cx("sidenav__icon delete_image")}
+                          style={{
+                            color: "white",
+                            margin: "12px 15px",
+                            position: "absolute",
+                            right: "0",
+                            top: 0,
+                            cursor: "pointer",
+                            backgroundColor: "#464646",
+                            color: "white",
+                            borderRadius: "50%",
+                            padding: "6px",
+                            width: "18px", height: "18px", marginBottom: "2px"
+                          }}
+                          onClick={() => deleteImage(index)}
+                        />
+                        {isFirstImage === true || images.length == 1 ? null : (
+                          <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                            <button
+                              onClick={showPrevImage}
+                              className={cx("img-slider-btn")}
+                              style={{ left: 10 }}
+                              aria-label="View Previous Image"
+                            >
+                              <ArrowBackIosNewIcon style={{ width: "16px", height: "16px", marginBottom: "2px" }} aria-hidden />
+                            </button>
+                          </div>
+                        )}
+                        {isLastImage === true ? null : (
+                          <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                            <button
+                              onClick={showNextImage}
+                              className={cx("img-slider-btn")}
+                              style={{ right: 10 }}
+                              aria-label="View Next Image"
+                            >
+                              <ArrowForwardIosIcon style={{ width: "16px", height: "16px", marginBottom: "2px" }} aria-hidden />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     ))}
-                    <CloseIcon
-                      className={cx("sidenav__icon")}
-                      style={{
-                        width: "27px",
-                        height: "27px",
-                        color: "white",
-                        margin: "12px 30px",
-                        position: "absolute",
-                        right: "0",
-                        cursor: "pointer",
-                      }}
-                    />
-                    {isFirstImage === true ? null : (
-                      <button
-                        onClick={showPrevImage}
-                        className={cx("img-slider-btn")}
-                        style={{ left: 0 }}
-                        aria-label="View Previous Image"
-                      >
-                        <ArrowBackIosNewIcon aria-hidden />
-                      </button>
-                    )}
-                    {isLastImage === true ? null : (
-                      <button
-                        onClick={showNextImage}
-                        className={cx("img-slider-btn")}
-                        style={{ right: "0px" }}
-                        aria-label="View Next Image"
-                      >
-                        <ArrowForwardIosIcon aria-hidden />
-                      </button>
-                    )}
+                    
+                    </div>
+                    <div className={cx("post__caption")}>
+                      <div className={cx("postInfo__user")}>
+                        <div className={cx("postInfo__user_avatar")}>
+                            <img
+                                style={{width: "28px",height: "28px"}}
+                                src={user?.profile_picture}
+                                alt=""
+                            />
+                        </div>
+                        <div className={cx("postInfo__user__info")}>
+                            <span className={cx("postInfo__username")}>{user?.username}</span>
+                        </div>
+                      </div>
+                      <div className={cx("post__text")}>
+                        <textarea placeholder="Write a caption..."></textarea>
+                      </div>
+                      <SentimentSatisfiedAltIcon type="submit" style={{color: "#737373", padding: "0px 8px", margin: "4px 8px", width: "24px", cursor: "pointer"}} />
+                    </div>
                   </div>
-                </div>
               </div>
             </div>
           ) : (
-            <div className={cx("modal-content")}>
+            <div className={cx("modal-content")} style={{width: "50%"}}>
               <div className={cx("modal-header")}>Create new post</div>
               <div
                 className={cx("modal-main")}

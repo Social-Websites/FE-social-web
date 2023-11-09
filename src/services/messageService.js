@@ -15,7 +15,17 @@ export const sendMessage = async (data) => {
         const response = await httprequest.post(`/messages/send`, data);
         return response;
     } catch (error) {
-        console.log('Lỗi lấy send message:', error);
+        console.log('Lỗi send message:', error);
         throw new Error('Đã xảy ra lỗi send message');
+    }
+};
+
+export const addReader = async (data) => {
+    try {
+        const response = await httprequest.post(`/messages/addReader`, data);
+        return response;
+    } catch (error) {
+        console.log('Lỗi add reader:', error);
+        throw new Error('Đã xảy ra lỗi add reader');
     }
 };

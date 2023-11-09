@@ -6,6 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { StateContext } from "../../context/StateContext";
 import * as messageService from "../../services/messageService"
 import { storage, ref, getDownloadURL, uploadBytesResumable } from "../../config/firebase";
@@ -47,10 +48,35 @@ function InputMessage ({onSelectedFile}) {
     setText((prevText) => (prevText += emoji.emoji))
   }
 
+  const handleSendIcon = async () => {
+    console.log(currentChat);
+    try{
+      const newMessage = {
+        conversationId: currentChat._id,
+        recieve_ids: currentChat.userIds,
+        sender_id: user._id,
+        img: user.profile_picture,
+        content: "❤️",
+        media: img,
+      }
+      const result =  await messageService.sendMessage(newMessage);
+      socket.current.emit("send-msg", newMessage)
+      dispatch({type: "ADD_MESSAGE", payload: newMessage,
+        fromSelf: true,
+      })
+      if (result !== null) {
+        setText("") ;
+        setImg([]);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
   const handleSendMessage = async () => {
     // const promises = [];
     const promises = img.map((image) => {
-      const storageRef  = ref(storage,`images/${image.name}`);
+      const name = Date.now();
+      const storageRef  = ref(storage,`images/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, image.file);
       // promises.push(uploadTask);
       // console.log(promises);
@@ -69,7 +95,6 @@ function InputMessage ({onSelectedFile}) {
             getDownloadURL(uploadTask.snapshot.ref)
             .then((url) => {
               console.log(url);
-              // setUrls((prevState) => [...prevState, url]);
               resolve(url);
             })
             .catch((error) => {
@@ -84,30 +109,29 @@ function InputMessage ({onSelectedFile}) {
     try{
       const urls = await Promise.allSettled(promises)
       const urlStrings = urls.map((url) => url.value.toString());
-        try{
-            const newMessage = {
-            conversationId: currentChat._id,
-            recieve_ids: currentChat.userIds,
-            sender_id: user._id,
-            img: user.profile_picture,
-            content: text,
-            media: urlStrings,
-          };
-          const result =  messageService.sendMessage(newMessage);
-          socket.current.emit("send-msg", newMessage)
-          dispatch({type: "ADD_MESSAGE", payload: newMessage,
-            fromSelf: true,
-          })
-          if (result !== null) {
-            setText("") ;
-            setImg([]);
-          }
-        } catch (err) {
-          console.log(err);
+      console.log(currentChat);
+      try{
+          const newMessage = {
+          conversationId: currentChat._id,
+          recieve_ids: currentChat.userIds,
+          sender_id: user._id,
+          img: user.profile_picture,
+          content: text,
+          media: urlStrings,
+        };
+        const result = await messageService.sendMessage(newMessage);
+        socket.current.emit("send-msg", newMessage)
+        dispatch({type: "ADD_MESSAGE", payload: newMessage,
+          fromSelf: true,
+        })
+        if (result !== null) {
+          setText("") ;
+          setImg([]);
         }
+      } catch (err) {
+        console.log(err);
       }
-      
-     catch (err) {
+    } catch (err) {
       console.log(err);
     }
     await ReturnHeight();
@@ -140,12 +164,16 @@ function InputMessage ({onSelectedFile}) {
   async function ReturnHeight() {
     let isSelectedFile = 4;
     console.log(img.length)
-    if(img.length % 12 === 0  || img.length === 1){
+    if(img.length % 12 === 0){
       isSelectedFile = 3 ;
     }
-    else if(img.length % 11 === 0){
+    else if(img.length % 11 === 0 ){
       isSelectedFile = 2 ;
     }
+    else if(img.length === 1) {
+      isSelectedFile = 1 ;
+    }
+    else isSelectedFile = 0 ;
     onSelectedFile(isSelectedFile);
   }
   async function deleteImage(index) {
@@ -176,6 +204,7 @@ function InputMessage ({onSelectedFile}) {
               top: "-25px", right: "10px",
               borderRadius: "50%",
               border: "white solid 1.5px",
+              cursor: "pointer",
             }} 
               onClick={() => deleteImage(index)}/>
           </div>
@@ -185,7 +214,7 @@ function InputMessage ({onSelectedFile}) {
       
       <div style={{height:"auto", display: "flex", alignItems: "center", justifyContent: "center"}}>
         <div className={cx("input")} id="emoji-open" ref={emojiPickerRef}> 
-          <SentimentSatisfiedAltIcon type="submit" style={{color: "white"}} onClick={handleEmojiModal}/>
+          <SentimentSatisfiedAltIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={handleEmojiModal}/>
           {emojiPicker && <div style={{position: "absolute", bottom: 75}}>
             <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" ></EmojiPicker>
             </div>}
@@ -207,9 +236,9 @@ function InputMessage ({onSelectedFile}) {
               <PhotoOutlinedIcon 
                 role="button"
                 onClick={selectFiles} 
-                style={{color: "white"}}/>
+                style={{color: "white",cursor: "pointer", marginRight: "10px"}}/>
           </div>
-          <SendIcon type="submit" style={{color: "white"}} onClick={handleSendMessage}/>
+          { text || img.length !== 0 ? (<SendIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={handleSendMessage}/>) : (<FavoriteBorderOutlinedIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={handleSendIcon}/>)}
         </div>
       </div>
     </div>

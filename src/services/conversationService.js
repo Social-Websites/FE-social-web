@@ -1,8 +1,8 @@
 import * as httprequest from '../shared/util/httprequest';
 
-export const getUserConversations = async (conversationId) => {
+export const getUserConversations = async (userId) => {
     try {
-        const response = await httprequest.get(`/conversation/${conversationId}`);
+        const response = await httprequest.get(`/conversation/${userId}`);
         return response;
     } catch (error) {
         console.log('Lỗi lấy danh sách message:', error);
