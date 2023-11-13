@@ -92,3 +92,13 @@ export const resetPassword = async (resetData, sendRequest) => {
     throw err;
   }
 };
+
+export const searchUsers = async (data, sendRequest) => {
+  try {
+      const response = await sendRequest(`/users/search`, data);
+      return response?.data;
+  } catch (error) {
+      console.log('Lỗi search users:', error);
+      throw new Error('Đã xảy ra lỗi search users');
+  }
+};

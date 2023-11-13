@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
@@ -25,6 +26,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { auth } from "../firebase";
 import { StateContext } from "../../../context/StateContext";
 import useLogout from "../../hook/auth-hook/logout-hook";
+import * as usersService from '../../../services/userService';
+import SearchUser from "../../../components/SearchUser";
+import usePublicHttpClient from "../../../shared/hook/http-hook/public-http-hook";
 
 const cx = classNames.bind(styles);
 
@@ -41,7 +45,9 @@ function NavBar() {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchedUsers, setSearchedUsers] = useState([]);
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -56,18 +62,46 @@ function NavBar() {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+  const { publicRequest } = usePublicHttpClient();
+
+  const handleSearch = () => {
+    if(open != ""){
+      if(open != "Search") setOpen("Search")
+      else setOpen("")
+    } else setOpen("Search")
+  }
+  const handleNotification = () => {
+    if(open != ""){
+      if(open != "Notification") setOpen("Notification")
+      else setOpen("")
+    } else setOpen("Notification")
+  }
+
+  const searchUsers = async () => {
+    const data = {
+      searchText: searchInput,
+    }
+    try{
+        const result = await usersService.searchUsers(data, publicRequest);
+        console.log(result);
+        if (result !== null) {
+          setSearchedUsers(result);
+        }
+      } catch (err) {
+        console.log(err);
+    }
+    
+  };
 
   function showNextImage() {
     setImageIndex((index) => {
       if (index === images.length - 2) {
         setIsLastImage(true);
         setIsFirstImage(false);
-        console.log(index);
         return images.length - 1;
       } else {
         setIsLastImage(false);
         setIsFirstImage(false);
-        console.log(index);
         return index + 1;
       }
     });
@@ -110,18 +144,27 @@ function NavBar() {
     setIsDropping(true);
     if (files.length > 1) {
       setIsLastImage(false);
+      setIsFirstImage(true);
     }
     else{
       setIsLastImage(true);
+      setIsFirstImage(true);
     }
   }
 
   function deleteImage(index) {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     setImageIndex((index) => {return index - 1;})
-    window.alert(images.length);
     if(images.length == 1){
       setIsDropping(false);
+      setImageIndex(0)
+      setImages([]);
+    }
+    if(index == 1){
+      setIsFirstImage(true)
+    }
+    if(images.length == 2){
+      setIsLastImage(true)
     }
   }
 
@@ -152,6 +195,14 @@ function NavBar() {
       }
     }
     setIsDropping(true);
+    if (files.length > 1) {
+      setIsLastImage(false);
+      setIsFirstImage(true);
+    }
+    else{
+      setIsLastImage(true);
+      setIsFirstImage(true);
+    }
   }
 
   const handelReturnCreatPost = () => {
@@ -184,7 +235,7 @@ function NavBar() {
             <button
               className={cx("sidenav__button")}
               style={
-                open ? { width: "71%", margin: "5px 10px 5px 10px" } : null
+                open ? { width: "71%", margin: "5px 13px 8px 10px" } : null
               }
             >
               <InstagramIcon
@@ -195,13 +246,24 @@ function NavBar() {
           </div>
         ) : (
           <div
-            style={{ height: "120px", display: "flex", alignItems: "center" }}
+            className={cx("sidenav__title")}
           >
             <img
               className={cx("sidenav__logo")}
               src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
               alt="Instagram Logo"
             />
+            <button
+              className={cx("sidenav__button sidenav__title__button")}
+              style={
+                open ? { width: "71%", margin: "5px 10px 5px 10px" } : null
+              }
+            >
+              <InstagramIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            </button>
           </div>
         )}
 
@@ -221,12 +283,16 @@ function NavBar() {
           </button>
           <button
             className={cx("sidenav__button")}
-            onClick={() => setOpen(!open)}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            onClick={handleSearch}
+            style={Object.assign(
+              {},
+              open ? { width: "71%", margin: "5px 10px 5px 10px" } : {},
+              open === "Search" ? { background: "#262626" } : {}
+            )}
           >
             <SearchIcon
               className={cx("sidenav__icon")}
-              style={{ width: "27px", height: "27px" }}
+              style={{ width: "27px", height: "27px", fontWeight: "900" }}
             />
             {open ? null : <span>Search</span>}
           </button>
@@ -235,7 +301,7 @@ function NavBar() {
               navigate("/group", { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "71%", margin: "5px 10px 5px 10px"} : null}
           >
             <ExploreOutlinedIcon
               className={cx("sidenav__icon")}
@@ -266,13 +332,23 @@ function NavBar() {
             {open ? null : <span>Messages</span>}
           </button>
           <button
+            onClick={handleNotification}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={Object.assign(
+              {},
+              open ? { width: "71%", margin: "5px 10px 5px 10px" } : {},
+              open === "Notification" ? { background: "#262626" } : {}
+            )}
           >
+            {open == "Notification" ? (
+            <FavoriteIcon
+              className={cx("sidenav__icon")}
+              style={{ width: "27px", height: "27px" }}
+            />) : (
             <FavoriteBorderIcon
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
-            />
+            />)}
             {open ? null : <span>Notifications</span>}
           </button>
           <button
@@ -293,12 +369,11 @@ function NavBar() {
             className={cx("sidenav__button")}
             style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null}
           >
-            <Avatar
-              className={cx("sidenav__icon")}
-              style={{ width: "24px", height: "24px", margin: "3px" }}
-            >
-              A
-            </Avatar>
+            <img
+                style={{width: "25px",height: "25px", borderRadius: "50%"}}
+                src={user?.profile_picture}
+                alt=""
+            />
             {open ? null : <span>{user?.username}</span>}
           </button>
         </div>
@@ -320,17 +395,31 @@ function NavBar() {
       <div style={{ marginLeft: "81px", height: "100%" }}>
         <div
           className={cx("open")}
-          style={open ? { transform: "translateX(0%)" } : null}
+          style={open == "Search" ? { transform: "translateX(0%)" } : null}
         >
           {/* {notifications.map((n) => displayNotification(n))} */}
           <div className={cx("open__title")}>
             <span>Search</span>
           </div>
           <div className={cx("open__input")}>
-            <input type="text" placeholder="Search" />
+            <input type="text" onChange={searchUsers} placeholder="Search" />
           </div>
           <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
             <span> Recent </span>
+            {searchedUsers.map((u) => {
+                <SearchUser u={u} key={u._id} />; 
+            })}
+          </div>
+        </div>
+        <div
+          className={cx("open")}
+          style={open == "Notification" ? { transform: "translateX(0%)" } : null}
+        >
+          <div className={cx("open__title")} style={{padding: "12px 24px"}}>
+            <span>Notifications</span>
+          </div>
+          {/* {notifications.map((n) => displayNotification(n))} */}
+          <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
             <div className={cx("open__user")}>
               <span className={cx("open__user_avatar")}>
                 <Avatar>R</Avatar>
