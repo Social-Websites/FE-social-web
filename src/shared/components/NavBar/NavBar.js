@@ -28,7 +28,7 @@ import { StateContext } from "../../../context/StateContext";
 import useLogout from "../../hook/auth-hook/logout-hook";
 import * as usersService from '../../../services/userService';
 import SearchUser from "../../../components/SearchUser";
-import usePublicHttpClient from "../../../shared/hook/http-hook/public-http-hook";
+import SearchUserLoading from "../../../components/SearchUserLoading";
 
 const cx = classNames.bind(styles);
 
@@ -44,11 +44,13 @@ function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+  let timerId; // Biến để lưu ID của timeout
 
   const [open, setOpen] = useState("");
-  const [searchInput, setSearchInput] = useState("");
   const [searchedUsers, setSearchedUsers] = useState([]);
   const [modal, setModal] = useState(false);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  
   const toggleModal = () => {
     setModal(!modal);
     setIsDropping(false);
@@ -62,7 +64,6 @@ function NavBar() {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
-  const { publicRequest } = usePublicHttpClient();
 
   const handleSearch = () => {
     if(open != ""){
@@ -77,19 +78,26 @@ function NavBar() {
     } else setOpen("Notification")
   }
 
-  const searchUsers = async () => {
-    const data = {
-      searchText: searchInput,
+  const searchUsers = (e) => {
+    
+    const data = e.target.value;
+    setIsLoadingSearch(true);
+    // Hủy timeout hiện tại nếu tồn tại
+    if (timerId !== null) {
+      clearTimeout(timerId);
+      console.log(timerId);
     }
-    try{
-        const result = await usersService.searchUsers(data, publicRequest);
-        console.log(result);
-        if (result !== null) {
-          setSearchedUsers(result);
-        }
-      } catch (err) {
-        console.log(err);
-    }
+    timerId = setTimeout(async () => {
+      try{
+          const result = await usersService.searchUsers(data);
+          if (result !== null) {
+            setSearchedUsers(result);
+            setIsLoadingSearch(false);
+          }
+        } catch (err) {
+          console.log(err);
+      }
+    }, 1000);
     
   };
 
@@ -405,10 +413,16 @@ function NavBar() {
             <input type="text" onChange={searchUsers} placeholder="Search" />
           </div>
           <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
-            <span> Recent </span>
-            {searchedUsers.map((u) => {
-                <SearchUser u={u} key={u._id} />; 
-            })}
+          {isLoadingSearch?(<SearchUserLoading/>):(<div>{searchedUsers.length === 0 ? (
+            <div style={{ justifyContent: "center", alignItems: "center", display:"flex", height: "90%" }}>
+              <span className={cx("open__content__span")}> No search results </span>
+            </div>
+            ): 
+            (<div>{searchedUsers.map((u) => (
+              <SearchUser u={u} key={u._id} />
+              ))} </div>
+            )
+          }</div>)}
           </div>
         </div>
         <div
