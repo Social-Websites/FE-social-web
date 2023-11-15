@@ -1,3 +1,4 @@
+import * as httprequest from '../shared/util/httprequest';
 export const getUser = async (sendRequest) => {
   try {
     const response = await sendRequest("/users/auth-user");
