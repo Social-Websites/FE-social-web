@@ -1,3 +1,5 @@
+import httprequest from "../shared/util/httprequest";
+
 export const getUser = async (sendRequest) => {
   try {
     const response = await sendRequest("/users/auth-user");
@@ -93,10 +95,10 @@ export const resetPassword = async (resetData, sendRequest) => {
 
 export const searchUsers = async (data) => {
   try {
-      const response = await httprequest.get(`/users/search?searchText=${data}`);
-      return response;
+    const response = await httprequest.get(`/users/search?searchText=${data}`);
+    return response;
   } catch (error) {
-      console.log('Lỗi search users:', error);
-      throw new Error('Đã xảy ra lỗi search users');
+    console.log("Lỗi search users:", error);
+    throw new Error("Đã xảy ra lỗi search users");
   }
 };
