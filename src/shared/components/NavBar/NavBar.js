@@ -21,10 +21,6 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import WestIcon from "@mui/icons-material/West";
 import { useLocation, useNavigate } from "react-router-dom";
-//import { useDispatch, useSelector } from "react-redux";
-// import { signOut } from "firebase/auth";
-// import { logoutUser } from "../features/userSlice";
-// import { auth } from "../firebase";
 import { StateContext } from "../../../context/StateContext";
 import useLogout from "../../hook/auth-hook/logout-hook";
 import {
@@ -55,18 +51,23 @@ function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
-  let timerId; // Biến để lưu ID của timeout
 
   const [open, setOpen] = useState("");
+  const [more, setMore] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState([]);
   const [modal, setModal] = useState(false);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
   const toggleModal = () => {
+    if(document.body.style.overflow == "")
+      document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
     setModal(!modal);
     setIsDropping(false);
     setImages([]);
   };
+
+
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
@@ -105,38 +106,44 @@ function NavBar() {
     setTitlePost((prevText) => (prevText += emoji.emoji));
   };
   const handleSearch = () => {
-    if (open != "") {
-      if (open != "Search") setOpen("Search");
+    if (open !== "") {
+      if (open !== "Search") setOpen("Search");
       else setOpen("");
     } else setOpen("Search");
   };
   const handleNotification = () => {
-    if (open != "") {
-      if (open != "Notification") setOpen("Notification");
+    if (open !== "") {
+      if (open !== "Notification") setOpen("Notification");
       else setOpen("");
     } else setOpen("Notification");
   };
 
-  const searchUsers = (e) => {
+  const searchUsers = async (e) => {
     const data = e.target.value;
-    setIsLoadingSearch(true);
-    // Hủy timeout hiện tại nếu tồn tại
-    if (timerId !== null) {
-      clearTimeout(timerId);
-      console.log(timerId);
-    }
-    timerId = setTimeout(async () => {
-      try {
-        const result = await usersService.searchUsers(data);
-        if (result !== null) {
-          setSearchedUsers(result);
-          setIsLoadingSearch(false);
-        }
-      } catch (err) {
-        console.log(err);
+    try {
+      const result = await usersService.searchUsers(data);
+      console.log(result);
+      if (result !== null) {
+        setSearchedUsers(result);
+        setIsLoadingSearch(false);
       }
-    }, 1000);
+    } catch (err) {
+      console.log(err);
+    }
   };
+  const debounce = (fn, delay) => {
+    let timerId = null;
+  
+    return function (...args) {
+      setIsLoadingSearch(true);
+      clearTimeout(timerId);
+  
+      timerId = setTimeout(() => {
+        fn.apply(this, args);
+      }, delay);
+    };
+  };
+  const debouncedSearchUsers = debounce(searchUsers, 500);
 
   function showNextImage() {
     setImageIndex((index) => {
@@ -446,7 +453,7 @@ function NavBar() {
               open === "Notification" ? { background: "#262626" } : {}
             )}
           >
-            {open == "Notification" ? (
+            {open === "Notification" ? (
               <FavoriteIcon
                 className={cx("sidenav__icon")}
                 style={{ width: "27px", height: "27px" }}
@@ -486,9 +493,21 @@ function NavBar() {
           </button>
         </div>
         <div className={cx("sidenav__more")}>
+          <div style={{display: "inline-block", position: "relative", width:"100%"}}>
+            {more && (
+              <div style={{position: "absolute", bottom: 140, left: 10}}>
+                <div className={cx("sidenav__more-content")}>     
+                  <div className={cx("sidenav__more-element")}>Setting</div>
+                  <div className={cx("sidenav__more-element")}>Your Profile</div>
+                  <div className={cx("sidenav__more-element")} style={{color: "#ed4956"}}>Log out</div>
+                </div>
+              </div>
+            )}
+          </div>
           <button
             className={cx("sidenav__button")}
             style={open ? { width: "24%", margin: "5px 10px 5px 10px" } : null}
+            onClick={()=>{setMore(!more)}}
           >
             <DensityMediumOutlinedIcon
               className={cx("sidenav__icon")}
@@ -503,14 +522,14 @@ function NavBar() {
       <div style={{ marginLeft: "81px", height: "100%" }}>
         <div
           className={cx("open")}
-          style={open == "Search" ? { transform: "translateX(0%)" } : null}
+          style={open === "Search" ? { transform: "translateX(0%)" } : null}
         >
           {/* {notifications.map((n) => displayNotification(n))} */}
           <div className={cx("open__title")}>
             <span>Search</span>
           </div>
           <div className={cx("open__input")}>
-            <input type="text" onChange={searchUsers} placeholder="Search" />
+            <input type="text" onChange={debouncedSearchUsers} placeholder="Search" />
           </div>
           <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
             {isLoadingSearch ? (
@@ -527,15 +546,14 @@ function NavBar() {
                     }}
                   >
                     <span className={cx("open__content__span")}>
-                      {" "}
-                      No search results{" "}
+                      No search results found
                     </span>
                   </div>
                 ) : (
                   <div>
                     {searchedUsers.map((u) => (
                       <SearchUser u={u} key={u._id} />
-                    ))}{" "}
+                    ))}
                   </div>
                 )}
               </div>
@@ -545,7 +563,7 @@ function NavBar() {
         <div
           className={cx("open")}
           style={
-            open == "Notification" ? { transform: "translateX(0%)" } : null
+            open === "Notification" ? { transform: "translateX(0%)" } : null
           }
         >
           <div className={cx("open__title")} style={{ padding: "12px 24px" }}>

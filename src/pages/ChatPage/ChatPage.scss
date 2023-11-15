@@ -25,14 +25,17 @@ html, body {
                 .sidenav__logo{
                   display: none;
                 }
-              }
-              .sidenav__button{
-                width: 71%;
-                margin: 5px 10px 5px 10px;
-              }
-              .sidenav__button > span {
-                display: none;
-              }
+            }
+            .sidenav__button{
+            width: 71%;
+            margin: 5px 10px 5px 10px;
+            }
+            .sidenav__button > span {
+            display: none;
+            }
+            .sidenav__more{
+                width: 80px;
+            }
         }
     }
 
