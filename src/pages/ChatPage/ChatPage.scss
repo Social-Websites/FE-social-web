@@ -13,13 +13,36 @@ html, body {
 
     .chatpage__navWraper {
         position: relative;
+        .sidenav{
+            width: 80px;
+            .sidenav__title{
+                height: 120px; 
+                display: flex; 
+                align-items: center;
+                .sidenav__title__button{
+                  display: block;
+                }
+                .sidenav__logo{
+                  display: none;
+                }
+              }
+              .sidenav__button{
+                width: 71%;
+                margin: 5px 10px 5px 10px;
+              }
+              .sidenav__button > span {
+                display: none;
+              }
+        }
     }
 
     .chatpage__sideBar {
+        z-index: 0;
         position: relative;
         width: 400px; 
     }
     .chatpage__messages{
+        z-index: 0;
         flex: 1;
         height: 100vh;
         .chatInfo {

@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState, useLayoutEffect} from "react";
 import classNames from 'classnames/bind';
 import styles from "./ChatPage.scss";
-import Sidenav from "../../shared/components/NavBarMini";
+import Sidenav from "../../shared/components/NavBar";
 import Chats from "../../components/Chats";
 import Messages from "../../components/Messages";
 import Input from "../../components/InputMessage";

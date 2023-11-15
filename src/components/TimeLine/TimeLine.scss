@@ -15,3 +15,12 @@
     margin-left: 50px;
   }
   
+@media (max-width: 1064px) {
+  .timeline {
+    display: flex;
+    justify-content: center;
+  }
+  .timeline__right{
+    display: none;
+  }
+}

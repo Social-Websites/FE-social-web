@@ -110,5 +110,14 @@ html, body {
     }
     
 }
+
+@media (max-width: 1064px){
+    .group {
+      .group__navWraper {
+        position: relative;
+        width: 80px;
+      }
+    }
+  }
   
     
