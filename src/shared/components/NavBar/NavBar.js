@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useRef, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./NavBar.scss";
@@ -12,11 +12,12 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
 import { Avatar } from "@mui/material";
+import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import WestIcon from "@mui/icons-material/West";
 import { useLocation, useNavigate } from "react-router-dom";
 //import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +26,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { auth } from "../firebase";
 import { StateContext } from "../../../context/StateContext";
 import useLogout from "../../hook/auth-hook/logout-hook";
+import {
+  getDownloadURL,
+  ref,
+  storage,
+  uploadBytesResumable,
+} from "../../../config/firebase";
+import usePrivateHttpClient from "../../hook/http-hook/private-http-hook";
+import { createPost } from "../../../services/postServices";
 
 const cx = classNames.bind(styles);
 
@@ -35,6 +44,8 @@ function NavBar() {
   //     dispatch(logoutUser());
   //     signOut(auth);
   //   };
+
+  const privateHttpClient = usePrivateHttpClient();
   const { user } = useContext(StateContext);
   const { logout } = useLogout();
   const navigate = useNavigate();
@@ -52,10 +63,39 @@ function NavBar() {
   const [isDragging, setIsDragging] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
   const [isTitlePost, setIsTitlePost] = useState(false);
+  const [titlePost, setTitlePost] = useState("");
+  const [emojiPicker, setEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (event.target.id !== "emoji-open") {
+        if (
+          emojiPickerRef.current &&
+          !emojiPickerRef.current.contains(event.target)
+        ) {
+          setEmojiPicker(false);
+        }
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
+
+  const handleEmojiModal = () => {
+    setEmojiPicker(!emojiPicker);
+  };
+
+  const handleEmojiClick = (emoji) => {
+    setTitlePost((prevText) => (prevText += emoji.emoji));
+  };
 
   function showNextImage() {
     setImageIndex((index) => {
@@ -89,6 +129,20 @@ function NavBar() {
     });
   }
 
+  //Validate file
+  const notValidFile = (file) => {
+    //image/jpg,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm
+    return (
+      file.type !== "image/jpg" &&
+      file.type !== "image/jpeg" &&
+      file.type !== "image/png" &&
+      file.type !== "image/gif" &&
+      file.type !== "image/webp" &&
+      file.type !== "video/mp4" &&
+      file.type !== "video/webm"
+    );
+  };
+
   function selectFiles() {
     fileInputRef.current.click();
   }
@@ -96,7 +150,7 @@ function NavBar() {
     const files = event.target.files;
     if (files.length === 0) return;
     for (let i = 0; i < files.length; i++) {
-      if (files[i].type.split("/")[0] !== "image") continue;
+      if (notValidFile(files[i])) continue;
       if (!images.some((e) => e.name === files[i].name)) {
         setImages((prevImages) => [
           ...prevImages,
@@ -110,21 +164,32 @@ function NavBar() {
     setIsDropping(true);
     if (files.length > 1) {
       setIsLastImage(false);
-    }
-    else{
+    } else {
       setIsLastImage(true);
     }
   }
 
   function deleteImage(index) {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-    setImageIndex((index) => {return index - 1;})
-    window.alert(images.length);
-    if(images.length == 1){
+    setImageIndex((index) => {
+      return index - 1;
+    });
+
+    if (images.length === 1) {
       setIsDropping(false);
+      setImageIndex(0);
+      setImages([]);
+    }
+
+    if (index === 1) {
+      setIsFirstImage(true);
+    }
+    if (images.length === 2) {
+      setIsLastImage(true);
     }
   }
 
+  //Kéo thả ảnh vào phần tạo bài viết
   function onDragOver(event) {
     event.preventDefault();
     setIsDragging(true);
@@ -140,7 +205,7 @@ function NavBar() {
     const files = event.dataTransfer.files;
     if (files.length === 0) return;
     for (let i = 0; i < files.length; i++) {
-      if (files[i].type.split("/")[0] !== "image") continue;
+      if (notValidFile(files[i])) continue;
       if (!images.some((e) => e.name === files[i].name)) {
         setImages((prevImages) => [
           ...prevImages,
@@ -152,11 +217,63 @@ function NavBar() {
       }
     }
     setIsDropping(true);
+    if (files.length > 1) {
+      setIsLastImage(false);
+    } else {
+      setIsLastImage(true);
+    }
   }
 
   const handelReturnCreatPost = () => {
     setIsDropping(false);
     setImages([]);
+  };
+
+  const handleCreatePost = async () => {
+    const promises = images.map((image) => {
+      const name = Date.now();
+      const storageRef = ref(storage, `images/${name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image.file);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          null,
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref)
+              .then((url) => {
+                console.log(url);
+                resolve(url);
+              })
+              .catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+          }
+        );
+      });
+    });
+
+    try {
+      const urls = await Promise.allSettled(promises);
+      const urlStrings = urls.map((url) => url.value.toString());
+
+      const postData = { title: titlePost, urlStrings };
+      const result = await createPost(
+        postData,
+        privateHttpClient.privateRequest
+      );
+
+      if (result !== null) {
+        toggleModal();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const messageOnClick = () => {
@@ -288,7 +405,7 @@ function NavBar() {
           </button>
           <button
             onClick={() => {
-              navigate("/profile", { replace: true });
+              navigate(`/${user?.username}`, { replace: true });
             }}
             className={cx("sidenav__button")}
             style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null}
@@ -375,12 +492,16 @@ function NavBar() {
                   <WestIcon
                     className={cx("sidenav__icon")}
                     style={{ width: "27px", height: "27px", cursor: "pointer" }}
-                    onClick={()=>handelReturnCreatPost()}
+                    onClick={() => handelReturnCreatPost()}
                   />
                 </div>
-                <div style={{ width: "86%" }}>Create new post</div>
-                <span className={cx("header-next")} style={{ width: "7%" }}>
-                  Create
+                <div style={{ width: "86%" }}>Bài viết mới</div>
+                <span
+                  onClick={handleCreatePost}
+                  className={cx("header-next")}
+                  style={{ width: "7%" }}
+                >
+                  Tạo
                 </span>
               </div>
               <div
@@ -404,9 +525,9 @@ function NavBar() {
                       overflow: "hidden",
                     }}
                   >
-                    {images.map((images, index) => (
-                      <div 
-                        classname={cx("img-slider")}  
+                    {images.map((image, index) => (
+                      <div
+                        className={cx("img-slider")}
                         style={{
                           width: "100%",
                           transform: `translateX(-${100 * imageIndex}%)`,
@@ -419,17 +540,17 @@ function NavBar() {
                         aria-hidden={imageIndex !== index}
                       >
                         <img
-                        style={{
-                          width: "100%",
-                          objectFit: "contain",
-                          height: "auto",
-                          display: "block",
-                          flexShrink: "0",
-                          flexGrow: "0",
-                          borderRadius: "0px 0px 10px 10px",
-                        }}
-                          src={images.url}
-                          alt={images.name}
+                          style={{
+                            width: "100%",
+                            objectFit: "contain",
+                            height: "auto",
+                            display: "block",
+                            flexShrink: "0",
+                            flexGrow: "0",
+                            borderRadius: "0px 0px 10px 10px",
+                          }}
+                          src={image.url}
+                          alt={image.name}
                         />
                         <CloseIcon
                           className={cx("sidenav__icon delete_image")}
@@ -441,65 +562,126 @@ function NavBar() {
                             top: 0,
                             cursor: "pointer",
                             backgroundColor: "#464646",
-                            color: "white",
                             borderRadius: "50%",
                             padding: "6px",
-                            width: "18px", height: "18px", marginBottom: "2px"
+                            width: "18px",
+                            height: "18px",
+                            marginBottom: "2px",
                           }}
                           onClick={() => deleteImage(index)}
                         />
-                        {isFirstImage === true || images.length == 1 ? null : (
-                          <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                        {isFirstImage === true || images.length === 1 ? null : (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
                             <button
                               onClick={showPrevImage}
                               className={cx("img-slider-btn")}
                               style={{ left: 10 }}
                               aria-label="View Previous Image"
                             >
-                              <ArrowBackIosNewIcon style={{ width: "16px", height: "16px", marginBottom: "2px" }} aria-hidden />
+                              <ArrowBackIosNewIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  marginBottom: "2px",
+                                }}
+                                aria-hidden
+                              />
                             </button>
                           </div>
                         )}
                         {isLastImage === true ? null : (
-                          <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
                             <button
                               onClick={showNextImage}
                               className={cx("img-slider-btn")}
                               style={{ right: 10 }}
                               aria-label="View Next Image"
                             >
-                              <ArrowForwardIosIcon style={{ width: "16px", height: "16px", marginBottom: "2px" }} aria-hidden />
+                              <ArrowForwardIosIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  marginBottom: "2px",
+                                }}
+                                aria-hidden
+                              />
                             </button>
                           </div>
                         )}
                       </div>
                     ))}
-                    
+                  </div>
+                  <div className={cx("post__caption")}>
+                    <div className={cx("postInfo__user")}>
+                      <div className={cx("postInfo__user_avatar")}>
+                        <img
+                          style={{ width: "28px", height: "28px" }}
+                          src={user?.profile_picture}
+                          alt=""
+                        />
+                      </div>
+                      <div className={cx("postInfo__user__info")}>
+                        <span className={cx("postInfo__username")}>
+                          {user?.username}
+                        </span>
+                      </div>
                     </div>
-                    <div className={cx("post__caption")}>
-                      <div className={cx("postInfo__user")}>
-                        <div className={cx("postInfo__user_avatar")}>
-                            <img
-                                style={{width: "28px",height: "28px"}}
-                                src={user?.profile_picture}
-                                alt=""
-                            />
+
+                    <div className={cx("post__text")}>
+                      <textarea
+                        value={titlePost}
+                        onChange={(e) => setTitlePost(e.target.value)}
+                        placeholder="Tiêu đề bài viết..."
+                      ></textarea>
+                    </div>
+                    <div
+                      className={cx("input")}
+                      id="emoji-open"
+                      ref={emojiPickerRef}
+                    >
+                      <SentimentSatisfiedAltIcon
+                        type="submit"
+                        style={{
+                          color: "#737373",
+                          padding: "0px 8px",
+                          margin: "4px 8px",
+                          width: "24px",
+                          cursor: "pointer",
+                        }}
+                        onClick={handleEmojiModal}
+                      />
+                      {emojiPicker && (
+                        <div style={{ position: "absolute", bottom: 10 }}>
+                          <EmojiPicker
+                            onEmojiClick={handleEmojiClick}
+                            theme="dark"
+                            emojiStyle="native"
+                            searchDisabled={true}
+                            width={330}
+                            height={350}
+                          />
                         </div>
-                        <div className={cx("postInfo__user__info")}>
-                            <span className={cx("postInfo__username")}>{user?.username}</span>
-                        </div>
-                      </div>
-                      <div className={cx("post__text")}>
-                        <textarea placeholder="Write a caption..."></textarea>
-                      </div>
-                      <SentimentSatisfiedAltIcon type="submit" style={{color: "#737373", padding: "0px 8px", margin: "4px 8px", width: "24px", cursor: "pointer"}} />
+                      )}
                     </div>
                   </div>
+                </div>
               </div>
             </div>
           ) : (
-            <div className={cx("modal-content")} style={{width: "50%"}}>
-              <div className={cx("modal-header")}>Create new post</div>
+            <div className={cx("modal-content")} style={{ width: "50%" }}>
+              <div className={cx("modal-header")}>Bài viết mới</div>
               <div
                 className={cx("modal-main")}
                 style={isDragging ? { backgroundColor: "black" } : null}
@@ -510,17 +692,18 @@ function NavBar() {
                   </div>
                   {isDragging ? (
                     <div className={cx("modal-text")}>
-                      Drop photos and videos here
+                      Thả ảnh hoặc video tại đây
                     </div>
                   ) : (
                     <div className={cx("modal-text")}>
-                      Drag photos and videos here
+                      Kéo thả ảnh hoặc video vào đây
                     </div>
                   )}
 
                   <div className={cx("modal-input")}>
                     <input
                       type="file"
+                      accept="image/jpg,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
                       multiple
                       ref={fileInputRef}
                       onChange={onFileSelect}
@@ -532,7 +715,7 @@ function NavBar() {
                       onClick={selectFiles}
                       className={cx("modal-upload")}
                     >
-                      Select from computer
+                      Chọn từ thiết bị
                     </label>
                   </div>
                 </div>
