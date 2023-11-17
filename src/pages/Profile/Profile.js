@@ -65,7 +65,7 @@ function Profile() {
               <div className={cx("profile__user")}>
                 <span>{userData?.username}</span>
                 <button className={cx("profile__button")}>
-                  <span>Chỉnh sửa</span>
+                  <span>Edit</span>
                 </button>
                 <button className={cx("profile__button")}>
                   <span>View Archive</span>

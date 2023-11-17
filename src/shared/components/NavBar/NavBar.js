@@ -59,14 +59,13 @@ function NavBar() {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
   const toggleModal = () => {
-    if(document.body.style.overflow == "")
+    if (document.body.style.overflow == "")
       document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
     setModal(!modal);
     setIsDropping(false);
     setImages([]);
   };
-
 
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -133,11 +132,11 @@ function NavBar() {
   };
   const debounce = (fn, delay) => {
     let timerId = null;
-  
+
     return function (...args) {
       setIsLoadingSearch(true);
       clearTimeout(timerId);
-  
+
       timerId = setTimeout(() => {
         fn.apply(this, args);
       }, delay);
@@ -203,6 +202,7 @@ function NavBar() {
           {
             name: files[i].name,
             url: URL.createObjectURL(files[i]),
+            file: files[i],
           },
         ]);
       }
@@ -259,6 +259,7 @@ function NavBar() {
           {
             name: files[i].name,
             url: URL.createObjectURL(files[i]),
+            file: files[i],
           },
         ]);
       }
@@ -493,13 +494,26 @@ function NavBar() {
           </button>
         </div>
         <div className={cx("sidenav__more")}>
-          <div style={{display: "inline-block", position: "relative", width:"100%"}}>
+          <div
+            style={{
+              display: "inline-block",
+              position: "relative",
+              width: "100%",
+            }}
+          >
             {more && (
-              <div style={{position: "absolute", bottom: 140, left: 10}}>
-                <div className={cx("sidenav__more-content")}>     
+              <div style={{ position: "absolute", bottom: 140, left: 10 }}>
+                <div className={cx("sidenav__more-content")}>
                   <div className={cx("sidenav__more-element")}>Setting</div>
-                  <div className={cx("sidenav__more-element")}>Your Profile</div>
-                  <div className={cx("sidenav__more-element")} style={{color: "#ed4956"}}>Log out</div>
+                  <div className={cx("sidenav__more-element")}>
+                    Your Profile
+                  </div>
+                  <div
+                    className={cx("sidenav__more-element")}
+                    style={{ color: "#ed4956" }}
+                  >
+                    Log out
+                  </div>
                 </div>
               </div>
             )}
@@ -507,7 +521,9 @@ function NavBar() {
           <button
             className={cx("sidenav__button")}
             style={open ? { width: "24%", margin: "5px 10px 5px 10px" } : null}
-            onClick={()=>{setMore(!more)}}
+            onClick={() => {
+              setMore(!more);
+            }}
           >
             <DensityMediumOutlinedIcon
               className={cx("sidenav__icon")}
@@ -529,7 +545,11 @@ function NavBar() {
             <span>Search</span>
           </div>
           <div className={cx("open__input")}>
-            <input type="text" onChange={debouncedSearchUsers} placeholder="Search" />
+            <input
+              type="text"
+              onChange={debouncedSearchUsers}
+              placeholder="Search"
+            />
           </div>
           <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
             {isLoadingSearch ? (

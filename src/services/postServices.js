@@ -10,3 +10,13 @@ export const createPost = async (formData, sendRequest) => {
     throw err;
   }
 };
+
+export const getHomePosts = async (page = 1, limit = 10, sendRequest) => {
+  try {
+    const response = await sendRequest(`/posts?page=${page}?limit=${limit}`);
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
