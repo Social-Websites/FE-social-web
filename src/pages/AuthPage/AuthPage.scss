@@ -1,8 +1,7 @@
-body {
+html {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: white !important;
 }
 
 p {
@@ -14,7 +13,8 @@ p {
 }
 
 .back-ground {
-  min-height: 100%;
+  background-color: white !important;
+  height: 100vh;
   margin-bottom: 44px;
   display: flex;
   border-bottom-left-radius: 0;

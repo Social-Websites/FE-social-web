@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import classNames from "classnames/bind";
-import styles from "./HomePage.scss";
+import styles from "./HomePage.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import Timeline from "../../components/TimeLine";
 import useLogout from "../../shared/hook/auth-hook/logout-hook";
