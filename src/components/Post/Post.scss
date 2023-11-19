@@ -11,11 +11,11 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
-  .post__more{
+  .post__more {
     color: white;
     cursor: pointer;
   }
-  .post__more:hover{
+  .post__more:hover {
     color: rgb(110, 110, 110);
     cursor: pointer;
   }
@@ -47,14 +47,16 @@
   color: white;
   font-weight: 700;
   font-size: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 .post__footer > span {
   padding: 0px 10px;
   color: white;
   font-weight: 700;
   font-size: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 .post__footerIcons {
@@ -86,36 +88,36 @@
   background-color: black;
   display: flex;
   align-items: center;
-  
+
   input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background-color: black;
-      color: white;
-      font-size: 14px;
-      &::placeholder {
-          color: #A8A8A8;
-      }
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    &::placeholder {
+      color: #a8a8a8;
+    }
   }
 
   .send {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-      img {
-          height: 24px;
-          cursor: pointer;
-      }
+    img {
+      height: 24px;
+      cursor: pointer;
+    }
 
-      button {
-          border: none;
-          padding: 10px 15px;
-          color: white;
-          background-color: #8da4f1;
-          cursor: pointer;
-      }
+    button {
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      background-color: #8da4f1;
+      cursor: pointer;
+    }
   }
 }
 
@@ -123,8 +125,7 @@
 .active-post-modal {
   overflow-y: hidden;
 }
-
-.btn-post-modal {
+post-modal .btn-post-modal {
   padding: 10px 20px;
   display: block;
   margin: 100px auto 0;
@@ -145,11 +146,10 @@
 
 .post-overlay {
   background: rgba(4, 3, 3, 0.8);
-  
+
   .sidenav__icon {
     transform: scale(1.05);
   }
-  
 }
 .modal-post-content {
   border: #353535 solid 0.5px;
@@ -221,7 +221,6 @@
           border-bottom: #353535 solid 0.5px;
 
           .postInfo-user-avatar {
-            padding: 6px;
             position: relative;
             display: inline-block;
           }
@@ -275,51 +274,53 @@
     }
   }
 }
-.post-comment{
+.post-comment {
   overflow: auto;
   width: 100%;
   height: 70%;
 
-.post-comment-user{
-  width: 85%;
-  display: flex;
-  padding: 8px 24px;
-  
-  .post-comment-user-avatar{
+  .post-comment-user {
+    width: 85%;
+    display: flex;
+    padding: 8px 24px;
+
+    .post-comment-user-avatar {
       position: relative;
       display: inline-block;
       width: 44px;
       height: 44px;
       margin-right: 12px;
-  }
-  .post-comment-user-avatar > img {
+    }
+    .post-comment-user-avatar > img {
       border-radius: 50%;
       object-fit: cover;
-  }
+    }
 
-  .post-comment-user-info {
-    width: 85%;
-    display: inline-block;
-    word-wrap: break-word;
+    .post-comment-user-info {
+      width: 85%;
+      display: inline-block;
+      word-wrap: break-word;
       .post-comment-content {
         width: 100px;
         max-width: max-content;
         white-space: pre-line;
         word-wrap: break-word;
-        
+
         color: white;
         font-weight: 400;
         font-size: 14px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
       }
-      
+
       .post-comment-username {
         margin-right: 5px;
-          color: white;
-          font-weight: 700;
-          font-size: 14px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-          margin-bottom: 5px;
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin-bottom: 5px;
       }
     }
   }
@@ -338,17 +339,18 @@
   line-height: 1.4;
   background: #262626;
   border-radius: 10px;
-  .more-content-element{
+  .more-content-element {
     text-align: center;
     padding: 14px 10px;
     border-bottom: #4e4d4d solid 1px;
     color: white;
     font-weight: 500;
     font-size: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
     cursor: pointer;
   }
-  .more-content-element:last-child{
-    border-bottom:none;
+  .more-content-element:last-child {
+    border-bottom: none;
   }
 }

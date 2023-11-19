@@ -10,6 +10,7 @@ const INITIAL_STATE = {
   isLoadingMsg: true,
   error: false,
   currentChat: null,
+  posts: new Map(),
   messages: [],
   socket: undefined,
 };
@@ -37,6 +38,7 @@ export const StateContextProvider = ({ children }) => {
         isLoadingMsg: state.isLoadingMsg,
         error: state.error,
         currentChat: state.currentChat,
+        posts: state.posts,
         messages: state.messages,
         socket: state.socket,
         dispatch,

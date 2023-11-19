@@ -1,23 +1,47 @@
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import classNames from "classnames/bind";
-import { React, useState, useRef, useEffect } from "react";
+import {
+  React,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import styles from "./Post.scss";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import EmojiPicker from "emoji-picker-react";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { Skeleton } from "@mui/material";
 import TimeAgo from "./TimeAgo";
-import { grey } from "@mui/material/colors";
+import { grey, pink } from "@mui/material/colors";
+import useAuth from "../../shared/hook/auth-hook/auth-hook";
+import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+import { reactPost } from "../../services/postServices";
+import { StateContext } from "../../context/StateContext";
+import { updatePostReact } from "../../context/StateAction";
 
 const cx = classNames.bind(styles);
 
 function Post({ post }) {
+  const avatarUrl =
+    post.creator.profile_picture === ""
+      ? "/static-resources/default-avatar.jpg"
+      : post.creator.profile_picture;
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const privateHttpRequest = usePrivateHttpClient();
+  const { dispatch } = useContext(StateContext);
+
   const [text, setText] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [emojiModal, setEmojiModal] = useState(false);
@@ -28,6 +52,8 @@ function Post({ post }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+
+  const [isLike, setIsLike] = useState(post.reacts.has(user._id));
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -77,19 +103,35 @@ function Post({ post }) {
   };
 
   const handleSendComment = async () => {};
+  const handleReactPost = async () => {
+    try {
+      console.log("Dispatching action...");
+      setIsLike(!isLike);
+      const response = await reactPost(
+        { postId: post._id, emoji: "LOVE" },
+        privateHttpRequest.privateRequest
+      );
+    } catch (err) {}
+  };
 
   const toggleModal = () => {
     setModal(!modal);
-    if (document.body.style.overflow == "")
+    if (document.body.style.overflow !== "hidden") {
+      window.history.replaceState(null, null, `/p/${post._id}`);
       document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    } else {
+      window.history.replaceState(null, null, `/`);
+      document.body.style.overflow = "auto";
+    }
   };
 
   const toggleMore = () => {
     setMore(!more);
-    if (document.body.style.overflow == "")
+    if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    } else {
+      document.body.style.overflow = "auto";
+    }
   };
 
   function showNextImage() {
@@ -126,48 +168,130 @@ function Post({ post }) {
     <div className={cx("post")}>
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
-          <Link
-            to={`/${post.creator?.username}`}
-            style={{
-              marginRight: 10,
-              position: "inherit",
-              textDecoration: "none",
-              color: "inherit",
-            }}
-          >
-            <img
-              style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-              src={post.creator?.profile_picture}
-              alt=""
-            />
-          </Link>
+          {post ? (
+            <Link
+              to={`/${post.creator?.username}`}
+              style={{
+                marginRight: 10,
+                position: "inherit",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <img
+                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+                src={avatarUrl}
+                alt=""
+              />
+            </Link>
+          ) : (
+            <Skeleton variant="circular" width={40} height={40} />
+          )}
           &nbsp;
-          <Link
-            to={`/${post.creator?.username}`}
-            style={{
-              marginRight: 5,
-              position: "inherit",
-              textDecoration: "none",
-              color: "inherit",
-            }}
-          >
-            {post.creator?.username}
-          </Link>
+          {post ? (
+            <Link
+              to={`/${post.creator?.username}`}
+              style={{
+                marginRight: 5,
+                position: "inherit",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              {post.creator?.username}
+            </Link>
+          ) : (
+            <Skeleton variant="rectangular" />
+          )}
           •
-          <span>
-            <TimeAgo type="short" created_at={post.created_at} />
-          </span>
+          {post ? (
+            <span>
+              <TimeAgo type="short" created_at={post.created_at} />
+            </span>
+          ) : (
+            <Skeleton variant="rectangular" width={5} />
+          )}
         </div>
         <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
       </div>
       <div className={cx("post__image")}>
-        <img src={post?.media[0]} alt="img" />
+        {post ? (
+          <>
+            <img
+              src={post?.media[0]}
+              alt="post-image"
+              style={{
+                objectFit: "contain",
+                height: "auto",
+                display: "block",
+                flexShrink: "0",
+                flexGrow: "0",
+              }}
+            />
+            {isFirstImage === true || post?.media.length === 1 ? null : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <button
+                  onClick={showPrevImage}
+                  className={cx("img-post-slider-btn")}
+                  style={{ left: 10 }}
+                  aria-label="View Previous Image"
+                >
+                  <ArrowBackIosNewIcon
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      marginBottom: "2px",
+                    }}
+                    aria-hidden
+                  />
+                </button>
+              </div>
+            )}
+            {isLastImage === true || post?.media.length === 1 ? null : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <button
+                  onClick={showNextImage}
+                  className={cx("img-post-slider-btn")}
+                  style={{ right: 10 }}
+                  aria-label="View Next Image"
+                >
+                  <ArrowForwardIosIcon
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      marginBottom: "2px",
+                    }}
+                    aria-hidden
+                  />
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <Skeleton variant="rounded" />
+        )}
       </div>
       <div className={cx("post__footer")}>
         <div className={cx("post__footerIcons")}>
           <div className={cx("post__iconsMain")}>
-            <div className={cx("postIcon")}>
-              <FavoriteBorderIcon />
+            <div onClick={handleReactPost} className={cx("postIcon")}>
+              {isLike ? (
+                <FavoriteIcon sx={{ color: pink[500] }} />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
             </div>
             <div className={cx("postIcon")} onClick={toggleModal}>
               <ChatBubbleOutlineIcon />
@@ -185,8 +309,16 @@ function Post({ post }) {
             </div>
           </div>
         </div>
-        {post.reacts.length} likes
-        <div style={{ marginTop: 5, fontWeight: 400 }}>{post.content}</div>
+        {post ? (
+          <>{post.reacts.size} likes</>
+        ) : (
+          <Skeleton variant="rectangular" width={10} />
+        )}
+        {post ? (
+          <div style={{ marginTop: 5, fontWeight: 400 }}>{post.content}</div>
+        ) : (
+          <Skeleton variant="rectangular" />
+        )}
       </div>
       <div
         style={{ display: "inline-block", position: "relative", width: "100%" }}
@@ -317,7 +449,8 @@ function Post({ post }) {
                           </button>
                         </div>
                       )}
-                      {isLastImage === true ? null : (
+                      {isLastImage === true ||
+                      post?.media.length === 1 ? null : (
                         <div
                           style={{
                             display: "flex",
@@ -350,20 +483,57 @@ function Post({ post }) {
                   style={{ position: "relative" }}
                 >
                   <div className={cx("postInfo-user")}>
-                    <div className={cx("postInfo-user-avatar")}>
-                      <img
-                        style={{ width: "28px", height: "28px" }}
-                        src={post.creator.profile_picture}
-                        alt=""
-                      />
+                    <div style={{ padding: 6 }}>
+                      <Link
+                        to={`/${post.creator?.username}`}
+                        className={cx("postInfo-user-avatar")}
+                        style={{
+                          position: "inherit",
+                          textDecoration: "none",
+                          color: "inherit",
+                        }}
+                      >
+                        <img
+                          style={{ width: "30px", height: "30px" }}
+                          src={avatarUrl}
+                          alt={post.creator.username + " avatar"}
+                        />
+                      </Link>
                     </div>
                     <div className={cx("postInfo-user-info")}>
-                      <span className={cx("postInfo-username")}>
-                        {post.creator.username}
-                      </span>
+                      <Link
+                        to={`/${post.creator?.username}`}
+                        style={{
+                          position: "inherit",
+                          textDecoration: "none",
+                          color: "inherit",
+                        }}
+                      >
+                        <span className={cx("postInfo-username")}>
+                          {post.creator.username}
+                        </span>
+                      </Link>
                     </div>
                   </div>
                   <div className={cx("post-comment")}>
+                    <div className={cx("post-comment-user")}>
+                      <div className={cx("post-comment-user-avatar")}>
+                        <img
+                          style={{ width: "30px", height: "30px" }}
+                          src={avatarUrl}
+                          alt={post.creator.username + " avatar"}
+                        />
+                      </div>
+
+                      <div className={cx("post-comment-user-info")}>
+                        <span className={cx("post-comment-username")}>
+                          {post.creator.username}
+                        </span>
+                        <span className={cx("post-comment-content")}>
+                          {post.content}
+                        </span>
+                      </div>
+                    </div>
                     <div className={cx("post-comment-user")}>
                       <div className={cx("post-comment-user-avatar")}>
                         <img
@@ -412,7 +582,11 @@ function Post({ post }) {
                     <div className={cx("post__footerIcons")}>
                       <div className={cx("post__iconsMain")}>
                         <div className={cx("postIcon")}>
-                          <FavoriteBorderIcon />
+                          {isLike ? (
+                            <FavoriteIcon sx={{ color: pink[500] }} />
+                          ) : (
+                            <FavoriteBorderIcon />
+                          )}
                         </div>
                         <div className={cx("postIcon")}>
                           <ChatBubbleOutlineIcon />
@@ -430,7 +604,7 @@ function Post({ post }) {
                         </div>
                       </div>
                     </div>
-                    <span>{post.reacts.length} likes</span>
+                    <span>{post.reacts.size} likes</span>
                     <br />
                     <span
                       style={{
@@ -543,8 +717,8 @@ function Post({ post }) {
               Report
             </div>
             <div className={cx("more-content-element")}>Add friend</div>
-            <div className={cx("more-content-element")}>Profile</div>
-            <div className={cx("more-content-element")}>Cancle</div>
+            <div className={cx("more-content-element")}>Go to post</div>
+            <div className={cx("more-content-element")}>Cancel</div>
           </div>
         </div>
       )}

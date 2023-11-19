@@ -57,3 +57,19 @@ export const setOtpToken = (otpToken) => ({
   type: "SET_OTP_TOKEN",
   payload: otpToken,
 });
+export const setPosts = (posts) => ({
+  type: "SET_POSTS",
+  payload: posts,
+});
+export const addCreatedPost = (post) => ({
+  type: "ADD_CREATED_POST",
+  payload: post,
+});
+export const addPosts = (posts) => ({
+  type: "ADD_POSTS",
+  payload: posts,
+});
+export const updatePostReact = (react) => ({
+  type: "UPDATE_POST_REACT",
+  payload: react,
+});

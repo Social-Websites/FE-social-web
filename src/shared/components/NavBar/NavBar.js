@@ -12,7 +12,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
-import { Avatar } from "@mui/material";
+import { Avatar, CircularProgress } from "@mui/material";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
@@ -34,10 +34,11 @@ import { createPost } from "../../../services/postServices";
 import * as usersService from "../../../services/userService";
 import SearchUser from "../../../components/SearchUser";
 import SearchUserLoading from "../../../components/SearchUserLoading";
+import { addCreatedPost, setPosts } from "../../../context/StateAction";
 
 const cx = classNames.bind(styles);
 
-function NavBar() {
+function NavBar({ onScrollToTop }) {
   //   const user = useSelector((state) => state.data.user.user);
   //   const dispatch = useDispatch();
   //   const handelLogout = () => {
@@ -46,9 +47,11 @@ function NavBar() {
   //   };
 
   const privateHttpClient = usePrivateHttpClient();
-  const { user } = useContext(StateContext);
+  const [creatingPost, setCreatingPost] = useState(false);
+  const { user, dispatch } = useContext(StateContext);
   const { logout } = useLogout();
   const navigate = useNavigate();
+
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
@@ -58,10 +61,15 @@ function NavBar() {
   const [modal, setModal] = useState(false);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
+  const avatarUrl =
+    user?.profile_picture === ""
+      ? "/static-resources/default-avatar.jpg"
+      : user?.profile_picture;
+
   const toggleModal = () => {
-    if (document.body.style.overflow == "")
+    if (document.body.style.overflow !== "hidden")
       document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    else document.body.style.overflow = "auto";
     setModal(!modal);
     setIsDropping(false);
     setImages([]);
@@ -274,12 +282,13 @@ function NavBar() {
     }
   }
 
-  const handelReturnCreatPost = () => {
+  const handelReturnCreatePost = () => {
     setIsDropping(false);
     setImages([]);
   };
 
   const handleCreatePost = async () => {
+    setCreatingPost(true);
     const promises = images.map((image) => {
       const name = Date.now();
       const storageRef = ref(storage, `images/${name}`);
@@ -292,6 +301,7 @@ function NavBar() {
           (error) => {
             console.log(error);
             reject(error);
+            setCreatingPost(false);
           },
           () => {
             getDownloadURL(uploadTask.snapshot.ref)
@@ -313,15 +323,21 @@ function NavBar() {
       const urlStrings = urls.map((url) => url.value.toString());
 
       const postData = { title: titlePost, urlStrings };
-      const result = await createPost(
+      const response = await createPost(
         postData,
         privateHttpClient.privateRequest
       );
 
-      if (result !== null) {
+      if (response !== null) {
+        console.log(response.post);
+        dispatch(addCreatedPost(response.post));
         toggleModal();
+        setTitlePost("");
+        setCreatingPost(false);
+        onScrollToTop();
       }
     } catch (err) {
+      setCreatingPost(false);
       console.log(err);
     }
   };
@@ -424,7 +440,6 @@ function NavBar() {
             {open ? null : <span>Explore</span>}
           </button>
           <button
-            onClick={signOut}
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >
@@ -487,10 +502,10 @@ function NavBar() {
           >
             <img
               style={{ width: "25px", height: "25px", borderRadius: "50%" }}
-              src={user?.profile_picture}
+              src={avatarUrl}
               alt=""
             />
-            {open ? null : <span>{user?.username}</span>}
+            {open ? null : <span>Profile</span>}
           </button>
         </div>
         <div className={cx("sidenav__more")}>
@@ -511,6 +526,7 @@ function NavBar() {
                   <div
                     className={cx("sidenav__more-element")}
                     style={{ color: "#ed4956" }}
+                    onClick={signOut}
                   >
                     Log out
                   </div>
@@ -635,17 +651,21 @@ function NavBar() {
                   <WestIcon
                     className={cx("sidenav__icon")}
                     style={{ width: "27px", height: "27px", cursor: "pointer" }}
-                    onClick={() => handelReturnCreatPost()}
+                    onClick={() => handelReturnCreatePost()}
                   />
                 </div>
-                <div style={{ width: "86%" }}>Bài viết mới</div>
-                <span
-                  onClick={handleCreatePost}
-                  className={cx("header-next")}
-                  style={{ width: "7%" }}
-                >
-                  Tạo
-                </span>
+                <div style={{ width: "86%" }}>New Post</div>
+                {!creatingPost ? (
+                  <span
+                    onClick={handleCreatePost}
+                    className={cx("header-next")}
+                    style={{ width: "7%" }}
+                  >
+                    Create
+                  </span>
+                ) : (
+                  <CircularProgress size={20} />
+                )}
               </div>
               <div
                 className={cx("modal-main")}
@@ -678,7 +698,7 @@ function NavBar() {
                           display: "flex",
                           flexShrink: "0",
                           flexGrow: "0",
-                          borderRadius: "0px 0px 0px 10px",
+                          borderRadius: "0px 0px 10px 10px",
                         }}
                         aria-hidden={imageIndex !== index}
                       >
@@ -690,7 +710,7 @@ function NavBar() {
                             display: "block",
                             flexShrink: "0",
                             flexGrow: "0",
-                            borderRadius: "0px 0px 10px 10px",
+                            borderRadius: "0px 0px 0px 10px",
                           }}
                           src={image.url}
                           alt={image.name}
@@ -771,7 +791,7 @@ function NavBar() {
                       <div className={cx("postInfo__user_avatar")}>
                         <img
                           style={{ width: "28px", height: "28px" }}
-                          src={user?.profile_picture}
+                          src={avatarUrl}
                           alt=""
                         />
                       </div>
@@ -824,7 +844,7 @@ function NavBar() {
             </div>
           ) : (
             <div className={cx("modal-content")} style={{ width: "50%" }}>
-              <div className={cx("modal-header")}>Bài viết mới</div>
+              <div className={cx("modal-header")}>New Post</div>
               <div
                 className={cx("modal-main")}
                 style={isDragging ? { backgroundColor: "black" } : null}
@@ -835,11 +855,11 @@ function NavBar() {
                   </div>
                   {isDragging ? (
                     <div className={cx("modal-text")}>
-                      Thả ảnh hoặc video tại đây
+                      Drop photos and videos here
                     </div>
                   ) : (
                     <div className={cx("modal-text")}>
-                      Kéo thả ảnh hoặc video vào đây
+                      Drag photos and videos here
                     </div>
                   )}
 
@@ -858,7 +878,7 @@ function NavBar() {
                       onClick={selectFiles}
                       className={cx("modal-upload")}
                     >
-                      Chọn từ thiết bị
+                      Select from device
                     </label>
                   </div>
                 </div>

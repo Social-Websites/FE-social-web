@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import classNames from "classnames/bind";
 import styles from "./HomePage.scss";
 import Sidenav from "../../shared/components/NavBar";
@@ -14,18 +14,20 @@ const cx = classNames.bind(styles);
 function HomePage() {
   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const topPage = useRef();
 
-  useEffect(() => {
-    console.log("user homepage: ", user);
-  }, [user]);
+  const scrollToTop = () => {
+    if (topPage.current) {
+      topPage.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <div className={cx("homepage")}>
       <div className={cx("homepage__navWraper")}>
-        <Sidenav />
+        <Sidenav onScrollToTop={scrollToTop} />
       </div>
-      <div className={cx("homepage__timeline")}>
+      <div ref={topPage} className={cx("homepage__timeline")}>
         <Timeline style={{ width: "90%" }} />
       </div>
     </div>

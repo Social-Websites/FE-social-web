@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Post from "../Post/Post";
 import Suggestions from "../Suggestions/Suggestions";
 import classNames from "classnames/bind";
 import styles from "./TimeLine.scss";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { getHomePosts } from "../../services/postServices";
+import { StateContext } from "../../context/StateContext";
+import { addPosts, setPosts } from "../../context/StateAction";
 
 const cx = classNames.bind(styles);
 
@@ -12,7 +14,7 @@ function TimeLine() {
   const privateHttpRequest = usePrivateHttpClient();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [posts, setPosts] = useState([]);
+  const { posts, dispatch } = useContext(StateContext);
 
   useEffect(() => {
     const getPosts = async () => {
@@ -22,29 +24,30 @@ function TimeLine() {
         privateHttpRequest.privateRequest
       );
 
-      if (data.posts.length > 0) {
-        setPosts((prevPosts) => {
-          const newPostIds = new Set(data.posts.map((p) => p._id));
+      const postsCount = data.posts.length;
 
-          // Lọc các bài viết mới chưa có trong prevPosts
-          const uniqueNewPosts = data.posts.filter(
-            (newPost) =>
-              !prevPosts.some((prevPost) => prevPost._id === newPost._id)
-          );
+      if (postsCount > 0 && page === 1) dispatch(setPosts(data.posts));
+      else if (postsCount > 0) dispatch(addPosts(data.posts));
 
-          return [...prevPosts, ...uniqueNewPosts];
-        });
-      }
-      setHasMore(data.posts.length > 0);
+      setHasMore(postsCount > 0);
     };
     getPosts();
   }, [page]);
+
+  useEffect(() => {
+    console.log(posts);
+  }, [posts]);
+
+  const postsArray = [...posts.entries()];
 
   return (
     <div className={cx("timeline")}>
       <div className={cx("timeline__left")}>
         <div className={cx("timeline__posts")}>
-          {posts.length > 0 && posts.map((post) => <Post post={post} />)}
+          {!privateHttpRequest.isLoading &&
+            postsArray.map(([postId, post]) => (
+              <Post key={postId} post={post} />
+            ))}
         </div>
       </div>
       <div className={cx("timeline__right")}>
