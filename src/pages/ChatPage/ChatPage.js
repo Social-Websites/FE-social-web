@@ -29,9 +29,9 @@ function ChatPage() {
             if (containerRef.current && inputRef.current) {
                 const containerHeight = containerRef.current?.clientHeight || 0
                 console.log(containerRef.current.clientHeight)
-                const inputHeight = inputRef.current?.clientHeight || 0;
+                const inputHeight = inputRef.current?.clientHeight || 66;
                 console.log(inputRef.current.clientHeight)
-                const chatInfoHeight = document.getElementById("chatInfo")?.clientHeight || 0;
+                const chatInfoHeight = document.getElementById("chatInfo")?.clientHeight || 75;
                 console.log(chatInfoHeight)
                 let remainingHeight;
                 remainingHeight = containerHeight - inputHeight - chatInfoHeight - 30 ; //-padding messages + bottom:10px
@@ -42,43 +42,54 @@ function ChatPage() {
     
     useEffect(()=>{
         if(user){
-            socket.current = io("http://localhost:5000");
-            console.log(socket);
-            socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
-                console.log(
-                    `You connected with socket`,
-                    Date().split("G")[0]
-                  );
-              }); // sự kiện mở kết nối socket
-            socket.current.emit("add-user", user._id);
-            dispatch({type: "SET_SOCKET", payload: socket});
+            if(socket.current == null){
+                socket.current = io("http://localhost:5000");
+                console.log(socket);
+                socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
+                    console.log(
+                        `You connected with socket`,
+                        Date().split("G")[0]
+                    );
+                }); // sự kiện mở kết nối socket
+                socket.current.emit("add-user", user._id);
+                dispatch({type: "SET_SOCKET", payload: socket});
+            }
         }
     }, [user]);
 
 
     useEffect(() => {
+        setIsOnline(currentChat?.online);
+        console.log("online chua");
         if(currentChat){
-            setIsOnline(currentChat.online);
+            console.log("online chua");
             socket.current.on("getOnlineUser", (data) => {
                 console.log(data)
-                if(currentChat.userIds == data.user_id){
+                if(currentChat.userIds.includes(data.user_id)){
                     setIsOnline(true);
                 }
             });
         }
-    }, [socket.current]);
+    }, [socket.current, currentChat]);
 
     useEffect(() => {
+        setIsOnline(currentChat?.online);
         if(currentChat){
-            setIsOnline(currentChat.online);
             socket.current.on("getOfflineUser", (data) => {
                 console.log(data)
-                if(currentChat.userIds == data.user_id){
+                if(currentChat.userIds.includes(data.user_id)){
                     setIsOnline(false);
                 }
             });
         }
-    }, [socket.current]);
+    }, [socket.current, currentChat]);
+
+
+    useEffect(() => {
+        console.log(currentChat);
+    },[currentChat]);
+
+    
     
     return (
         <div className={cx("chatpage")}>

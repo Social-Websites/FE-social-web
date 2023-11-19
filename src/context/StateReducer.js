@@ -40,6 +40,7 @@ const StateReducer = (state, action) => {
       return {
         ...state,
         currentChat: action.payload,
+        isLoadingMsg: true,
       };
 
     case "SET_SOCKET":
@@ -61,6 +62,11 @@ const StateReducer = (state, action) => {
       return {
         ...state,
         messages: [...state.messages, action.payload],
+      };
+    case "LOAD_MORE_MESSAGES":
+      return {
+        ...state,
+        messages: [...action.payload, ...state.messages],
       };
     case "SET_POSTS":
       const postsWithReactMaps = convertReactsArrayToMap(action.payload);
@@ -127,6 +133,7 @@ const StateReducer = (state, action) => {
         posts: new Map([...state.posts.entries(), [reactPost._id, reactPost]]),
       };
 
+    
     case "SET_USER":
       return {
         ...state,

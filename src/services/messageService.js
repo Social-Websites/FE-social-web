@@ -1,12 +1,12 @@
 import * as httprequest from '../shared/util/httprequest';
 
-export const getMessages = async (userId) => {
+export const getMessages = async (conversationId, skip) => {
     try {
-        const response = await httprequest.get(`/messages/${userId}`);
+        const response = await httprequest.get(`/messages/${conversationId}?skip=${skip}`);
         return response;
     } catch (error) {
-        console.log('Lỗi lấy thong tin user:', error);
-        throw new Error('Đã xảy ra lỗi lấy thong tin user');
+        console.log('Lỗi lấy thong tin message:', error);
+        throw new Error('Đã xảy ra lỗi lấy thong tin message');
     }
 };
 

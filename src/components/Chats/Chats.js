@@ -10,14 +10,13 @@ const cx = classNames.bind(styles);
 function Chats() {
 
     const [conversations, setConversation] = useState([])
-    const  {user}  = useContext(StateContext);
+    const  {user, dispatch}  = useContext(StateContext);
 
     useEffect(() => {
         if(user){
             const fetchData = async () => {
                 try {
                     const data = await conversationService.getUserConversations(user._id);
-                    console.log(data);
                     setConversation(data);
                 } catch (error) {
                     console.error(error);
@@ -27,9 +26,10 @@ function Chats() {
         }
     }, [user]);
 
-    useEffect(() => {
-        console.log(conversations);
-    },[conversations]);
+    function  handleClick(con) {
+        dispatch({ type: "CURRENT_CHAT", payload: con });
+        console.log("Chon conversation")
+    };
 
     
     return (
@@ -49,6 +49,7 @@ function Chats() {
                     <ConversationChat 
                         key={con._id}
                         c={con}
+                        onClick={() => handleClick(con)}
                     />
                 ))}
             </div>

@@ -7,7 +7,7 @@ import * as messageService from '../../../services/messageService';
 
 const cx = classNames.bind(styles)
 
-function ConversationChat({c}) {
+function ConversationChat({c, onClick}) {
     const [hasNotification, setHasNotification] = useState("");
     const { user, socket, messages, currentChat ,dispatch } = useContext(StateContext);
     const [ unread , setUnread] = useState(false);
@@ -24,7 +24,7 @@ function ConversationChat({c}) {
                 }
             });
         }
-    }, [socket]);
+    }, [socket?.current]);
 
     useEffect(() => {
         if(socket){
@@ -36,45 +36,39 @@ function ConversationChat({c}) {
                 }
             });
         }
-    }, [socket]);
+    }, [socket?.current]);
 
 
     useEffect(() => {
+        console.log(socket);
         if(socket){
+            console.log("toi socket");
             if (socket.current && !socketEventRef.current) {
-            socket.current.on("msg-recieve", handleMsgRecieve);
-            socketEventRef.current = true;
+                socket.current.on("msg-recieve", handleMsgRecieve);
+                socketEventRef.current = true;
             }
         }
-    }, [socket]);
+    }, [socket.current]);
 
     const handleMsgRecieve = (data) => {
-        console.log(data);
         if ( data.conversationId == c._id) {
             if (data.media.length > 0) setHasNotification("Image");
             else setHasNotification(data.content);
             setUnread(true);
-            console.log("day nua ne toi");
-            if ( currentChat ){
-                if(data.conversationId == currentChat._id){
-                    dispatch({
-                        type: "ADD_MESSAGE",
-                        payload: data
-                    });
-                }
-            }
         }
     };
     
 
     useEffect(() => {
-        console.log(messages + currentChat);
+        console.log(currentChat);
         if(messages && messages.length > 0){
-            console.log(" toi 1");
-            if(user._id == messages[messages.length - 1].sender_id){
-                if(messages[messages.length - 1].media.length > 0) {setHasNotification("You: Image"); console.log(" toi 2");}
-                else { setHasNotification(`You: ${messages[messages.length - 1].content}`); console.log(" toi 3");}
+            if(c._id == messages[messages.length - 1].conversationId){
+                if(user._id == messages[messages.length - 1].sender_id){
+                    if(messages[messages.length - 1].media.length > 0) {setHasNotification("You: Image");}
+                    else { setHasNotification(`You: ${messages[messages.length - 1].content}`);}
+                }
             }
+            
         }
         if(currentChat){
             if(currentChat._id === c._id){
@@ -83,46 +77,24 @@ function ConversationChat({c}) {
                     reader_id: user._id,
                 }
                 if(unread){
-                    try{
-                        const result = messageService.addReader(data);
-                        if (result !== null) {
-                            setUnread(false);
+                    (async () =>{
+                        try{
+                            const result = await messageService.addReader(data);
+                            if (result !== null) {
+                                setUnread(false);
+                            }
+                        } catch (err) {
+                            console.log(err);
                         }
-                    } catch (err) {
-                        console.log(err);
-                    }
+                    })()
                 }
             }
         }
     }, [messages]);
-
-    useEffect(() => {
-        setUnread(c.unread);
-    },[]);
-
-    const handleClick = () => {
-        dispatch({ type: "CURRENT_CHAT", payload: c });
-        const data = {
-            conversation_id: c._id,
-            reader_id: user._id,
-        }
-        dispatch({ type: "IS_LOADING_MESSAGES", payload: true });
-        if(c.unread){
-            try{
-                const result =  messageService.addReader(data);
-                if (result !== null) {
-                  setUnread(false);
-                }
-              } catch (err) {
-                console.log(err);
-              }
-        }
-        
-    };
     
 
     return (
-        <div className={cx("chats__user")} onClick={handleClick}>
+        <div className={cx("chats__user")} onClick={onClick}>
             <div className={cx("chats__user_avatar")}>
                 <img
                     style={{width: "44px",height: "44px"}}
@@ -135,23 +107,19 @@ function ConversationChat({c}) {
 
             {unread ? (<div className={cx("chats__user__info")}>
                 <span className={cx("chats__username")} style={{fontWeight: 700}}>{c.name}</span>
-                {hasNotification?(<span className={cx("chats__relation")} style={{fontWeight: 700}}>{hasNotification}</span>) : 
+                {hasNotification?(<span className={cx("chats__relation")} style={{fontWeight: 600, color:"white"}}>{hasNotification}</span>) : 
                 (<span className={cx("chats__relation")}>{c.lastMsg}</span>)}
                 
             </div>)
             :(<div className={cx("chats__user__info")}>
                 <span className={cx("chats__username")}>{c.name}</span>
-                {hasNotification?(<span className={cx("chats__relation")} style={{fontWeight: 700}}>{hasNotification}</span>) : 
+                {hasNotification?(<span className={cx("chats__relation")}>{hasNotification}</span>) : 
                 (<span className={cx("chats__relation")}>{c.lastMsg}</span>)}
             </div>)}
             
             {unread ? (<div className={cx("unread__info")}>
                 <span className={cx("unread")}></span>
             </div>): null}
-
-
-            
-            
         </div>
     )
 }
