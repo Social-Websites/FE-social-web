@@ -69,30 +69,32 @@ const StateReducer = (state, action) => {
         messages: [...action.payload, ...state.messages],
       };
     case "SET_POSTS":
-      const postsWithReactMaps = convertReactsArrayToMap(action.payload);
+      if (!action.payload || action.payload.length === 0) {
+        // Nếu action.payload là null hoặc rỗng, trả về state với posts là Map trống
+        return {
+          ...state,
+          posts: new Map(),
+        };
+      }
 
       return {
         ...state,
-        posts: new Map(postsWithReactMaps.map((post) => [post._id, post])),
+        posts: new Map(action.payload.map((post) => [post._id, post])),
       };
     case "ADD_CREATED_POST":
-      const newPostWithReactMap = convertReactsArrayToMap([action.payload])[0];
-
       return {
         ...state,
         posts: new Map([
-          [newPostWithReactMap._id, newPostWithReactMap],
+          [action.payload._id, action.payload],
           ...state.posts.entries(),
         ]),
       };
     case "ADD_POSTS":
-      const postsWithReactMapsToAdd = convertReactsArrayToMap(action.payload);
-
       return {
         ...state,
         posts: new Map([
           ...state.posts.entries(),
-          ...postsWithReactMapsToAdd.map((post) => [post._id, post]),
+          ...action.payload.map((post) => [post._id, post]),
         ]),
       };
     case "UPDATE_POST_REACT":
@@ -133,7 +135,6 @@ const StateReducer = (state, action) => {
         posts: new Map([...state.posts.entries(), [reactPost._id, reactPost]]),
       };
 
-    
     case "SET_USER":
       return {
         ...state,

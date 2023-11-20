@@ -29,7 +29,7 @@ const RequireAuth = ({ admin = false }) => {
           console.log(err.message);
         }
       };
-      fetchUser();
+      if (auth?.accessToken) fetchUser();
     }
 
     return () => {

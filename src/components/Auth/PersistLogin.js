@@ -23,7 +23,7 @@ const PersistLogin = () => {
         }
       };
 
-      !auth?.accessToken ? verifyRefreshToken() : setIsLoad(false);
+      !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoad(false);
     }
     return () => {
       effectRan.current = true;

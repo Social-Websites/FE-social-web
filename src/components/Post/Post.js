@@ -53,7 +53,7 @@ function Post({ post }) {
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
 
-  const [isLike, setIsLike] = useState(post.reacts.has(user._id));
+  const [isLike, setIsLike] = useState(post.is_user_like);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -105,7 +105,6 @@ function Post({ post }) {
   const handleSendComment = async () => {};
   const handleReactPost = async () => {
     try {
-      console.log("Dispatching action...");
       setIsLike(!isLike);
       const response = await reactPost(
         { postId: post._id, emoji: "LOVE" },
@@ -310,7 +309,7 @@ function Post({ post }) {
           </div>
         </div>
         {post ? (
-          <>{post.reacts.size} likes</>
+          <>{post.reacts.length} likes</>
         ) : (
           <Skeleton variant="rectangular" width={10} />
         )}
