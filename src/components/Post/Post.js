@@ -9,7 +9,7 @@ import {
   useCallback,
 } from "react";
 import styles from "./Post.scss";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -19,15 +19,17 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import { Skeleton } from "@mui/material";
-import TimeAgo from "./TimeAgo";
+import TimeAgo from "../../shared/components/TimeAgo";
 import { grey, pink } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { reactPost } from "../../services/postServices";
+import ReactIcon from "../ReactIcon/ReactIcon";
 import { StateContext } from "../../context/StateContext";
-import { updatePostReact } from "../../context/StateAction";
+import { updatePostReact, updateReactsCount } from "../../context/StateAction";
+import CommentInput from "../Comment/CommentInput";
+import { getPostComments } from "../../services/postServices";
 
 const cx = classNames.bind(styles);
 
@@ -42,79 +44,48 @@ function Post({ post }) {
   const privateHttpRequest = usePrivateHttpClient();
   const { dispatch } = useContext(StateContext);
 
-  const [text, setText] = useState("");
-  const [emojiPicker, setEmojiPicker] = useState(false);
-  const [emojiModal, setEmojiModal] = useState(false);
-  const emojiPickerRef = useRef(null);
-  const emojiPickerModalRef = useRef(null);
   const [modal, setModal] = useState(false);
   const [more, setMore] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
 
-  const [isLike, setIsLike] = useState(post.is_user_like);
+  const [isLiked, setIsLiked] = useState(post.is_user_liked);
+  const [reactsCount, setReactsCount] = useState(post.reacts_count);
 
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (event.target.id !== "emoji-open") {
-        if (
-          emojiPickerRef.current &&
-          !emojiPickerRef.current.contains(event.target)
-        ) {
-          setEmojiPicker(false);
-        }
-      }
-    };
+  const [comments, setComments] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isFirstMount, setIsFirstMount] = useState(true);
 
-    document.addEventListener("click", handleOutsideClick);
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (event.target.id !== "emoji-modal-open") {
-        if (
-          emojiPickerModalRef.current &&
-          !emojiPickerModalRef.current.contains(event.target)
-        ) {
-          setEmojiModal(false);
-        }
-      }
-    };
-
-    document.addEventListener("click", handleOutsideClick);
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
-
-  const handleEmojiModal = () => {
-    setEmojiPicker(!emojiPicker);
-  };
-  const handleEmojiPickerModal = () => {
-    setEmojiModal(!emojiModal);
-  };
-
-  const handleEmojiClick = (emoji) => {
-    setText((prevText) => (prevText += emoji.emoji));
-  };
-
-  const handleSendComment = async () => {};
-  const handleReactPost = async () => {
+  const loadComments = useCallback(async () => {
     try {
-      setIsLike(!isLike);
-      const response = await reactPost(
-        { postId: post._id, emoji: "LOVE" },
+      const response = await getPostComments(
+        post._id,
+        page,
+        30,
         privateHttpRequest.privateRequest
       );
-    } catch (err) {}
-  };
+      setComments((prevComments) => [...prevComments, ...response.comments]);
+    } catch (err) {
+      console.error("Error loading comments: ", err);
+    }
+  }, [post._id, page]);
+
+  useEffect(() => {
+    dispatch(
+      updateReactsCount({
+        postId: post._id,
+        reactsCount: reactsCount,
+      })
+    );
+  }, [reactsCount]);
 
   const toggleModal = () => {
     setModal(!modal);
+    if (isFirstMount) {
+      loadComments();
+      setIsFirstMount(false);
+    }
     if (document.body.style.overflow !== "hidden") {
       window.history.replaceState(null, null, `/p/${post._id}`);
       document.body.style.overflow = "hidden";
@@ -167,131 +138,113 @@ function Post({ post }) {
     <div className={cx("post")}>
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
-          {post ? (
-            <Link
-              to={`/${post.creator?.username}`}
-              style={{
-                marginRight: 10,
-                position: "inherit",
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <img
-                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-                src={avatarUrl}
-                alt=""
-              />
-            </Link>
-          ) : (
-            <Skeleton variant="circular" width={40} height={40} />
-          )}
+          <Link
+            to={`/${post.creator?.username}`}
+            style={{
+              marginRight: 10,
+              position: "inherit",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            <img
+              style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+              src={avatarUrl}
+              alt=""
+            />
+          </Link>
           &nbsp;
-          {post ? (
-            <Link
-              to={`/${post.creator?.username}`}
-              style={{
-                marginRight: 5,
-                position: "inherit",
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              {post.creator?.username}
-            </Link>
-          ) : (
-            <Skeleton variant="rectangular" />
-          )}
+          <Link
+            to={`/${post.creator?.username}`}
+            style={{
+              marginRight: 5,
+              position: "inherit",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            {post.creator?.username}
+          </Link>
           •
-          {post ? (
-            <span>
-              <TimeAgo type="short" created_at={post.created_at} />
-            </span>
-          ) : (
-            <Skeleton variant="rectangular" width={5} />
-          )}
+          <span>
+            <TimeAgo type="short" created_at={post.created_at} />
+          </span>
         </div>
         <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
       </div>
       <div className={cx("post__image")}>
-        {post ? (
-          <>
-            <img
-              src={post?.media[0]}
-              alt="post-image"
-              style={{
-                objectFit: "contain",
-                height: "auto",
-                display: "block",
-                flexShrink: "0",
-                flexGrow: "0",
-              }}
-            />
-            {isFirstImage === true || post?.media.length === 1 ? null : (
-              <div
+        <img
+          src={post?.media[0]}
+          alt="post-image"
+          style={{
+            objectFit: "contain",
+            height: "auto",
+            display: "block",
+            flexShrink: "0",
+            flexGrow: "0",
+          }}
+        />
+        {isFirstImage === true || post?.media.length === 1 ? null : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <button
+              onClick={showPrevImage}
+              className={cx("img-post-slider-btn")}
+              style={{ left: 10 }}
+              aria-label="View Previous Image"
+            >
+              <ArrowBackIosNewIcon
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: "16px",
+                  height: "16px",
+                  marginBottom: "2px",
                 }}
-              >
-                <button
-                  onClick={showPrevImage}
-                  className={cx("img-post-slider-btn")}
-                  style={{ left: 10 }}
-                  aria-label="View Previous Image"
-                >
-                  <ArrowBackIosNewIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      marginBottom: "2px",
-                    }}
-                    aria-hidden
-                  />
-                </button>
-              </div>
-            )}
-            {isLastImage === true || post?.media.length === 1 ? null : (
-              <div
+                aria-hidden
+              />
+            </button>
+          </div>
+        )}
+        {isLastImage === true || post?.media.length === 1 ? null : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <button
+              onClick={showNextImage}
+              className={cx("img-post-slider-btn")}
+              style={{ right: 10 }}
+              aria-label="View Next Image"
+            >
+              <ArrowForwardIosIcon
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: "16px",
+                  height: "16px",
+                  marginBottom: "2px",
                 }}
-              >
-                <button
-                  onClick={showNextImage}
-                  className={cx("img-post-slider-btn")}
-                  style={{ right: 10 }}
-                  aria-label="View Next Image"
-                >
-                  <ArrowForwardIosIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      marginBottom: "2px",
-                    }}
-                    aria-hidden
-                  />
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <Skeleton variant="rounded" />
+                aria-hidden
+              />
+            </button>
+          </div>
         )}
       </div>
       <div className={cx("post__footer")}>
         <div className={cx("post__footerIcons")}>
           <div className={cx("post__iconsMain")}>
-            <div onClick={handleReactPost} className={cx("postIcon")}>
-              {isLike ? (
-                <FavoriteIcon sx={{ color: pink[500] }} />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
-            </div>
+            <ReactIcon
+              postId={post._id}
+              isLiked={isLiked}
+              setIsLiked={setIsLiked}
+              setReactsCount={setReactsCount}
+              className={cx("postIcon")}
+            />
             <div className={cx("postIcon")} onClick={toggleModal}>
               <ChatBubbleOutlineIcon />
             </div>
@@ -308,68 +261,28 @@ function Post({ post }) {
             </div>
           </div>
         </div>
-        {post ? (
-          <>{post.reacts.length} likes</>
-        ) : (
-          <Skeleton variant="rectangular" width={10} />
-        )}
-        {post ? (
-          <div style={{ marginTop: 5, fontWeight: 400 }}>{post.content}</div>
-        ) : (
-          <Skeleton variant="rectangular" />
-        )}
-      </div>
-      <div
-        style={{ display: "inline-block", position: "relative", width: "100%" }}
-      >
-        {emojiPicker && (
-          <div style={{ position: "absolute", bottom: 0, right: 0 }}>
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              theme="dark"
-              emojiStyle="native"
-              searchDisabled={true}
-              width={330}
-              height={350}
-            />
-          </div>
-        )}
-      </div>
-      <div className={cx("input")} id="emoji-open" ref={emojiPickerRef}>
-        <input
-          type="text"
-          placeholder="Add a comment..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        {text ? (
-          <button
-            type="submit"
+        {reactsCount} likes
+        <div style={{ marginTop: 5, fontWeight: 400 }}>
+          <Link
+            to={`/${post.creator?.username}`}
             style={{
-              color: "#0095f6",
-              cursor: "pointer",
-              background: "none",
-              border: "none",
-              marginRight: "5px",
-              fontSize: "14px",
-              fontWeight: "500",
+              marginRight: 5,
+              position: "inherit",
+              textDecoration: "none",
+              color: "inherit",
+              fontWeight: 700,
             }}
-            onClick={handleSendComment}
           >
-            Post
-          </button>
-        ) : null}
-        <SentimentSatisfiedAltIcon
-          type="submit"
-          style={{
-            color: "#A8A8A8",
-            cursor: "pointer",
-            width: "16px",
-            height: "16px",
-          }}
-          onClick={handleEmojiModal}
-        />
+            {post.creator?.username}
+          </Link>
+          {post.content}
+        </div>
       </div>
+      <CommentInput
+        postId={post._id}
+        setComments={setComments}
+        className={cx("input")}
+      />
 
       {modal && (
         <div className={cx("post-modal active-post-modal")}>
@@ -397,6 +310,7 @@ function Post({ post }) {
                 <div className={cx("image-post")} style={{}}>
                   {post?.media.map((image, index) => (
                     <div
+                      key={index}
                       className={cx("img-post-slider")}
                       style={{
                         width: "100%",
@@ -533,40 +447,35 @@ function Post({ post }) {
                         </span>
                       </div>
                     </div>
-                    <div className={cx("post-comment-user")}>
-                      <div className={cx("post-comment-user-avatar")}>
-                        <img
-                          style={{ width: "30px", height: "30px" }}
-                          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80"
-                          alt=""
-                        />
-                      </div>
-                      <div className={cx("post-comment-user-info")}>
-                        <span className={cx("post-comment-username")}>
-                          ten ne
-                        </span>
-                        <span className={cx("post-comment-content")}>
-                          neeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                        </span>
-                      </div>
-                    </div>
-                    <div className={cx("post-comment-user")}>
-                      <div className={cx("post-comment-user-avatar")}>
-                        <img
-                          style={{ width: "30px", height: "30px" }}
-                          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80"
-                          alt=""
-                        />
-                      </div>
-                      <div className={cx("post-comment-user-info")}>
-                        <span className={cx("post-comment-username")}>
-                          ten ne
-                        </span>
-                        <span className={cx("post-comment-content")}>
-                          comment neeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                        </span>
-                      </div>
-                    </div>
+                    {privateHttpRequest.isLoading ? (
+                      <span style={{ color: "white" }}>
+                        Loading comments...
+                      </span>
+                    ) : (
+                      comments.length > 0 &&
+                      comments.map((comment) => (
+                        <div
+                          key={comment._id}
+                          className={cx("post-comment-user")}
+                        >
+                          <div className={cx("post-comment-user-avatar")}>
+                            <img
+                              style={{ width: "30px", height: "30px" }}
+                              src={comment.user.profile_picture}
+                              alt=""
+                            />
+                          </div>
+                          <div className={cx("post-comment-user-info")}>
+                            <span className={cx("post-comment-username")}>
+                              {comment.user.username}
+                            </span>
+                            <span className={cx("post-comment-content")}>
+                              {comment.comment}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                   <div
                     className={cx("post__footer")}
@@ -580,13 +489,13 @@ function Post({ post }) {
                   >
                     <div className={cx("post__footerIcons")}>
                       <div className={cx("post__iconsMain")}>
-                        <div className={cx("postIcon")}>
-                          {isLike ? (
-                            <FavoriteIcon sx={{ color: pink[500] }} />
-                          ) : (
-                            <FavoriteBorderIcon />
-                          )}
-                        </div>
+                        <ReactIcon
+                          postId={post._id}
+                          isLiked={isLiked}
+                          setIsLiked={setIsLiked}
+                          setReactsCount={setReactsCount}
+                          className={cx("postIcon")}
+                        />
                         <div className={cx("postIcon")}>
                           <ChatBubbleOutlineIcon />
                         </div>
@@ -603,7 +512,7 @@ function Post({ post }) {
                         </div>
                       </div>
                     </div>
-                    <span>{post.reacts.size} likes</span>
+                    <span>{reactsCount} likes</span>
                     <br />
                     <span
                       style={{
@@ -615,71 +524,16 @@ function Post({ post }) {
                       <TimeAgo created_at={post.created_at} />
                     </span>
 
-                    <div
-                      style={{
-                        display: "inline-block",
-                        position: "relative",
-                        width: "100%",
-                      }}
-                    >
-                      {emojiModal && (
-                        <div
-                          style={{ position: "absolute", bottom: 0, right: 0 }}
-                        >
-                          <EmojiPicker
-                            onEmojiClick={handleEmojiClick}
-                            theme="dark"
-                            emojiStyle="native"
-                            searchDisabled={true}
-                            width={330}
-                            height={350}
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div
+                    <CommentInput
+                      postId={post._id}
+                      setComments={setComments}
+                      emojiPickerPos="right"
                       style={{
                         padding: "10px 5px",
                         borderTop: "#353535 solid 0.5px",
                       }}
                       className={cx("input")}
-                      id="emoji-modal-open"
-                      ref={emojiPickerModalRef}
-                    >
-                      <input
-                        type="text"
-                        placeholder="Add a comment..."
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                      />
-                      {text ? (
-                        <button
-                          type="submit"
-                          style={{
-                            color: "#0095f6",
-                            cursor: "pointer",
-                            background: "none",
-                            border: "none",
-                            marginRight: "5px",
-                            fontSize: "14px",
-                            fontWeight: "500",
-                          }}
-                          onClick={handleSendComment}
-                        >
-                          Post
-                        </button>
-                      ) : null}
-                      <SentimentSatisfiedAltIcon
-                        type="submit"
-                        style={{
-                          color: "#A8A8A8",
-                          cursor: "pointer",
-                          width: "16px",
-                          height: "16px",
-                        }}
-                        onClick={handleEmojiPickerModal}
-                      />
-                    </div>
+                    />
                   </div>
                 </div>
               </div>

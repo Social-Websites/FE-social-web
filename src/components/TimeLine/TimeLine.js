@@ -44,10 +44,17 @@ function TimeLine() {
     <div className={cx("timeline")}>
       <div className={cx("timeline__left")}>
         <div className={cx("timeline__posts")}>
-          {!privateHttpRequest.isLoading &&
+          {privateHttpRequest.isLoading ? (
+            <span style={{ color: "white" }}>
+              ................................................... Loading
+              posts...
+            </span>
+          ) : (
+            postsArray.length > 0 &&
             postsArray.map(([postId, post]) => (
               <Post key={postId} post={post} />
-            ))}
+            ))
+          )}
         </div>
       </div>
       <div className={cx("timeline__right")}>

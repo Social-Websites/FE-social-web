@@ -36,3 +36,37 @@ export const reactPost = async (data, sendRequest) => {
     throw err;
   }
 };
+
+export const getPostComments = async (
+  postId,
+  page = 1,
+  limit = 30,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/posts/${postId}/comments?page=${page}?limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const comment = async (postId, commentText, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/posts/comments`,
+      "post",
+      { postId: postId, comment: commentText },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -97,6 +97,29 @@ const StateReducer = (state, action) => {
           ...action.payload.map((post) => [post._id, post]),
         ]),
       };
+    case "UPDATE_REACTS_COUNT": {
+      const { postId, reactsCount } = action.payload;
+
+      // Kiểm tra xem post có tồn tại trong state hay không
+      if (state.posts.has(postId)) {
+        const isLiked =
+          reactsCount < state.posts.get(postId).reactsCount ? false : true;
+        // Tạo bản sao của post và cập nhật giá trị reactsCount
+        const updatedPost = {
+          ...state.posts.get(postId),
+          reactsCount,
+          is_user_liked: isLiked,
+        };
+
+        // Cập nhật state.posts với post đã được cập nhật
+        return {
+          ...state,
+          posts: new Map([...state.posts, [postId, updatedPost]]),
+        };
+      }
+
+      return state;
+    }
     case "UPDATE_POST_REACT":
       const { postId, userId, emoji } = action.payload;
 

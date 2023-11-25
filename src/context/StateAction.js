@@ -73,3 +73,7 @@ export const updatePostReact = (react) => ({
   type: "UPDATE_POST_REACT",
   payload: react,
 });
+export const updateReactsCount = (react) => ({
+  type: "UPDATE_REACTS_COUNT",
+  payload: react,
+});
