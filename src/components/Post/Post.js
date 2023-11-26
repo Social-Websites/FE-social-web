@@ -19,7 +19,7 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
+import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { Skeleton } from "@mui/material";
 import TimeAgo from "../../shared/components/TimeAgo";
 import { grey, pink } from "@mui/material/colors";
@@ -461,7 +461,7 @@ function Post({ post }) {
                           <div className={cx("post-comment-user-avatar")}>
                             <img
                               style={{ width: "30px", height: "30px" }}
-                              src={comment.user.profile_picture}
+                              src={getAvatarUrl(comment.user.profile_picture)}
                               alt=""
                             />
                           </div>
@@ -487,7 +487,10 @@ function Post({ post }) {
                       height: "23%",
                     }}
                   >
-                    <div className={cx("post__footerIcons")} style={{padding: "0px 10px"}}>
+                    <div
+                      className={cx("post__footerIcons")}
+                      style={{ padding: "0px 10px" }}
+                    >
                       <div className={cx("post__iconsMain")}>
                         <ReactIcon
                           postId={post._id}
