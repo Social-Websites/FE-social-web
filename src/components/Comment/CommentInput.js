@@ -5,6 +5,7 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import { comment } from "../../services/postServices";
 import { CircularProgress } from "@mui/material";
 
+
 const CommentInput = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
 
@@ -104,7 +105,7 @@ const CommentInput = (props) => {
               }}
               onClick={handleEmojiModal}
             />
-            <input
+            <input 
               type="text"
               placeholder="Add a comment..."
               value={text}

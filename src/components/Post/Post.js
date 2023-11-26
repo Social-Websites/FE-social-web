@@ -484,10 +484,10 @@ function Post({ post }) {
                       bottom: 0,
                       width: "100%",
                       borderTop: "#353535 solid 0.5px",
-                      height: "20%",
+                      height: "23%",
                     }}
                   >
-                    <div className={cx("post__footerIcons")}>
+                    <div className={cx("post__footerIcons")} style={{padding: "0px 10px"}}>
                       <div className={cx("post__iconsMain")}>
                         <ReactIcon
                           postId={post._id}

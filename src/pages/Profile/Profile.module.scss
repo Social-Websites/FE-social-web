@@ -41,6 +41,7 @@ html, body {
         .avatar{
           width: 50%;
           height: 100%;
+          border-radius: 50%;
         }
       }
       .profile__info div {
@@ -145,6 +146,80 @@ html, body {
     }
   }
   
+}
+
+//Modal
+.active-profile-modal {
+  overflow-y: hidden;
+}
+profile-modal .btn-profile-modal {
+  padding: 10px 20px;
+  display: block;
+  margin: 100px auto 0;
+  font-size: 18px;
+}
+
+.profile-modal,
+.profile-overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  z-index: 3;
+}
+
+.profile-overlay {
+  background: rgba(4, 3, 3, 0.8);
+
+  .sidenav__icon {
+    transform: scale(1.05);
+  }
+}
+
+//friend-requests
+.profile-modal-content {
+  border: #353535 solid 0.5px;
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: fit-content;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: #262626;
+  border-radius: 10px;
+  .profile-modal-content-header {
+    text-align: center;
+    padding: 14px 10px;
+    border-bottom: #4e4d4d solid 1px;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+    cursor: pointer;
+  }
+  .profile-modal-content-users{
+    height:360px;
+    overflow:auto;
+  }
+  .profile-modal-content-no-users{
+    height:360px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .profile-modal-content-no-users > span{
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+  }
 }
 
 @media (max-width: 1064px){

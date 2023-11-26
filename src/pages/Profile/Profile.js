@@ -11,6 +11,7 @@ import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useParams } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { getUserByUsername } from "../../services/userService";
+import FriendRequest from "../../components/FriendRequest"
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +21,7 @@ function Profile() {
   const privateHttpRequest = usePrivateHttpClient();
 
   const [userData, setUserData] = useState(null);
+  const [more, setMore] = useState(false);
   const [unFQuestion, setUnFQuestion] = useState(false);
 
   const effectRan = useRef(false);
@@ -49,10 +51,20 @@ function Profile() {
   // }, [isOwnProfile, isFriend]);
 
   const handleAddFriend = async () => {};
-  const handleFriendRequests = async () => {};
+  const handleFriendRequests = async () => {
+    toggleMore();
+  };
   const handleUnFriend = async () => {};
   const handleUnfriendQuestion = async () => {
     setUnFQuestion(!unFQuestion);
+    if (document.body.style.overflow !== "hidden") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+  const toggleMore = () => {
+    setMore(!more);
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
@@ -194,6 +206,48 @@ function Profile() {
               >
                 Cancel
               </div>
+            </div>
+          </div>
+        )}
+
+        {more && (
+          <div className={cx("profile-modal active-profile-modal")}>
+            <div
+              onClick={toggleMore}
+              className={cx("profile-overlay")}
+              style={{ alignSelf: "flex-end" }}
+            >
+              <CloseIcon
+                className={cx("sidenav__icon")}
+                style={{
+                  width: "27px",
+                  height: "27px",
+                  color: "white",
+                  margin: "12px 30px",
+                  position: "absolute",
+                  right: "0",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+            <div className={cx("profile-modal-content")}>
+              <div className={cx("profile-modal-content-header")}>
+                Friend requests
+              </div>
+              <div className={cx("profile-modal-content-no-users")}>
+                <span>No Friend Requests</span>
+              </div>
+              {/* <div className={cx("profile-modal-content-users")}>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+                <FriendRequest/>
+              </div> */}
             </div>
           </div>
         )}

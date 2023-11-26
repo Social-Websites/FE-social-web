@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
@@ -54,6 +55,7 @@ function NavBar({ onScrollToTop }) {
 
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+  const locate = window.location.pathname;
 
   const [open, setOpen] = useState("");
   const [more, setMore] = useState(false);
@@ -452,12 +454,16 @@ function NavBar({ onScrollToTop }) {
           <button
             onClick={messageOnClick}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : (locate === "/chat" ? { background: "#262626" } : null)}
           >
-            <ChatOutlinedIcon
+            {locate === "/chat" ? (<ChatIcon
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
-            />
+            />) :
+            (<ChatOutlinedIcon
+              className={cx("sidenav__icon")}
+              style={{ width: "27px", height: "27px" }}
+            />)}
             {open ? null : <span>Messages</span>}
           </button>
           <button
