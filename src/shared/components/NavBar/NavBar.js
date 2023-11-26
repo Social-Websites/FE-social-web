@@ -35,7 +35,10 @@ import { createPost } from "../../../services/postServices";
 import * as usersService from "../../../services/userService";
 import SearchUser from "../../../components/SearchUser";
 import SearchUserLoading from "../../../components/SearchUserLoading";
+import Notification from "../../../components/NotificationItem";
 import { addCreatedPost, setPosts } from "../../../context/StateAction";
+import * as notificationsService from "../../../services/notificationService";
+import {io} from "socket.io-client";
 
 const cx = classNames.bind(styles);
 
@@ -49,6 +52,7 @@ function NavBar({ onScrollToTop }) {
 
   const privateHttpClient = usePrivateHttpClient();
   const [creatingPost, setCreatingPost] = useState(false);
+  const socket = useRef();
   const { user, dispatch } = useContext(StateContext);
   const { logout } = useLogout();
   const navigate = useNavigate();
@@ -62,6 +66,11 @@ function NavBar({ onScrollToTop }) {
   const [searchedUsers, setSearchedUsers] = useState([]);
   const [modal, setModal] = useState(false);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+
+  const scrollRef = useRef(null);
+  const [unreadMsg, setUnreadMsg] = useState(0);
+  const [unreadNotification, setUnreadNotification] = useState(0);
+  const [notification, setNotification] = useState([]);
 
   const avatarUrl =
     user?.profile_picture === ""
@@ -88,6 +97,109 @@ function NavBar({ onScrollToTop }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+
+
+  useEffect(()=>{
+    if(user){
+        if(socket.current == null){
+            socket.current = io("http://localhost:5000");
+            console.log(socket);
+            socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
+                console.log(
+                    `You connected with socket`,
+                    Date().split("G")[0]
+                );
+            }); // sự kiện mở kết nối socket
+            socket.current.emit("add-user", user._id);
+            dispatch({type: "SET_SOCKET", payload: socket});
+        }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if(notification){
+          console.log(user?._id);
+          const data = await notificationsService.getNotifications(user?._id, 0);
+          const unreadCount = data.filter(notification => !notification.read)
+          setUnreadNotification(unreadCount.length);
+          console.log('data' + data + 'unread' + unreadCount);
+          setNotification(data);
+        }
+      } catch (error) {
+        console.log(error);
+        // setFetching(false);
+      } finally {
+        // dispatch({ type: "IS_LOADING_MESSAGES", payload: false });
+        // setFetching(false);
+      }
+    };
+    
+    fetchData();
+  
+  }, [user]);
+  
+  useEffect(() => {
+    const handleGetNotification = async (data) => {
+      console.log("Nhận được thông báo:", data );
+      console.log("open:", open);
+      setNotification(prevNotifications => [data, ...prevNotifications]);
+      if(open !== "Notification")
+        setUnreadNotification(prevCount => prevCount + 1);
+      else{
+        try{
+          const result = await notificationsService.addReader();
+          if (result !== null) {
+              setUnreadNotification(0);
+          }
+        } catch (err) {
+            console.log(err);
+        }
+      }
+    };
+  
+    socket.current?.on("getNotification", handleGetNotification);
+  
+    return () => {
+      // Hủy đăng ký sự kiện khi component unmount
+      socket.current?.off("getNotification", handleGetNotification);
+    };
+  }, [socket.current, open==="Notification"]);
+
+  useEffect(() => {
+    let isFetching = false; 
+    const handleScroll = async () => {
+      const element = scrollRef.current;
+      if (!isFetching && Math.floor(element.scrollTop + element.clientHeight) === (element.scrollHeight-1) ) {
+        console.log('Đã đạt đến cuoi' + notification.length+ user._id );
+        try{
+          isFetching = true;
+          const data = await notificationsService.getNotifications(user._id, notification.length);
+          console.log('notification' + data );
+          setNotification((prevdata) => [...prevdata, ...data]);
+        }catch(error){
+          console.log("Lỗi:", error)
+        }
+        finally{
+          isFetching = false;
+          // setLoadMore(false);
+        }
+      }
+    }
+      
+    if(scrollRef.current){
+      scrollRef.current.addEventListener('scroll', (handleScroll));
+    }
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+    
+  }, [notification, user]);
+
+  
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -120,7 +232,18 @@ function NavBar({ onScrollToTop }) {
       else setOpen("");
     } else setOpen("Search");
   };
-  const handleNotification = () => {
+  const handleNotification = async () => {
+    if(unreadNotification !==0 ){
+      try{
+          const result = await notificationsService.addReader();
+          if (result !== null) {
+              setUnreadNotification(0);
+          }
+      } catch (err) {
+          console.log(err);
+      }
+    }
+  
     if (open !== "") {
       if (open !== "Notification") setOpen("Notification");
       else setOpen("");
@@ -411,7 +534,7 @@ function NavBar({ onScrollToTop }) {
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
             />
-            {open ? null : <span>Home</span>}
+            {open ? null : <span className={cx("span")}>Home</span>}
           </button>
           <button
             className={cx("sidenav__button")}
@@ -426,9 +549,9 @@ function NavBar({ onScrollToTop }) {
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px", fontWeight: "900" }}
             />
-            {open ? null : <span>Search</span>}
+            {open ? null : <span className={cx("span")}>Search</span>}
           </button>
-          <button
+          {/* <button
             onClick={() => {
               navigate("/group", { replace: true });
             }}
@@ -450,7 +573,7 @@ function NavBar({ onScrollToTop }) {
               style={{ width: "27px", height: "27px" }}
             />
             {open ? null : <span>Reels</span>}
-          </button>
+          </button> */}
           <button
             onClick={messageOnClick}
             className={cx("sidenav__button")}
@@ -464,7 +587,8 @@ function NavBar({ onScrollToTop }) {
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
             />)}
-            {open ? null : <span>Messages</span>}
+            {unreadMsg > 0 && <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadMsg > 5 ? "5+" : unreadMsg}</span>}
+            {open ? null : <span className={cx("span")}>Messages</span>}
           </button>
           <button
             onClick={handleNotification}
@@ -486,7 +610,8 @@ function NavBar({ onScrollToTop }) {
                 style={{ width: "27px", height: "27px" }}
               />
             )}
-            {open ? null : <span>Notifications</span>}
+            {unreadNotification > 0 &&  <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadNotification > 5 ? "5+" : unreadNotification}</span>}
+            {open ? null : <span className={cx("span")}>Notifications</span>}
           </button>
           <button
             className={cx("sidenav__button")}
@@ -497,7 +622,7 @@ function NavBar({ onScrollToTop }) {
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
             />
-            {open ? null : <span>Create</span>}
+            {open ? null : <span className={cx("span")}>Create</span>}
           </button>
           <button
             onClick={() => {
@@ -511,7 +636,7 @@ function NavBar({ onScrollToTop }) {
               src={avatarUrl}
               alt=""
             />
-            {open ? null : <span>Profile</span>}
+            {open ? null : <span className={cx("span")}>Profile</span>}
           </button>
         </div>
         <div className={cx("sidenav__more")}>
@@ -611,19 +736,10 @@ function NavBar({ onScrollToTop }) {
           <div className={cx("open__title")} style={{ padding: "12px 24px" }}>
             <span>Notifications</span>
           </div>
-          {/* {notifications.map((n) => displayNotification(n))} */}
-          <div className={cx("open__content")} style={{ paddingTop: "12px" }}>
-            <div className={cx("open__user")}>
-              <span className={cx("open__user_avatar")}>
-                <Avatar>R</Avatar>
-              </span>
-              <div className={cx("open__user__info")}>
-                <span className={cx("open__username")}>redian_</span>
-                <span className={cx("open__relation")}>New to Instagram</span>
-              </div>
+            <div className={cx("open__content")} style={{ paddingTop: "12px" }} ref={scrollRef}>
+              {notification.map((n) => (<Notification key={n._id} n={n}/>))}
             </div>
           </div>
-        </div>
       </div>
       {modal && (
         <div
@@ -817,6 +933,7 @@ function NavBar({ onScrollToTop }) {
                     </div>
                     <div
                       className={cx("input")}
+                      style={{background: "#262626"}}
                       id="emoji-open"
                       ref={emojiPickerRef}
                     >

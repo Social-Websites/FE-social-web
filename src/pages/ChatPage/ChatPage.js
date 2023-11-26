@@ -7,13 +7,13 @@ import Messages from "../../components/Messages";
 import Input from "../../components/InputMessage";
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import { StateContext } from "../../context/StateContext"
-import {io} from "socket.io-client";
+// import {io} from "socket.io-client";
 
 const cx = classNames.bind(styles);
 
 function ChatPage() {
-    const { user, currentChat, isLoadingMsg, dispatch } = useContext(StateContext);
-    const socket = useRef();
+    const { user, currentChat, isLoadingMsg, socket, dispatch } = useContext(StateContext);
+    // const socket = useRef();
     const [ isOnline , setIsOnline] = useState(false);
     const containerRef = useRef(null);
     const inputRef = useRef(null);
@@ -40,22 +40,22 @@ function ChatPage() {
     }, 0);
     }, [inputRef.current, isSelectedFile]);
     
-    useEffect(()=>{
-        if(user){
-            if(socket.current == null){
-                socket.current = io("http://localhost:5000");
-                console.log(socket);
-                socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
-                    console.log(
-                        `You connected with socket`,
-                        Date().split("G")[0]
-                    );
-                }); // sự kiện mở kết nối socket
-                socket.current.emit("add-user", user._id);
-                dispatch({type: "SET_SOCKET", payload: socket});
-            }
-        }
-    }, [user]);
+    // useEffect(()=>{
+    //     if(user){
+    //         if(socket.current == null){
+    //             socket.current = io("http://localhost:5000");
+    //             console.log(socket);
+    //             socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
+    //                 console.log(
+    //                     `You connected with socket`,
+    //                     Date().split("G")[0]
+    //                 );
+    //             }); // sự kiện mở kết nối socket
+    //             socket.current.emit("add-user", user._id);
+    //             dispatch({type: "SET_SOCKET", payload: socket});
+    //         }
+    //     }
+    // }, [user]);
 
 
     useEffect(() => {
@@ -70,7 +70,7 @@ function ChatPage() {
                 }
             });
         }
-    }, [socket.current, currentChat]);
+    }, [socket?.current, currentChat]);
 
     useEffect(() => {
         setIsOnline(currentChat?.online);
@@ -82,7 +82,7 @@ function ChatPage() {
                 }
             });
         }
-    }, [socket.current, currentChat]);
+    }, [socket?.current, currentChat]);
 
 
     useEffect(() => {

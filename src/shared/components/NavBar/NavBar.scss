@@ -39,6 +39,24 @@
   padding: 10px 15px 10px 15px;
   border-radius: 15px;
   width: 90%;
+  position: relative;
+  // display: inline-block;
+  .unread{
+    display: flex;
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    position: absolute;
+    width: 20px;
+    height: 19px;
+    align-items: center;
+    border-radius: 50%;
+    background-color: rgb(255, 8, 8);
+    font-size: 12px;
+    font-weight: 550;
+    bottom: 40px;
+    left: 10%;
+    transform: translate(-50%, 50%);
+  }
 }
 
 .sidenav__button:hover {
@@ -160,41 +178,7 @@
 
   .open__content {
     height: 100%;
-    .open__user {
-      display: flex;
-      padding: 8px 24px;
-      .open__user_avatar {
-        width: 44px;
-        height: 44px;
-        margin-right: 12px;
-      }
-      .open__user__info {
-        display: flex;
-        flex-direction: column;
-        margin-left: 7px;
-        .open__relation {
-          color: #a8a8a8;
-          font-weight: 400;
-        }
-
-        .open__username {
-          color: white;
-          font-weight: 600;
-        }
-      }
-      .user__info > span {
-        font-size: 14px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-      }
-    }
-    .open__user:hover {
-      cursor: pointer;
-      background-color: rgba(255, 255, 255, 0.128);
-      .sidenav__icon {
-        transform: scale(1.05);
-      }
-    }
+    overflow: auto;
   }
 
   .open__content__span {
@@ -446,7 +430,10 @@
     width: 71%;
     margin: 5px 10px 5px 10px;
   }
-  .sidenav__button > span {
+  .sidenav__button .unread{
+    left: 20px;
+  }
+  .sidenav__button .span {
     display: none;
   }
   .sidenav__more {

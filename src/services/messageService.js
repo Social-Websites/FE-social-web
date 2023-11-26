@@ -22,7 +22,7 @@ export const sendMessage = async (data) => {
 
 export const addReader = async (data) => {
     try {
-        const response = await httprequest.post(`/messages/addReader`, data);
+        const response = await httprequest.put(`/messages/addReader`, data);
         return response;
     } catch (error) {
         console.log('Lỗi add reader:', error);
