@@ -1,14 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import EmojiPicker from "emoji-picker-react";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { comment } from "../../services/postServices";
 import { CircularProgress } from "@mui/material";
+import { StateContext } from "../../context/StateContext";
 
 
 const CommentInput = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
-
+  const  {user, socket}  = useContext(StateContext);
   const [emojiPicker, setEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
   const [text, setText] = useState("");
@@ -56,6 +57,13 @@ const CommentInput = (props) => {
       console.log("------ comment success!");
     } catch (err) {
       console.error("Error while post comment: ", err);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [props.userId],
+        content_id: props.postId,
+        type: "comment",
+      });
     }
   };
 

@@ -239,6 +239,7 @@ function Post({ post }) {
         <div className={cx("post__footerIcons")}>
           <div className={cx("post__iconsMain")}>
             <ReactIcon
+              userId={[post.creator._id]}
               postId={post._id}
               isLiked={isLiked}
               setIsLiked={setIsLiked}
@@ -280,6 +281,7 @@ function Post({ post }) {
       </div>
       <CommentInput
         postId={post._id}
+        userId={post.creator._id}
         setComments={setComments}
         className={cx("input")}
       />
@@ -493,6 +495,7 @@ function Post({ post }) {
                     >
                       <div className={cx("post__iconsMain")}>
                         <ReactIcon
+                          userId={[post.creator._id]}
                           postId={post._id}
                           isLiked={isLiked}
                           setIsLiked={setIsLiked}
@@ -529,6 +532,7 @@ function Post({ post }) {
 
                     <CommentInput
                       postId={post._id}
+                      userId={post.creator._id}
                       setComments={setComments}
                       emojiPickerPos="right"
                       style={{

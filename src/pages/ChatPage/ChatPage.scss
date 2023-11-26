@@ -27,12 +27,16 @@ html, body {
                 }
             }
             .sidenav__button{
-            width: 71%;
-            margin: 5px 10px 5px 10px;
+                width: 71%;
+                margin: 5px 10px 5px 10px;
             }
-            .sidenav__button > span {
-            display: none;
+            .unread{
+                left: 20px;
             }
+            .sidenav__button .span {
+                display: none;
+            }
+            
             .sidenav__more{
                 width: 80px;
             }

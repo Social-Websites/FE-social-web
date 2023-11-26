@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { reactPost } from "../../services/postServices";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { pink } from "@mui/material/colors";
+import { StateContext } from "../../context/StateContext";
 
 const ReactIcon = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
+  const  {user, socket}  = useContext(StateContext);
 
   const handleReactPost = async () => {
     try {
@@ -19,6 +21,14 @@ const ReactIcon = (props) => {
         privateHttpRequest.privateRequest
       );
     } catch (err) {}
+    finally{
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: props.userId,
+        content_id: props.postId,
+        type: "like",
+      });
+    }
   };
   return (
     <div onClick={handleReactPost} className={props.className}>
