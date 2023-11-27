@@ -13,6 +13,7 @@ function Setting() {
             </div>
             <div className={cx("settings__content")} >
                 <div className={cx("settings__content__element")}>Edit profile</div>
+                <div className={cx("settings__content__element")}>Change Password</div>
                 <div className={cx("settings__content__element")}>Push notifications</div>
                 <div className={cx("settings__content__element")}>What you see</div>
             </div>

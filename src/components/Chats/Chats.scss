@@ -57,3 +57,19 @@
 .chats__content::-webkit-scrollbar-thumb {
     background-color: #686868; /* Màu của thanh cuộn */
 }
+
+
+@media (max-width: 900px){
+    .chats {
+        width: 120px; 
+        .chats__title{
+            display: none;
+        }
+        .chats__input{
+            display: none;
+        }
+        .chats__messages{
+            margin-top: 20px;
+        }
+    }
+}

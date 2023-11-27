@@ -45,13 +45,22 @@ function Chats() {
                 Messages
             </div>
             <div className={cx("chats__content")} >
-                {conversations.map((con) => (
+                {conversations.length > 0 ? (conversations.map((con) => (
                     <ConversationChat 
                         key={con._id}
                         c={con}
                         onClick={() => handleClick(con)}
                     />
-                ))}
+                ))) : (<div style={{display: "flex",justifyContent: "center"}}>
+                    <span style={{
+                        color: "#A8A8A8",
+                        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+                        fontWeight: "500",
+                        fontSize: "14px"
+                    }}
+                    >No messages
+                    </span>
+                </div>)}
             </div>
         </div>
     )

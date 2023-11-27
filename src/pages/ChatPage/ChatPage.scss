@@ -40,6 +40,9 @@ html, body {
             .sidenav__more{
                 width: 80px;
             }
+            .sidenav__buttonText{
+                display: none;
+            }
         }
     }
 
@@ -176,3 +179,10 @@ html, body {
     }
 }
 
+@media (max-width: 900px){
+    .chatpage {
+        .chatpage__sideBar {
+            width: 130px; 
+        }
+    }
+}

@@ -14,6 +14,11 @@ function ConversationChat({c, onClick}) {
     const [ isOnline , setIsOnline] = useState(false);
     const socketEventRef = useRef(false);
 
+
+    useEffect(() => {
+        setUnread(c.unread)
+    }, []);
+
     useEffect(() => {
         if(socket){
             setIsOnline(c.online);

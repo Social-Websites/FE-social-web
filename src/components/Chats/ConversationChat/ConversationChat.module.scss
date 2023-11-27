@@ -63,3 +63,19 @@
 cursor: pointer;
 background-color: rgba(255, 255, 255, 0.128);
 }
+
+
+@media (max-width: 900px){
+    .chats__user {
+        width: 72px; 
+        .chats__user_avatar{
+            margin-right: 10px;
+        }
+        .chats__user__info{
+            display: none;
+        }
+        .unread__info{
+            margin: 0px;
+        }
+    }
+}

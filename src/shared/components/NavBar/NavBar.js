@@ -3,6 +3,7 @@ import { useState, useRef, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./NavBar.scss";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import HomeIcon from '@mui/icons-material/Home';
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
@@ -14,6 +15,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
 import { Avatar, CircularProgress } from "@mui/material";
+import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
@@ -68,6 +70,7 @@ function NavBar({ onScrollToTop }) {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
   const scrollRef = useRef(null);
+  const [loadMore, setLoadMore] = useState(false);
   const [unreadMsg, setUnreadMsg] = useState(0);
   const [unreadNotification, setUnreadNotification] = useState(0);
   const [notification, setNotification] = useState([]);
@@ -174,16 +177,18 @@ function NavBar({ onScrollToTop }) {
       if (!isFetching && Math.floor(element.scrollTop + element.clientHeight) === (element.scrollHeight-1) ) {
         console.log('Đã đạt đến cuoi' + notification.length+ user._id );
         try{
+          setLoadMore(true);
           isFetching = true;
           const data = await notificationsService.getNotifications(user._id, notification.length);
           console.log('notification' + data );
           setNotification((prevdata) => [...prevdata, ...data]);
         }catch(error){
+          setLoadMore(false);
           console.log("Lỗi:", error)
         }
         finally{
           isFetching = false;
-          // setLoadMore(false);
+          setLoadMore(false);
         }
       }
     }
@@ -491,6 +496,9 @@ function NavBar({ onScrollToTop }) {
           >
             <button
               className={cx("sidenav__button")}
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               style={
                 open ? { width: "71%", margin: "5px 13px 8px 10px" } : null
               }
@@ -504,11 +512,18 @@ function NavBar({ onScrollToTop }) {
         ) : (
           <div className={cx("sidenav__title")}>
             <img
+              style={{cursor: "pointer"}}
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               className={cx("sidenav__logo")}
               src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
               alt="Instagram Logo"
             />
             <button
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               className={cx("sidenav__button sidenav__title__button")}
               style={
                 open ? { width: "71%", margin: "5px 10px 5px 10px" } : null
@@ -528,12 +543,16 @@ function NavBar({ onScrollToTop }) {
               navigate("/", { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : (locate === "/" ? { background: "#262626" } : null)}
           >
-            <HomeOutlinedIcon
+            {locate === "/" ? (<HomeIcon
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
-            />
+            />) :
+            (<HomeOutlinedIcon
+              className={cx("sidenav__icon")}
+              style={{ width: "27px", height: "27px" }}
+            />)}
             {open ? null : <span className={cx("span")}>Home</span>}
           </button>
           <button
@@ -629,7 +648,7 @@ function NavBar({ onScrollToTop }) {
               navigate(`/${user?.username}`, { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : (locate === `/${user?.username}`  ? { background: "#262626" } : null)}
           >
             <img
               style={{ width: "25px", height: "25px", borderRadius: "50%" }}
@@ -687,7 +706,6 @@ function NavBar({ onScrollToTop }) {
           className={cx("open")}
           style={open === "Search" ? { transform: "translateX(0%)" } : null}
         >
-          {/* {notifications.map((n) => displayNotification(n))} */}
           <div className={cx("open__title")}>
             <span>Search</span>
           </div>
@@ -738,6 +756,9 @@ function NavBar({ onScrollToTop }) {
           </div>
             <div className={cx("open__content")} style={{ paddingTop: "12px" }} ref={scrollRef}>
               {notification.map((n) => (<Notification key={n._id} n={n}/>))}
+              <div style={{justifyContent: "center", display:"flex"}}>
+                {loadMore ? (<DonutLargeIcon className={loadMore? cx("loading-icon") : null} style={{color: "#A8A8A8", marginTop: "5px", marginBottom: "10px"}}/>) : null}
+              </div>
             </div>
           </div>
       </div>

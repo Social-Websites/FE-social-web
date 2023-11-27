@@ -7,6 +7,7 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import { getHomePosts } from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
 import { addPosts, setPosts } from "../../context/StateAction";
+import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
 
 const cx = classNames.bind(styles);
 
@@ -50,11 +51,23 @@ function TimeLine() {
               posts...
             </span>
           ) : (
-            postsArray.length > 0 &&
+            postsArray.length > 0 ? (
             postsArray.map(([postId, post]) => (
               <Post key={postId} post={post} />
             ))
-          )}
+          ) : (<div className={cx("no__post")}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "center"}}>
+                <ImageNotSupportedIcon style={{ color: "white", width: "100px", height: "100px" }}/>
+              </div>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <span style={{ color: "white" }}>
+                  Add friend to see some posts
+                </span>
+              </div>
+            </div>
+          </div>
+          ))}
         </div>
       </div>
       <div className={cx("timeline__right")}>
