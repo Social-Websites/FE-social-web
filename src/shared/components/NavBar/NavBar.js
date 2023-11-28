@@ -40,6 +40,7 @@ import SearchUserLoading from "../../../components/SearchUserLoading";
 import Notification from "../../../components/NotificationItem";
 import { addCreatedPost, setPosts } from "../../../context/StateAction";
 import * as notificationsService from "../../../services/notificationService";
+import * as conversationService from '../../../services/conversationService';
 import {io} from "socket.io-client";
 
 const cx = classNames.bind(styles);
@@ -71,6 +72,7 @@ function NavBar({ onScrollToTop }) {
 
   const scrollRef = useRef(null);
   const [loadMore, setLoadMore] = useState(false);
+  const [conversationUnread, setConversationUnread] = useState([]);
   const [unreadMsg, setUnreadMsg] = useState(0);
   const [unreadNotification, setUnreadNotification] = useState(0);
   const [notification, setNotification] = useState([]);
@@ -127,21 +129,57 @@ function NavBar({ onScrollToTop }) {
           const data = await notificationsService.getNotifications(user?._id, 0);
           const unreadCount = data.filter(notification => !notification.read)
           setUnreadNotification(unreadCount.length);
-          console.log('data' + data + 'unread' + unreadCount);
           setNotification(data);
         }
       } catch (error) {
         console.log(error);
-        // setFetching(false);
-      } finally {
-        // dispatch({ type: "IS_LOADING_MESSAGES", payload: false });
-        // setFetching(false);
-      }
+      } 
     };
     
     fetchData();
   
   }, [user]);
+
+  useEffect(() => {
+    if(user){
+      let unread;
+      const fetchData = async () => {
+        try {
+            const data = await conversationService.getUserConversations(user._id);
+            unread = data.filter(item => item.unread === true);
+            setConversationUnread(unread);
+            setUnreadMsg(unread.length);  
+        } catch (error) {
+            console.error(error);
+        } 
+      };
+      fetchData();
+    }
+  }, [user]);
+
+
+  useEffect(() => {
+    const handleGetMsgNotification = async (data) => {
+      console.log("Nhận được message:", data );
+      console.log(conversationUnread);
+      console.log(conversationUnread.find(con => con._id === data.conversationId));
+      if(!conversationUnread.find(con => con._id === data.conversationId)){
+        console.log("toi day chua");
+        setConversationUnread(prevCon=> [...prevCon, {_id: data.conversationId}])
+        setUnreadMsg(prevCount => prevCount + 1);
+      }
+        
+      
+    };
+  
+    socket.current?.on("msg-recieve", handleGetMsgNotification);
+  
+    return () => {
+      // Hủy đăng ký sự kiện khi component unmount
+      socket.current?.off("msg-recieve", handleGetMsgNotification);
+    };
+  }, [socket.current, conversationUnread ]);
+
   
   useEffect(() => {
     const handleGetNotification = async (data) => {
@@ -168,7 +206,13 @@ function NavBar({ onScrollToTop }) {
       // Hủy đăng ký sự kiện khi component unmount
       socket.current?.off("getNotification", handleGetNotification);
     };
-  }, [socket.current, open==="Notification"]);
+  }, [socket.current, open === "Notification"]);
+
+  useEffect(() => {
+    if(locate !== "/chat"){
+        dispatch({ type: "CURRENT_CHAT", payload: null });
+    }
+  }, [locate]);
 
   useEffect(() => {
     let isFetching = false; 
@@ -447,7 +491,7 @@ function NavBar({ onScrollToTop }) {
         );
       });
     });
-
+    let createdPostId;
     try {
       const urls = await Promise.allSettled(promises);
       const urlStrings = urls.map((url) => url.value.toString());
@@ -459,6 +503,7 @@ function NavBar({ onScrollToTop }) {
       );
 
       if (response !== null) {
+        createdPostId = response.post._id;
         console.log(response.post);
         dispatch(addCreatedPost(response.post));
         toggleModal();
@@ -469,10 +514,18 @@ function NavBar({ onScrollToTop }) {
     } catch (err) {
       setCreatingPost(false);
       console.log(err);
+    } finally{
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: user?.friends,
+        content_id: createdPostId,
+        type: "post",
+      });
     }
   };
 
   const messageOnClick = () => {
+    setUnreadMsg(prevCount => prevCount = 0);
     navigate("/chat", { replace: true });
   };
 
@@ -606,7 +659,7 @@ function NavBar({ onScrollToTop }) {
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
             />)}
-            {unreadMsg > 0 && <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadMsg > 5 ? "5+" : unreadMsg}</span>}
+            {locate !== "/chat" && (unreadMsg > 0 && <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadMsg > 5 ? "5+" : unreadMsg}</span>)}
             {open ? null : <span className={cx("span")}>Messages</span>}
           </button>
           <button

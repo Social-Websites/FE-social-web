@@ -43,7 +43,7 @@ function Profile() {
   }, [username]);
 
   const isOwnProfile = user?.username === userData?.username;
-  const isFriend = /*true;*/ userData?.friends.includes(user._id);
+  const isFriend = /*true;*/ userData?.friends.includes(user?._id);
 
   // useEffect(() => {
   //   console.log("own ", isOwnProfile);
@@ -98,7 +98,7 @@ function Profile() {
               </div>
               <div className={cx("profile__info")}>
                 <div className={cx("profile__user")}>
-                  <span>{userData?.username}</span>
+                  <span style={{display:"flex", alignItems: "center"}}>{userData?.username}</span>
                   <button
                     onClick={
                       isOwnProfile
@@ -109,7 +109,7 @@ function Profile() {
                     }
                     className={cx("profile__button")}
                   >
-                    <span>
+                    <span style={{display:"flex", alignItems: "center"}}>
                       {isOwnProfile ? (
                         "Friend requests"
                       ) : isFriend ? (

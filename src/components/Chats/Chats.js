@@ -11,6 +11,13 @@ function Chats() {
 
     const [conversations, setConversation] = useState([])
     const  {user, dispatch}  = useContext(StateContext);
+    const locate = window.location.pathname;
+
+    useEffect(() => {
+        if(locate !== "/chat"){
+            dispatch({ type: "CURRENT_CHAT", payload: null });
+        }
+    }, [user]);
 
     useEffect(() => {
         if(user){
@@ -26,7 +33,7 @@ function Chats() {
         }
     }, [user]);
 
-    function  handleClick(con) {
+    function handleClick(con) {
         dispatch({ type: "CURRENT_CHAT", payload: con });
         console.log("Chon conversation")
     };
