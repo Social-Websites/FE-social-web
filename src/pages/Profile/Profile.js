@@ -171,7 +171,7 @@ function Profile() {
                       <span style={{ display: "flex", alignItems: "center" }}>
                         {isFriend ? (
                           <>
-                            "Friends" <ExpandMoreIcon />
+                            Friends <ExpandMoreIcon />
                           </>
                         ) : isSentFriendRequest ? (
                           "Sent"
