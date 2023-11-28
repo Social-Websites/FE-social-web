@@ -280,6 +280,20 @@ post-modal .btn-post-modal {
     }
   }
 }
+
+.profile__post {
+  width: 32.75%;
+  margin: 0.27%;
+  &:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
+}
+.profile__post > img {
+  width: 100%;
+  flex-basis: 33.3%;
+}
+
 .post-comment {
   overflow-y: auto;
   overflow-x: hidden;

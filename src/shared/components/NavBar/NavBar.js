@@ -4,11 +4,12 @@ import classNames from "classnames/bind";
 import styles from "./NavBar.scss";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatIcon from '@mui/icons-material/Chat';
+import ChatIcon from "@mui/icons-material/Chat";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
@@ -38,7 +39,8 @@ import SearchUserLoading from "../../../components/SearchUserLoading";
 import Notification from "../../../components/NotificationItem";
 import { addCreatedPost, setPosts } from "../../../context/StateAction";
 import * as notificationsService from "../../../services/notificationService";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
+import getAvatarUrl from "../../util/getAvatarUrl";
 
 const cx = classNames.bind(styles);
 
@@ -61,6 +63,8 @@ function NavBar({ onScrollToTop }) {
   const from = location.state?.from?.pathname || "/";
   const locate = window.location.pathname;
 
+  const [currentTitle, setCurrentTitle] = useState(document.title);
+
   const [open, setOpen] = useState("");
   const [more, setMore] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState([]);
@@ -72,15 +76,16 @@ function NavBar({ onScrollToTop }) {
   const [unreadNotification, setUnreadNotification] = useState(0);
   const [notification, setNotification] = useState([]);
 
-  const avatarUrl =
-    user?.profile_picture === ""
-      ? "/static-resources/default-avatar.jpg"
-      : user?.profile_picture;
+  const avatarUrl = getAvatarUrl(user?.profile_picture);
 
   const toggleModal = () => {
-    if (document.body.style.overflow !== "hidden")
+    if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
+      document.title = "Create new post | NestMe";
+    } else {
+      document.body.style.overflow = "auto";
+      document.title = currentTitle;
+    }
     setModal(!modal);
     setIsDropping(false);
     setImages([]);
@@ -98,33 +103,33 @@ function NavBar({ onScrollToTop }) {
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
 
-
-  useEffect(()=>{
-    if(user){
-        if(socket.current == null){
-            socket.current = io("http://localhost:5000");
-            console.log(socket);
-            socket.current.on("connect", () => {  // yêu cầu kết nối vào 1 socket mới
-                console.log(
-                    `You connected with socket`,
-                    Date().split("G")[0]
-                );
-            }); // sự kiện mở kết nối socket
-            socket.current.emit("add-user", user._id);
-            dispatch({type: "SET_SOCKET", payload: socket});
-        }
+  useEffect(() => {
+    if (user) {
+      if (socket.current == null) {
+        socket.current = io("http://localhost:5000");
+        console.log(socket);
+        socket.current.on("connect", () => {
+          // yêu cầu kết nối vào 1 socket mới
+          console.log(`You connected with socket`, Date().split("G")[0]);
+        }); // sự kiện mở kết nối socket
+        socket.current.emit("add-user", user._id);
+        dispatch({ type: "SET_SOCKET", payload: socket });
+      }
     }
   }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if(notification){
+        if (notification) {
           console.log(user?._id);
-          const data = await notificationsService.getNotifications(user?._id, 0);
-          const unreadCount = data.filter(notification => !notification.read)
+          const data = await notificationsService.getNotifications(
+            user?._id,
+            0
+          );
+          const unreadCount = data.filter((notification) => !notification.read);
           setUnreadNotification(unreadCount.length);
-          console.log('data' + data + 'unread' + unreadCount);
+          console.log("data" + data + "unread" + unreadCount);
           setNotification(data);
         }
       } catch (error) {
@@ -135,71 +140,73 @@ function NavBar({ onScrollToTop }) {
         // setFetching(false);
       }
     };
-    
+
     fetchData();
-  
   }, [user]);
-  
+
   useEffect(() => {
     const handleGetNotification = async (data) => {
-      console.log("Nhận được thông báo:", data );
+      console.log("Nhận được thông báo:", data);
       console.log("open:", open);
-      setNotification(prevNotifications => [data, ...prevNotifications]);
-      if(open !== "Notification")
-        setUnreadNotification(prevCount => prevCount + 1);
-      else{
-        try{
+      setNotification((prevNotifications) => [data, ...prevNotifications]);
+      if (open !== "Notification")
+        setUnreadNotification((prevCount) => prevCount + 1);
+      else {
+        try {
           const result = await notificationsService.addReader();
           if (result !== null) {
-              setUnreadNotification(0);
+            setUnreadNotification(0);
           }
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
       }
     };
-  
+
     socket.current?.on("getNotification", handleGetNotification);
-  
+
     return () => {
       // Hủy đăng ký sự kiện khi component unmount
       socket.current?.off("getNotification", handleGetNotification);
     };
-  }, [socket.current, open==="Notification"]);
+  }, [socket.current, open === "Notification"]);
 
   useEffect(() => {
-    let isFetching = false; 
+    let isFetching = false;
     const handleScroll = async () => {
       const element = scrollRef.current;
-      if (!isFetching && Math.floor(element.scrollTop + element.clientHeight) === (element.scrollHeight-1) ) {
-        console.log('Đã đạt đến cuoi' + notification.length+ user._id );
-        try{
+      if (
+        !isFetching &&
+        Math.floor(element.scrollTop + element.clientHeight) ===
+          element.scrollHeight - 1
+      ) {
+        console.log("Đã đạt đến cuoi" + notification.length + user._id);
+        try {
           isFetching = true;
-          const data = await notificationsService.getNotifications(user._id, notification.length);
-          console.log('notification' + data );
+          const data = await notificationsService.getNotifications(
+            user._id,
+            notification.length
+          );
+          console.log("notification" + data);
           setNotification((prevdata) => [...prevdata, ...data]);
-        }catch(error){
-          console.log("Lỗi:", error)
-        }
-        finally{
+        } catch (error) {
+          console.log("Lỗi:", error);
+        } finally {
           isFetching = false;
           // setLoadMore(false);
         }
       }
-    }
-      
-    if(scrollRef.current){
-      scrollRef.current.addEventListener('scroll', (handleScroll));
+    };
+
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener("scroll", handleScroll);
     }
     return () => {
       if (scrollRef.current) {
-        scrollRef.current.removeEventListener('scroll', handleScroll);
+        scrollRef.current.removeEventListener("scroll", handleScroll);
       }
     };
-    
   }, [notification, user]);
-
-  
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -233,17 +240,17 @@ function NavBar({ onScrollToTop }) {
     } else setOpen("Search");
   };
   const handleNotification = async () => {
-    if(unreadNotification !==0 ){
-      try{
-          const result = await notificationsService.addReader();
-          if (result !== null) {
-              setUnreadNotification(0);
-          }
+    if (unreadNotification !== 0) {
+      try {
+        const result = await notificationsService.addReader();
+        if (result !== null) {
+          setUnreadNotification(0);
+        }
       } catch (err) {
-          console.log(err);
+        console.log(err);
       }
     }
-  
+
     if (open !== "") {
       if (open !== "Notification") setOpen("Notification");
       else setOpen("");
@@ -455,7 +462,14 @@ function NavBar({ onScrollToTop }) {
 
       if (response !== null) {
         console.log(response.post);
-        dispatch(addCreatedPost(response.post));
+        dispatch(
+          addCreatedPost({
+            ...response.post,
+            is_user_liked: false,
+            reacts_count: 0,
+            comments_count: 0,
+          })
+        );
         toggleModal();
         setTitlePost("");
         setCreatingPost(false);
@@ -530,11 +544,22 @@ function NavBar({ onScrollToTop }) {
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >
-            <HomeOutlinedIcon
-              className={cx("sidenav__icon")}
-              style={{ width: "27px", height: "27px" }}
-            />
-            {open ? null : <span className={cx("span")}>Home</span>}
+            {locate === "/" ? (
+              <HomeIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            ) : (
+              <HomeOutlinedIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            )}
+            {open ? null : (
+              <span className={cx("span")} style={{ fontWeight: 800 }}>
+                Home
+              </span>
+            )}
           </button>
           <button
             className={cx("sidenav__button")}
@@ -577,17 +602,33 @@ function NavBar({ onScrollToTop }) {
           <button
             onClick={messageOnClick}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : (locate === "/chat" ? { background: "#262626" } : null)}
+            style={
+              open
+                ? { width: "71%", margin: "5px 10px 5px 10px" }
+                : locate === "/chat"
+                ? { background: "#262626" }
+                : null
+            }
           >
-            {locate === "/chat" ? (<ChatIcon
-              className={cx("sidenav__icon")}
-              style={{ width: "27px", height: "27px" }}
-            />) :
-            (<ChatOutlinedIcon
-              className={cx("sidenav__icon")}
-              style={{ width: "27px", height: "27px" }}
-            />)}
-            {unreadMsg > 0 && <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadMsg > 5 ? "5+" : unreadMsg}</span>}
+            {locate === "/chat" ? (
+              <ChatIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            ) : (
+              <ChatOutlinedIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            )}
+            {unreadMsg > 0 && (
+              <span
+                className={cx("unread")}
+                style={open ? { left: "20px" } : null}
+              >
+                {unreadMsg > 5 ? "5+" : unreadMsg}
+              </span>
+            )}
             {open ? null : <span className={cx("span")}>Messages</span>}
           </button>
           <button
@@ -610,7 +651,14 @@ function NavBar({ onScrollToTop }) {
                 style={{ width: "27px", height: "27px" }}
               />
             )}
-            {unreadNotification > 0 &&  <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadNotification > 5 ? "5+" : unreadNotification}</span>}
+            {unreadNotification > 0 && (
+              <span
+                className={cx("unread")}
+                style={open ? { left: "20px" } : null}
+              >
+                {unreadNotification > 5 ? "5+" : unreadNotification}
+              </span>
+            )}
             {open ? null : <span className={cx("span")}>Notifications</span>}
           </button>
           <button
@@ -677,7 +725,7 @@ function NavBar({ onScrollToTop }) {
               style={{ width: "27px", height: "27px" }}
             />
             {open ? null : (
-              <span className={cx("sidenav__buttonText")}>More</span>
+              <span className={cx("sidenav__buttonText span")}>More</span>
             )}
           </button>
         </div>
@@ -736,10 +784,16 @@ function NavBar({ onScrollToTop }) {
           <div className={cx("open__title")} style={{ padding: "12px 24px" }}>
             <span>Notifications</span>
           </div>
-            <div className={cx("open__content")} style={{ paddingTop: "12px" }} ref={scrollRef}>
-              {notification.map((n) => (<Notification key={n._id} n={n}/>))}
-            </div>
+          <div
+            className={cx("open__content")}
+            style={{ paddingTop: "12px" }}
+            ref={scrollRef}
+          >
+            {notification.map((n) => (
+              <Notification key={n._id} n={n} />
+            ))}
           </div>
+        </div>
       </div>
       {modal && (
         <div
@@ -933,7 +987,7 @@ function NavBar({ onScrollToTop }) {
                     </div>
                     <div
                       className={cx("input")}
-                      style={{background: "#262626"}}
+                      style={{ background: "#262626" }}
                       id="emoji-open"
                       ref={emojiPickerRef}
                     >

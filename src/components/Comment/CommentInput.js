@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
+import classNames from "classnames/bind";
+import styles from "./CommentInput.scss";
 import EmojiPicker from "emoji-picker-react";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
@@ -6,10 +8,11 @@ import { comment } from "../../services/postServices";
 import { CircularProgress } from "@mui/material";
 import { StateContext } from "../../context/StateContext";
 
+const cx = classNames.bind(styles);
 
 const CommentInput = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
-  const  {user, socket}  = useContext(StateContext);
+  const { user, socket } = useContext(StateContext);
   const [emojiPicker, setEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
   const [text, setText] = useState("");
@@ -113,7 +116,7 @@ const CommentInput = (props) => {
               }}
               onClick={handleEmojiModal}
             />
-            <input 
+            <input
               type="text"
               placeholder="Add a comment..."
               value={text}
@@ -125,15 +128,11 @@ const CommentInput = (props) => {
             ) : (
               <button
                 type="submit"
+                className={cx("comment__button")}
                 style={{
-                  color: "#0095f6",
-                  background: "none",
-                  border: "none",
-                  marginRight: "5px",
-                  fontSize: "14px",
-                  fontWeight: "600",
                   opacity: text === "" ? 0.5 : 1,
                   cursor: text !== "" ? "pointer" : "default",
+                  color: text !== "" ? null : "#0095f6",
                 }}
                 disabled={text === ""}
                 onClick={handleSendComment}
@@ -156,15 +155,7 @@ const CommentInput = (props) => {
             ) : text ? (
               <button
                 type="submit"
-                style={{
-                  color: "#0095f6",
-                  cursor: "pointer",
-                  background: "none",
-                  border: "none",
-                  marginRight: "5px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                }}
+                className={cx("comment__button")}
                 onClick={handleSendComment}
               >
                 Post

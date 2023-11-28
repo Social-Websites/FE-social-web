@@ -19,6 +19,39 @@ export const getUserByUsername = async (username, sendRequest) => {
   }
 };
 
+export const getUserFriendsListByUsername = async (
+  username,
+  page = 1,
+  limit = 20,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/users/${username}/friends?page=${page}&limit=${limit}`
+    );
+    return response?.data;
+  } catch (err) {
+    console.error("Lỗi lấy list friend:", err);
+    throw err;
+  }
+};
+
+export const getFriendRequestsList = async (
+  page = 1,
+  limit = 20,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/users/auth-user/friend-requests?page=${page}&limit=${limit}`
+    );
+    return response?.data;
+  } catch (err) {
+    console.error("Lỗi lấy list friend request:", err);
+    throw err;
+  }
+};
+
 export const login = async (loginForm, sendRequest) => {
   try {
     const response = await sendRequest("/auth/login", "post", loginForm, {

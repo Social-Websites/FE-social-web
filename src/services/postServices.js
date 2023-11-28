@@ -21,6 +21,23 @@ export const getHomePosts = async (page = 1, limit = 10, sendRequest) => {
   }
 };
 
+export const getUserPosts = async (
+  username,
+  page = 1,
+  limit = 15,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/posts/${username}?page=${page}?limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const reactPost = async (data, sendRequest) => {
   try {
     const response = await sendRequest(

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Profile.module.scss";
 import Sidenav from "../../shared/components/NavBar";
@@ -8,10 +8,12 @@ import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { getUserByUsername } from "../../services/userService";
-import FriendRequest from "../../components/FriendRequest"
+import FriendRequest from "../../components/FriendRequest";
+import { getUserPosts } from "../../services/postServices";
+import ProfilePost from "../../components/Post/ProfilePost";
 
 const cx = classNames.bind(styles);
 
@@ -19,42 +21,82 @@ function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
   const privateHttpRequest = usePrivateHttpClient();
+  const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
-  const [more, setMore] = useState(false);
+  const [isSentFriendRequest, setIsSentFriendRequest] = useState(
+    userData?.is_friend_request_sent || false
+  );
+  const [userPosts, setUserPosts] = useState([]);
+  const [postPage, setPostPage] = useState(1);
+  const [hasMorePost, setHasMorePost] = useState(true);
+
+  const [modal, setModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
   const [unFQuestion, setUnFQuestion] = useState(false);
 
-  const effectRan = useRef(false);
+  const fetchUser = useCallback(async () => {
+    try {
+      const response = await getUserByUsername(
+        username,
+        privateHttpRequest.privateRequest
+      );
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await getUserByUsername(
-          username,
-          privateHttpRequest.privateRequest
-        );
-
-        setUserData(response);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    fetchUser();
+      setUserData(response);
+      const userFullname = response.full_name;
+      // Thay đổi title khi component mount
+      document.title = `${userFullname} | NestMe profile`;
+    } catch (err) {
+      console.log(err.message);
+    }
   }, [username]);
 
+  const getInitPosts = useCallback(async () => {
+    const data = await getUserPosts(
+      username,
+      1,
+      15,
+      privateHttpRequest.privateRequest
+    );
+
+    const postsCount = data.posts.length;
+
+    if (postsCount > 0) setUserPosts(data.posts);
+
+    setHasMorePost(postsCount > 0);
+  }, [username]);
+
+  useEffect(() => {
+    fetchUser();
+    getInitPosts();
+
+    // Gỡ bỏ title khi component unmount (nếu cần)
+    return () => {
+      setUserPosts([]);
+      document.title = "NestMe"; // Đặt lại title khi component unmount
+    };
+  }, [username]);
+
+  // useEffect(() => {
+
+  // }, [ postPage]);
+
   const isOwnProfile = user?.username === userData?.username;
-  const isFriend = /*true;*/ userData?.friends.includes(user._id);
+  const isFriend = /*true;*/ userData?.is_friend;
 
   // useEffect(() => {
   //   console.log("own ", isOwnProfile);
   //   console.log("friend ", isFriend);
   // }, [isOwnProfile, isFriend]);
 
-  const handleAddFriend = async () => {};
-  const handleFriendRequests = async () => {
-    toggleMore();
+  const handleAddFriend = async () => {
+    setIsSentFriendRequest(false);
   };
+
   const handleUnFriend = async () => {};
+  const handleRemoveRequest = async () => {
+    setIsSentFriendRequest(true);
+  };
   const handleUnfriendQuestion = async () => {
     setUnFQuestion(!unFQuestion);
     if (document.body.style.overflow !== "hidden") {
@@ -63,12 +105,24 @@ function Profile() {
       document.body.style.overflow = "auto";
     }
   };
-  const toggleMore = () => {
-    setMore(!more);
+
+  const handleGetUserFriendsList = async () => {
+    setModalTitle("Friends");
+    toggleModal();
+  };
+
+  const handleGetUserFriendRequestsList = async () => {
+    setModalTitle("Friend requests");
+    toggleModal();
+  };
+
+  const toggleModal = () => {
+    setModal(!modal);
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
+      setModalTitle("");
     }
   };
 
@@ -99,41 +153,59 @@ function Profile() {
               <div className={cx("profile__info")}>
                 <div className={cx("profile__user")}>
                   <span>{userData?.username}</span>
-                  <button
-                    onClick={
-                      isOwnProfile
-                        ? handleFriendRequests
-                        : isFriend
-                        ? handleUnfriendQuestion
-                        : handleAddFriend
-                    }
-                    className={cx("profile__button")}
-                  >
-                    <span>
-                      {isOwnProfile ? (
-                        "Friend requests"
-                      ) : isFriend ? (
-                        <>
-                          Friends
-                          <ExpandMoreIcon />
-                        </>
-                      ) : (
-                        "Add friend"
-                      )}
-                    </span>
-                  </button>
-                  <button className={cx("profile__button")}>
-                    <span>Edit profile</span>
-                  </button>
+                  {isOwnProfile ? null : (
+                    <button
+                      onClick={
+                        isFriend
+                          ? handleUnfriendQuestion
+                          : isSentFriendRequest
+                          ? handleRemoveRequest
+                          : handleAddFriend
+                      }
+                      className={
+                        !isFriend
+                          ? cx("profile__button__blue")
+                          : cx("profile__button")
+                      }
+                    >
+                      <span>
+                        {isFriend
+                          ? "Unfriend"
+                          : isSentFriendRequest
+                          ? "Sent"
+                          : "Add friend"}
+                      </span>
+                    </button>
+                  )}
+                  {isOwnProfile ? (
+                    <button
+                      onClick={() => navigate("/user-info/edit")}
+                      className={cx("profile__button")}
+                    >
+                      <span>Edit profile</span>
+                    </button>
+                  ) : (
+                    <button className={cx("profile__button")}>
+                      <span>Message</span>
+                    </button>
+                  )}
                 </div>
                 <div className={cx("profile__user__2")}>
-                  <span>{userData?.posts.length} Posts</span>
-                  <a className={cx("follow")}>
-                    {userData?.friends.length} Friends
+                  <span>{userData?.posts_count} Posts</span>
+                  <a
+                    onClick={handleGetUserFriendsList}
+                    className={cx("follow")}
+                  >
+                    {userData?.friends_count} Friends
                   </a>
-                  <a className={cx("follow")}>
-                    {userData?.friend_requests.length} Requests
-                  </a>
+                  {isOwnProfile ? (
+                    <a
+                      onClick={handleGetUserFriendRequestsList}
+                      className={cx("follow")}
+                    >
+                      {userData?.friend_requests_count} Requests
+                    </a>
+                  ) : null}
                 </div>
                 <div className={cx("profile__user__3")}>
                   <span>{userData?.full_name}</span>
@@ -177,22 +249,33 @@ function Profile() {
               </a>
             </div>
             <div className={cx("profile__posts")}>
-              {userData?.posts.map((post) => (
-                <div className={cx("profile__post")}>
-                  <img src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80" />
-                </div>
-              ))}
+              {privateHttpRequest.isLoading ? (
+                <span style={{ color: "white" }}>Loading...</span>
+              ) : userPosts.length === 0 ? (
+                <span style={{ color: "white", fontWeight: 1000 }}>
+                  No posts yet
+                </span>
+              ) : hasMorePost ? (
+                userPosts.map((post, i) => <ProfilePost key={i} post={post} />)
+              ) : null}
             </div>
           </div>
         </div>
         {unFQuestion && (
-          <div className={cx("post-modal active-post-modal")}>
+          <div className={cx("profile-modal active-profile-modal")}>
             <div
               onClick={handleUnfriendQuestion}
               className={cx("post-overlay")}
               style={{ alignSelf: "flex-end" }}
             ></div>
+
             <div className={cx("more-content")}>
+              <div
+                className={cx("more-content-element")}
+                style={{ borderBottomWidth: 3, cursor: "default" }}
+              >
+                Are you sure?
+              </div>
               <div
                 className={cx("more-content-element")}
                 style={{ color: "#ed4956" }}
@@ -210,10 +293,10 @@ function Profile() {
           </div>
         )}
 
-        {more && (
+        {modal && (
           <div className={cx("profile-modal active-profile-modal")}>
             <div
-              onClick={toggleMore}
+              onClick={toggleModal}
               className={cx("profile-overlay")}
               style={{ alignSelf: "flex-end" }}
             >
@@ -232,21 +315,21 @@ function Profile() {
             </div>
             <div className={cx("profile-modal-content")}>
               <div className={cx("profile-modal-content-header")}>
-                Friend requests
+                {modalTitle}
               </div>
               <div className={cx("profile-modal-content-no-users")}>
-                <span>No Friend Requests</span>
+                <span>No {modalTitle}</span>
               </div>
               {/* <div className={cx("profile-modal-content-users")}>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
-                <FriendRequest/>
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
+                <FriendRequest />
               </div> */}
             </div>
           </div>
