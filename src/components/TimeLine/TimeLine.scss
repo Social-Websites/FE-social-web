@@ -8,12 +8,23 @@
   
   .timeline__left {
     flex: 0.7;
+    .timeline__posts{
+      .no__post{
+        height: 200px;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        
+      }
+    }
   }
   
   .timeline__right {
     flex: 0.3;
     margin-left: 50px;
   }
+
+  
   
 @media (max-width: 1064px) {
   .timeline {

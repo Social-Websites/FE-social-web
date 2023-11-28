@@ -3,6 +3,7 @@ import { useState, useRef, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./NavBar.scss";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import HomeIcon from '@mui/icons-material/Home';
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
@@ -15,6 +16,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
 import { Avatar, CircularProgress } from "@mui/material";
+import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
@@ -41,6 +43,7 @@ import { addCreatedPost, setPosts } from "../../../context/StateAction";
 import * as notificationsService from "../../../services/notificationService";
 import { io } from "socket.io-client";
 import getAvatarUrl from "../../util/getAvatarUrl";
+import * as conversationService from '../../../services/conversationService';
 
 const cx = classNames.bind(styles);
 
@@ -72,6 +75,8 @@ function NavBar({ onScrollToTop }) {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
   const scrollRef = useRef(null);
+  const [loadMore, setLoadMore] = useState(false);
+  const [conversationUnread, setConversationUnread] = useState([]);
   const [unreadMsg, setUnreadMsg] = useState(0);
   const [unreadNotification, setUnreadNotification] = useState(0);
   const [notification, setNotification] = useState([]);
@@ -129,21 +134,57 @@ function NavBar({ onScrollToTop }) {
           );
           const unreadCount = data.filter((notification) => !notification.read);
           setUnreadNotification(unreadCount.length);
-          console.log("data" + data + "unread" + unreadCount);
           setNotification(data);
         }
       } catch (error) {
         console.log(error);
-        // setFetching(false);
-      } finally {
-        // dispatch({ type: "IS_LOADING_MESSAGES", payload: false });
-        // setFetching(false);
-      }
+      } 
     };
 
     fetchData();
   }, [user]);
 
+  useEffect(() => {
+    if(user){
+      let unread;
+      const fetchData = async () => {
+        try {
+            const data = await conversationService.getUserConversations(user._id);
+            unread = data.filter(item => item.unread === true);
+            setConversationUnread(unread);
+            setUnreadMsg(unread.length);  
+        } catch (error) {
+            console.error(error);
+        } 
+      };
+      fetchData();
+    }
+  }, [user]);
+
+
+  useEffect(() => {
+    const handleGetMsgNotification = async (data) => {
+      console.log("Nhận được message:", data );
+      console.log(conversationUnread);
+      console.log(conversationUnread.find(con => con._id === data.conversationId));
+      if(!conversationUnread.find(con => con._id === data.conversationId)){
+        console.log("toi day chua");
+        setConversationUnread(prevCon=> [...prevCon, {_id: data.conversationId}])
+        setUnreadMsg(prevCount => prevCount + 1);
+      }
+        
+      
+    };
+  
+    socket.current?.on("msg-recieve", handleGetMsgNotification);
+  
+    return () => {
+      // Hủy đăng ký sự kiện khi component unmount
+      socket.current?.off("msg-recieve", handleGetMsgNotification);
+    };
+  }, [socket.current, conversationUnread ]);
+
+  
   useEffect(() => {
     const handleGetNotification = async (data) => {
       console.log("Nhận được thông báo:", data);
@@ -172,16 +213,19 @@ function NavBar({ onScrollToTop }) {
   }, [socket.current, open === "Notification"]);
 
   useEffect(() => {
+    if(locate !== "/chat"){
+        dispatch({ type: "CURRENT_CHAT", payload: null });
+    }
+  }, [locate]);
+
+  useEffect(() => {
     let isFetching = false;
     const handleScroll = async () => {
       const element = scrollRef.current;
-      if (
-        !isFetching &&
-        Math.floor(element.scrollTop + element.clientHeight) ===
-          element.scrollHeight - 1
-      ) {
-        console.log("Đã đạt đến cuoi" + notification.length + user._id);
-        try {
+      if (!isFetching && Math.floor(element.scrollTop + element.clientHeight) === (element.scrollHeight-1) ) {
+        console.log('Đã đạt đến cuoi' + notification.length+ user._id );
+        try{
+          setLoadMore(true);
           isFetching = true;
           const data = await notificationsService.getNotifications(
             user._id,
@@ -189,11 +233,13 @@ function NavBar({ onScrollToTop }) {
           );
           console.log("notification" + data);
           setNotification((prevdata) => [...prevdata, ...data]);
-        } catch (error) {
-          console.log("Lỗi:", error);
-        } finally {
+        }catch(error){
+          setLoadMore(false);
+          console.log("Lỗi:", error)
+        }
+        finally{
           isFetching = false;
-          // setLoadMore(false);
+          setLoadMore(false);
         }
       }
     };
@@ -449,7 +495,7 @@ function NavBar({ onScrollToTop }) {
         );
       });
     });
-
+    let createdPostId;
     try {
       const urls = await Promise.allSettled(promises);
       const urlStrings = urls.map((url) => url.value.toString());
@@ -461,6 +507,7 @@ function NavBar({ onScrollToTop }) {
       );
 
       if (response !== null) {
+        createdPostId = response.post._id;
         console.log(response.post);
         dispatch(
           addCreatedPost({
@@ -478,10 +525,18 @@ function NavBar({ onScrollToTop }) {
     } catch (err) {
       setCreatingPost(false);
       console.log(err);
+    } finally{
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: user?.friends,
+        content_id: createdPostId,
+        type: "post",
+      });
     }
   };
 
   const messageOnClick = () => {
+    setUnreadMsg(prevCount => prevCount = 0);
     navigate("/chat", { replace: true });
   };
 
@@ -505,6 +560,9 @@ function NavBar({ onScrollToTop }) {
           >
             <button
               className={cx("sidenav__button")}
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               style={
                 open ? { width: "71%", margin: "5px 13px 8px 10px" } : null
               }
@@ -518,11 +576,18 @@ function NavBar({ onScrollToTop }) {
         ) : (
           <div className={cx("sidenav__title")}>
             <img
+              style={{cursor: "pointer"}}
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               className={cx("sidenav__logo")}
               src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
               alt="Instagram Logo"
             />
             <button
+              onClick={() => {
+                navigate("/", { replace: true });
+              }}
               className={cx("sidenav__button sidenav__title__button")}
               style={
                 open ? { width: "71%", margin: "5px 10px 5px 10px" } : null
@@ -542,7 +607,7 @@ function NavBar({ onScrollToTop }) {
               navigate("/", { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : (locate === "/" ? { background: "#262626" } : null)}
           >
             {locate === "/" ? (
               <HomeIcon
@@ -610,25 +675,15 @@ function NavBar({ onScrollToTop }) {
                 : null
             }
           >
-            {locate === "/chat" ? (
-              <ChatIcon
-                className={cx("sidenav__icon")}
-                style={{ width: "27px", height: "27px" }}
-              />
-            ) : (
-              <ChatOutlinedIcon
-                className={cx("sidenav__icon")}
-                style={{ width: "27px", height: "27px" }}
-              />
-            )}
-            {unreadMsg > 0 && (
-              <span
-                className={cx("unread")}
-                style={open ? { left: "20px" } : null}
-              >
-                {unreadMsg > 5 ? "5+" : unreadMsg}
-              </span>
-            )}
+            {locate === "/chat" ? (<ChatIcon
+              className={cx("sidenav__icon")}
+              style={{ width: "27px", height: "27px" }}
+            />) :
+            (<ChatOutlinedIcon
+              className={cx("sidenav__icon")}
+              style={{ width: "27px", height: "27px" }}
+            />)}
+            {locate !== "/chat" && (unreadMsg > 0 && <span className={cx("unread")} style={open ? { left: "20px" } : null}>{unreadMsg > 5 ? "5+" : unreadMsg}</span>)}
             {open ? null : <span className={cx("span")}>Messages</span>}
           </button>
           <button
@@ -677,7 +732,7 @@ function NavBar({ onScrollToTop }) {
               navigate(`/${user?.username}`, { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : null}
+            style={open ? { width: "75%", margin: "5px 10px 5px 10px" } : (locate === `/${user?.username}`  ? { background: "#262626" } : null)}
           >
             <img
               style={{ width: "25px", height: "25px", borderRadius: "50%" }}
@@ -735,7 +790,6 @@ function NavBar({ onScrollToTop }) {
           className={cx("open")}
           style={open === "Search" ? { transform: "translateX(0%)" } : null}
         >
-          {/* {notifications.map((n) => displayNotification(n))} */}
           <div className={cx("open__title")}>
             <span>Search</span>
           </div>
@@ -784,14 +838,12 @@ function NavBar({ onScrollToTop }) {
           <div className={cx("open__title")} style={{ padding: "12px 24px" }}>
             <span>Notifications</span>
           </div>
-          <div
-            className={cx("open__content")}
-            style={{ paddingTop: "12px" }}
-            ref={scrollRef}
-          >
-            {notification.map((n) => (
-              <Notification key={n._id} n={n} />
-            ))}
+            <div className={cx("open__content")} style={{ paddingTop: "12px" }} ref={scrollRef}>
+              {notification.map((n) => (<Notification key={n._id} n={n}/>))}
+              <div style={{justifyContent: "center", display:"flex"}}>
+                {loadMore ? (<DonutLargeIcon className={loadMore? cx("loading-icon") : null} style={{color: "#A8A8A8", marginTop: "5px", marginBottom: "10px"}}/>) : null}
+              </div>
+            </div>
           </div>
         </div>
       </div>

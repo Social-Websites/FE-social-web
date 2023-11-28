@@ -168,12 +168,16 @@ function Profile() {
                           : cx("profile__button")
                       }
                     >
-                      <span>
-                        {isFriend
-                          ? "Unfriend"
-                          : isSentFriendRequest
-                          ? "Sent"
-                          : "Add friend"}
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        {isFriend ? (
+                          <>
+                            "Friends" <ExpandMoreIcon />
+                          </>
+                        ) : isSentFriendRequest ? (
+                          "Sent"
+                        ) : (
+                          "Add friend"
+                        )}
                       </span>
                     </button>
                   )}

@@ -15,6 +15,7 @@ import Error404Page from "../pages/AuthPage/Error404Page";
 import UnauthorizedPage from "../pages/AuthPage/UnauthorizedPage";
 import ResetPasswordForm from "../components/Auth/ResetPasswordForm";
 import EditProfilePage from "../pages/EditProfilePage";
+import ChangePassPage from "../pages/ChangePassPage";
 // public Routes
 const publicRoutes = [
   {
@@ -54,6 +55,7 @@ const privateRoutes = [
   { path: "/chat", component: Chat },
   { path: "/group", component: GroupPage },
   { path: "/user-info/edit", component: EditProfilePage },
+  { path: "/accounts/changePass/", component: ChangePassPage },
 ];
 // Private Routes
 const adminRoutes = [];

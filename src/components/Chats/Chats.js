@@ -11,6 +11,13 @@ function Chats() {
 
     const [conversations, setConversation] = useState([])
     const  {user, dispatch}  = useContext(StateContext);
+    const locate = window.location.pathname;
+
+    useEffect(() => {
+        if(locate !== "/chat"){
+            dispatch({ type: "CURRENT_CHAT", payload: null });
+        }
+    }, [user]);
 
     useEffect(() => {
         if(user){
@@ -26,7 +33,7 @@ function Chats() {
         }
     }, [user]);
 
-    function  handleClick(con) {
+    function handleClick(con) {
         dispatch({ type: "CURRENT_CHAT", payload: con });
         console.log("Chon conversation")
     };
@@ -45,13 +52,22 @@ function Chats() {
                 Messages
             </div>
             <div className={cx("chats__content")} >
-                {conversations.map((con) => (
+                {conversations.length > 0 ? (conversations.map((con) => (
                     <ConversationChat 
                         key={con._id}
                         c={con}
                         onClick={() => handleClick(con)}
                     />
-                ))}
+                ))) : (<div style={{display: "flex",justifyContent: "center"}}>
+                    <span style={{
+                        color: "#A8A8A8",
+                        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+                        fontWeight: "500",
+                        fontSize: "14px"
+                    }}
+                    >No messages
+                    </span>
+                </div>)}
             </div>
         </div>
     )
