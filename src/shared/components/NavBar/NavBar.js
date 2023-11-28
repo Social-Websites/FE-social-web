@@ -778,7 +778,10 @@ function NavBar({ onScrollToTop }) {
             {more && (
               <div style={{ position: "absolute", bottom: 140, left: 10 }}>
                 <div className={cx("sidenav__more-content")}>
-                  <div className={cx("sidenav__more-element")}>Setting</div>
+                  <div className={cx("sidenav__more-element")} 
+                    onClick={() => {
+                      navigate("/accounts/edit", { replace: true });
+                    }}>Setting</div>
                   <div className={cx("sidenav__more-element")}>
                     Your Profile
                   </div>
