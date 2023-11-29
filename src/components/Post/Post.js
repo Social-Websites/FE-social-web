@@ -526,12 +526,12 @@ function Post({ post }) {
                       bottom: 0,
                       width: "100%",
                       borderTop: "#353535 solid 0.5px",
-                      height: "23%",
+                      height: "25%",
                     }}
                   >
                     <div
                       className={cx("post__footerIcons")}
-                      style={{ padding: "0px 10px" }}
+                      style={{ padding: "0px 10px", height:"33%" }}
                     >
                       <div className={cx("post__iconsMain")}>
                         <ReactIcon
@@ -558,17 +558,19 @@ function Post({ post }) {
                         </div>
                       </div>
                     </div>
-                    <span>{reactsCount} likes</span>
-                    <br />
-                    <span
-                      style={{
-                        color: grey[600],
-                        fontSize: 10,
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      <TimeAgo created_at={post.created_at} />
-                    </span>
+                    <div style={{ padding: "0px 10px", height:"34%" }}>
+                      <span>{reactsCount} likes</span>
+                      <br />
+                      <span
+                        style={{
+                          color: grey[600],
+                          fontSize: 10,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        <TimeAgo created_at={post.created_at} />
+                      </span>
+                    </div>
 
                     <CommentInput
                       postId={post._id}
@@ -576,7 +578,7 @@ function Post({ post }) {
                       setComments={setComments}
                       emojiPickerPos="right"
                       style={{
-                        padding: "10px 5px",
+                        padding: "0px 10px", height:"31%",
                         borderTop: "#353535 solid 0.5px",
                       }}
                       className={cx("input")}
