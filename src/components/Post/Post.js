@@ -173,90 +173,88 @@ function Post({ post }) {
         <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
       </div>
       <div className={cx("post__image")}>
-      <div className={cx("image-post")} style={{}}>
-                  {post?.media.map((image, index) => (
-                    <div
-                      key={index}
-                      className={cx("img-post-slider")}
+        <div className={cx("image-post")} style={{}}>
+          {post?.media.map((image, index) => (
+            <div
+              key={index}
+              className={cx("img-post-slider")}
+              style={{
+                width: "100%",
+                height: "100%",
+                transform: `translateX(-${100 * imageIndex}%)`,
+                transition: "transform 0.2s",
+                display: "flex",
+                flexShrink: "0",
+                flexGrow: "0",
+                borderRadius: "0px 0px 0px 10px",
+              }}
+              aria-hidden={imageIndex !== index}
+            >
+              <img
+                style={{
+                  width: "100%",
+                  objectFit: "contain",
+                  height: "auto",
+                  display: "block",
+                  flexShrink: "0",
+                  flexGrow: "0",
+                  borderRadius: "0px 0px 10px 10px",
+                }}
+                src={image}
+              />
+              {isFirstImage === true || post?.media.length === 1 ? null : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    onClick={showPrevImage}
+                    className={cx("img-post-slider-btn")}
+                    style={{ left: 10 }}
+                    aria-label="View Previous Image"
+                  >
+                    <ArrowBackIosNewIcon
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        transform: `translateX(-${100 * imageIndex}%)`,
-                        transition: "transform 0.2s",
-                        display: "flex",
-                        flexShrink: "0",
-                        flexGrow: "0",
-                        borderRadius: "0px 0px 0px 10px",
+                        width: "16px",
+                        height: "16px",
+                        marginBottom: "2px",
                       }}
-                      aria-hidden={imageIndex !== index}
-                    >
-                      <img
-                        style={{
-                          width: "100%",
-                          objectFit: "contain",
-                          height: "auto",
-                          display: "block",
-                          flexShrink: "0",
-                          flexGrow: "0",
-                          borderRadius: "0px 0px 10px 10px",
-                        }}
-                        src={image}
-                      />
-                      {isFirstImage === true ||
-                      post?.media.length === 1 ? null : (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={showPrevImage}
-                            className={cx("img-post-slider-btn")}
-                            style={{ left: 10 }}
-                            aria-label="View Previous Image"
-                          >
-                            <ArrowBackIosNewIcon
-                              style={{
-                                width: "16px",
-                                height: "16px",
-                                marginBottom: "2px",
-                              }}
-                              aria-hidden
-                            />
-                          </button>
-                        </div>
-                      )}
-                      {isLastImage === true ||
-                      post?.media.length === 1 ? null : (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={showNextImage}
-                            className={cx("img-post-slider-btn")}
-                            style={{ right: 10 }}
-                            aria-label="View Next Image"
-                          >
-                            <ArrowForwardIosIcon
-                              style={{
-                                width: "16px",
-                                height: "16px",
-                                marginBottom: "2px",
-                              }}
-                              aria-hidden
-                            />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      aria-hidden
+                    />
+                  </button>
                 </div>
+              )}
+              {isLastImage === true || post?.media.length === 1 ? null : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    onClick={showNextImage}
+                    className={cx("img-post-slider-btn")}
+                    style={{ right: 10 }}
+                    aria-label="View Next Image"
+                  >
+                    <ArrowForwardIosIcon
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginBottom: "2px",
+                      }}
+                      aria-hidden
+                    />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
       <div className={cx("post__footer")}>
         <div className={cx("post__footerIcons")}>
@@ -297,7 +295,7 @@ function Post({ post }) {
               fontWeight: 700,
             }}
           >
-            {post.creator?.username}
+            {post.content ? post.creator.username : null}
           </Link>
           {post.content}
         </div>
@@ -484,16 +482,35 @@ function Post({ post }) {
                           className={cx("post-comment-user")}
                         >
                           <div className={cx("post-comment-user-avatar")}>
-                            <img
-                              style={{ width: "30px", height: "30px" }}
-                              src={getAvatarUrl(comment.user.profile_picture)}
-                              alt=""
-                            />
+                            <Link
+                              to={`/${comment.user.username}`}
+                              className={cx("post-comment-user-avatar")}
+                              style={{
+                                position: "inherit",
+                                textDecoration: "none",
+                                color: "inherit",
+                              }}
+                            >
+                              <img
+                                style={{ width: "30px", height: "30px" }}
+                                src={getAvatarUrl(comment.user.profile_picture)}
+                                alt=""
+                              />
+                            </Link>
                           </div>
                           <div className={cx("post-comment-user-info")}>
-                            <span className={cx("post-comment-username")}>
-                              {comment.user.username}
-                            </span>
+                            <Link
+                              to={`/${comment.user.username}`}
+                              style={{
+                                position: "inherit",
+                                textDecoration: "none",
+                                color: "inherit",
+                              }}
+                            >
+                              <span className={cx("post-comment-username")}>
+                                {comment.user.username}
+                              </span>
+                            </Link>
                             <span className={cx("post-comment-content")}>
                               {comment.comment}
                             </span>

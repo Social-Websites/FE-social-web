@@ -629,11 +629,7 @@ function NavBar({ onScrollToTop }) {
                 style={{ width: "27px", height: "27px" }}
               />
             )}
-            {open ? null : (
-              <span className={cx("span")} style={{ fontWeight: 800 }}>
-                Home
-              </span>
-            )}
+            {open ? null : <span className={cx("span")}>Home</span>}
           </button>
           <button
             className={cx("sidenav__button")}
@@ -778,11 +774,20 @@ function NavBar({ onScrollToTop }) {
             {more && (
               <div style={{ position: "absolute", bottom: 140, left: 10 }}>
                 <div className={cx("sidenav__more-content")}>
-                  <div className={cx("sidenav__more-element")} 
+                  <div
+                    className={cx("sidenav__more-element")}
                     onClick={() => {
-                      navigate("/accounts/edit", { replace: true });
-                    }}>Setting</div>
-                  <div className={cx("sidenav__more-element")}>
+                      navigate("/user-info/edit", { replace: true });
+                    }}
+                  >
+                    Setting
+                  </div>
+                  <div
+                    className={cx("sidenav__more-element")}
+                    onClick={() => {
+                      navigate(`/${user.username}`);
+                    }}
+                  >
                     Your Profile
                   </div>
                   <div

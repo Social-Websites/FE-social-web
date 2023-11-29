@@ -14,6 +14,7 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import {
   getFriendRequestsList,
   getUserByUsername,
+  getUserFriendsListByUsername,
   removeAddFriend,
   sendAddFriend,
 } from "../../services/userService";
@@ -45,7 +46,6 @@ function Profile() {
   const [hasMorePost, setHasMorePost] = useState(true);
 
   const [modal, setModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
   const [listType, setListType] = useState(0);
   const [unFQuestion, setUnFQuestion] = useState(false);
 
@@ -96,7 +96,28 @@ function Profile() {
     }
   }, [username]);
 
-  const getFriendRequests = useCallback(async () => {
+  const getInitFriends = useCallback(async () => {
+    try {
+      setModalLoading(true);
+      const data = await getUserFriendsListByUsername(
+        username,
+        friendsPage,
+        20,
+        privateHttpRequest.privateRequest
+      );
+
+      const recordsCount = data.friends.length;
+
+      if (recordsCount > 0) setFriends(data.friends);
+
+      setHasMoreFriends(recordsCount > 0 && recordsCount === 20);
+      setModalLoading(false);
+    } catch (err) {
+      setModalLoading(false);
+    }
+  }, [username, friendsPage]);
+
+  const getInitFriendRequests = useCallback(async () => {
     try {
       setModalLoading(true);
       const data = await getFriendRequestsList(
@@ -107,8 +128,7 @@ function Profile() {
 
       const recordsCount = data.friend_requests.length;
 
-      if (recordsCount > 0)
-        setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+      if (recordsCount > 0) setFriendRequests(data.friend_requests);
 
       setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
       setModalLoading(false);
@@ -125,8 +145,17 @@ function Profile() {
         request._id === recordId ? { ...request, decision: decision } : request
       )
     );
+  }, []);
 
-    console.log(`Friend request ${decision}: ${recordId}`);
+  const setRequestSent = useCallback((recordId) => {
+    // Update UI optimistically
+    setFriends((prev) =>
+      prev.map((friend) =>
+        friend._id === recordId
+          ? { ...friend, is_friend_request_sent: true }
+          : friend
+      )
+    );
   }, []);
 
   useEffect(() => {
@@ -190,19 +219,20 @@ function Profile() {
 
   const handleGetUserFriendsList = async () => {
     setListType(1);
-    setModalTitle("Friends");
+
     toggleModal();
+
+    console.log("get friends");
+    await getInitFriends();
   };
 
   const handleGetUserFriendRequestsList = async () => {
     setListType(2);
-    setModalTitle("Friend requests");
-    if (friendRequestsPage === 1) {
-      console.log("get friend requests");
-      await getFriendRequests();
-      setFriendRequestsPage(2);
-    }
+
     toggleModal();
+
+    console.log("get friend requests");
+    await getInitFriendRequests();
   };
 
   const toggleModal = () => {
@@ -211,7 +241,6 @@ function Profile() {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
-      setModalTitle("");
     }
   };
 
@@ -221,235 +250,237 @@ function Profile() {
       : userData?.profile_picture;
 
   return (
-    !profileLoading && (
-      <div
-        className={cx("profile")}
-        style={{ backgroundColor: "black", height: "100%" }}
-      >
-        <div className={cx("profile__navWraper")}>
-          <Sidenav />
-        </div>
-        <div className={cx("profile__right")}>
-          <div className={cx("profile__content")}>
-            <div className={cx("profile__header")}>
-              <div className={cx("profile_avatar")}>
-                <img
-                  className={cx("avatar")}
-                  style={{ position: "inherit" }}
-                  src={avatarUrl}
-                />
-              </div>
-              <div className={cx("profile__info")}>
-                <div className={cx("profile__user")}>
-                  <span>{userData?.username}</span>
-                  {isOwnProfile ? null : (
-                    <button
-                      onClick={
-                        isFriend
-                          ? handleUnfriendQuestion
-                          : isSentFriendRequest
-                          ? handleRemoveRequest
-                          : handleAddFriend
-                      }
-                      className={
-                        !isFriend && !isSentFriendRequest
-                          ? cx("profile__button__blue")
-                          : cx("profile__button")
-                      }
-                      disabled={friendButtonLoading}
-                    >
-                      <span style={{ display: "flex", alignItems: "center" }}>
-                        {friendButtonLoading ? (
-                          <CircularProgress size={15} />
-                        ) : isFriend ? (
-                          <>
-                            Friends <ExpandMoreIcon />
-                          </>
-                        ) : isSentFriendRequest ? (
-                          "Sent"
-                        ) : (
-                          "Add friend"
-                        )}
-                      </span>
-                    </button>
-                  )}
-                  {isOwnProfile ? (
-                    <button
-                      onClick={() => navigate("/user-info/edit")}
-                      className={cx("profile__button")}
-                    >
-                      <span>Edit profile</span>
-                    </button>
-                  ) : (
-                    <button className={cx("profile__button")}>
-                      <span>Message</span>
-                    </button>
-                  )}
-                </div>
-                <div className={cx("profile__user__2")}>
-                  <span>{userData?.posts_count} Posts</span>
-                  <a
-                    onClick={handleGetUserFriendsList}
-                    className={cx("follow")}
-                  >
-                    {userData?.friends_count} Friends
-                  </a>
-                  {isOwnProfile ? (
-                    <a
-                      onClick={handleGetUserFriendRequestsList}
-                      className={cx("follow")}
-                    >
-                      {userData?.friend_requests_count} Requests
-                    </a>
-                  ) : null}
-                </div>
-                <div className={cx("profile__user__3")}>
-                  <span>{userData?.full_name}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={cx("profile__post__tag")}>
-              <a>
-                <div className={cx("choose")}>
-                  <GridOnIcon className={cx("icon")} />
-                  <span
-                    className={cx("span")}
-                    style={{ textTransform: "uppercase" }}
-                  >
-                    Posts
-                  </span>
-                </div>
-              </a>
-              <a>
-                <div className={cx("choose")}>
-                  <BookmarkBorderIcon className={cx("icon")} />
-                  <span
-                    className={cx("span")}
-                    style={{ textTransform: "uppercase" }}
-                  >
-                    Saved
-                  </span>
-                </div>
-              </a>
-              <a>
-                <div className={cx("choose")} style={{ marginRight: "0px" }}>
-                  <PortraitOutlinedIcon className={cx("icon")} />
-                  <span
-                    className={cx("span")}
-                    style={{ textTransform: "uppercase" }}
-                  >
-                    Tagged
-                  </span>
-                </div>
-              </a>
-            </div>
-            <div className={cx("profile__posts")}>
-              {profilePostsLoading ? (
-                <span style={{ color: "white" }}>Loading...</span>
-              ) : userPosts.length === 0 ? (
-                <span style={{ color: "white", fontWeight: 1000 }}>
-                  No posts yet
-                </span>
-              ) : hasMorePost ? (
-                userPosts.map((post, i) => <ProfilePost key={i} post={post} />)
-              ) : null}
-            </div>
-          </div>
-        </div>
-        {unFQuestion && (
-          <div className={cx("profile-modal active-profile-modal")}>
-            <div
-              onClick={handleUnfriendQuestion}
-              className={cx("post-overlay")}
-              style={{ alignSelf: "flex-end" }}
-            ></div>
-
-            <div className={cx("more-content")}>
-              <div
-                className={cx("more-content-element")}
-                style={{ borderBottomWidth: 3, cursor: "default" }}
-              >
-                Are you sure?
-              </div>
-              <div
-                className={cx("more-content-element")}
-                style={{ color: "#ed4956" }}
-                onClick={handleUnFriend}
-              >
-                UnFriend
-              </div>
-              <div
-                className={cx("more-content-element")}
-                onClick={handleUnfriendQuestion}
-              >
-                Cancel
-              </div>
-            </div>
-          </div>
-        )}
-
-        {modal && (
-          <div className={cx("profile-modal active-profile-modal")}>
-            <div
-              onClick={toggleModal}
-              className={cx("profile-overlay")}
-              style={{ alignSelf: "flex-end" }}
-            >
-              <CloseIcon
-                className={cx("sidenav__icon")}
-                style={{
-                  width: "27px",
-                  height: "27px",
-                  color: "white",
-                  margin: "12px 30px",
-                  position: "absolute",
-                  right: "0",
-                  cursor: "pointer",
-                }}
+    <div
+      className={cx("profile")}
+      style={{ backgroundColor: "black", height: "100%" }}
+    >
+      <div className={cx("profile__navWraper")}>
+        <Sidenav />
+      </div>
+      <div className={cx("profile__right")}>
+        !profileLoading &&
+        <div className={cx("profile__content")}>
+          <div className={cx("profile__header")}>
+            <div className={cx("profile_avatar")}>
+              <img
+                className={cx("avatar")}
+                style={{ position: "inherit" }}
+                src={avatarUrl}
               />
             </div>
-            <div className={cx("profile-modal-content")}>
-              <div className={cx("profile-modal-content-header")}>
-                {modalTitle}
+            <div className={cx("profile__info")}>
+              <div className={cx("profile__user")}>
+                <span>{userData?.username}</span>
+                {isOwnProfile ? null : (
+                  <button
+                    onClick={
+                      isFriend
+                        ? handleUnfriendQuestion
+                        : isSentFriendRequest
+                        ? handleRemoveRequest
+                        : handleAddFriend
+                    }
+                    className={
+                      !isFriend && !isSentFriendRequest
+                        ? cx("profile__button__blue")
+                        : cx("profile__button")
+                    }
+                    disabled={friendButtonLoading}
+                  >
+                    <span style={{ display: "flex", alignItems: "center" }}>
+                      {friendButtonLoading ? (
+                        <CircularProgress size={15} />
+                      ) : isFriend ? (
+                        <>
+                          Friends <ExpandMoreIcon />
+                        </>
+                      ) : isSentFriendRequest ? (
+                        "Sent"
+                      ) : (
+                        "Add friend"
+                      )}
+                    </span>
+                  </button>
+                )}
+                {isOwnProfile ? (
+                  <button
+                    onClick={() => navigate("/user-info/edit")}
+                    className={cx("profile__button")}
+                  >
+                    <span>Edit profile</span>
+                  </button>
+                ) : (
+                  <button className={cx("profile__button")}>
+                    <span>Message</span>
+                  </button>
+                )}
               </div>
-              {modalLoading ? (
-                <CircularProgress size={40} color="white" />
-              ) : listType === 1 && friends.length > 0 ? (
-                <div className={cx("profile-modal-content-users")}>
-                  {friends.map((friend, i) => (
-                    <FriendRequest
-                      key={i}
-                      listType={1}
-                      myProfile={isOwnProfile}
-                      item={friend}
-                    />
-                  ))}
-                </div>
-              ) : listType === 2 && friendRequests.length > 0 ? (
-                <div className={cx("profile-modal-content-users")}>
-                  {friendRequests.map((friendRequest, i) => (
-                    <FriendRequest
-                      key={i}
-                      listType={2}
-                      item={friendRequest}
-                      decision={
-                        friendRequest?.decision ? friendRequest.decision : ""
-                      }
-                      setRequestDecision={setRequestDecision}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className={cx("profile-modal-content-no-users")}>
-                  <span>No {modalTitle}</span>
-                </div>
-              )}
+              <div className={cx("profile__user__2")}>
+                <span>{userData?.posts_count} Posts</span>
+                <a onClick={handleGetUserFriendsList} className={cx("follow")}>
+                  {userData?.friends_count} Friends
+                </a>
+                {isOwnProfile ? (
+                  <a
+                    onClick={handleGetUserFriendRequestsList}
+                    className={cx("follow")}
+                  >
+                    {userData?.friend_requests_count} Requests
+                  </a>
+                ) : null}
+              </div>
+              <div className={cx("profile__user__3")}>
+                <span>{userData?.full_name}</span>
+              </div>
             </div>
           </div>
-        )}
+
+          <div className={cx("profile__post__tag")}>
+            <a>
+              <div className={cx("choose")}>
+                <GridOnIcon className={cx("icon")} />
+                <span
+                  className={cx("span")}
+                  style={{ textTransform: "uppercase" }}
+                >
+                  Posts
+                </span>
+              </div>
+            </a>
+            <a>
+              <div className={cx("choose")}>
+                <BookmarkBorderIcon className={cx("icon")} />
+                <span
+                  className={cx("span")}
+                  style={{ textTransform: "uppercase" }}
+                >
+                  Saved
+                </span>
+              </div>
+            </a>
+            <a>
+              <div className={cx("choose")} style={{ marginRight: "0px" }}>
+                <PortraitOutlinedIcon className={cx("icon")} />
+                <span
+                  className={cx("span")}
+                  style={{ textTransform: "uppercase" }}
+                >
+                  Tagged
+                </span>
+              </div>
+            </a>
+          </div>
+          <div className={cx("profile__posts")}>
+            {profilePostsLoading ? (
+              <CircularProgress size={50} />
+            ) : userPosts.length === 0 ? (
+              <span style={{ color: "white", fontWeight: 1000 }}>
+                No posts yet
+              </span>
+            ) : hasMorePost ? (
+              userPosts.map((post, i) => (
+                <ProfilePost key={i} creator={userData} post={post} />
+              ))
+            ) : null}
+          </div>
+        </div>
       </div>
-    )
+      {unFQuestion && (
+        <div className={cx("profile-modal active-profile-modal")}>
+          <div
+            onClick={handleUnfriendQuestion}
+            className={cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          ></div>
+
+          <div className={cx("more-content")}>
+            <div
+              className={cx("more-content-element")}
+              style={{ borderBottomWidth: 3, cursor: "default" }}
+            >
+              Are you sure?
+            </div>
+            <div
+              className={cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+              onClick={handleUnFriend}
+            >
+              UnFriend
+            </div>
+            <div
+              className={cx("more-content-element")}
+              onClick={handleUnfriendQuestion}
+            >
+              Cancel
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modal && (
+        <div className={cx("profile-modal active-profile-modal")}>
+          <div
+            onClick={toggleModal}
+            className={cx("profile-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("profile-modal-content")}>
+            <div className={cx("profile-modal-content-header")}>
+              {listType === 1 ? "Friends" : "Friend requests"}
+            </div>
+            {modalLoading ? (
+              <CircularProgress size={40} />
+            ) : listType === 1 && friends.length > 0 ? (
+              <div className={cx("profile-modal-content-users")}>
+                {friends.map((friend, i) => (
+                  <FriendRequest
+                    key={i}
+                    yourId={user._id}
+                    listType={1}
+                    myProfile={isOwnProfile}
+                    isFriend={friend?.is_friend ? true : false}
+                    isSent={friend?.is_friend_request_sent ? true : false}
+                    setIsSent={setRequestSent}
+                    item={friend}
+                  />
+                ))}
+              </div>
+            ) : listType === 2 && friendRequests.length > 0 ? (
+              <div className={cx("profile-modal-content-users")}>
+                {friendRequests.map((friendRequest, i) => (
+                  <FriendRequest
+                    key={i}
+                    listType={2}
+                    item={friendRequest}
+                    decision={
+                      friendRequest?.decision ? friendRequest.decision : ""
+                    }
+                    setRequestDecision={setRequestDecision}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className={cx("profile-modal-content-no-users")}>
+                <span>No {listType === 1 ? "friends" : "friend requests"}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

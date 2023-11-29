@@ -36,10 +36,6 @@ const TimeLine = () => {
     getPosts();
   }, [page]);
 
-  useEffect(() => {
-    console.log(posts);
-  }, [posts]);
-
   const postsArray = [...posts.entries()];
 
   return (
@@ -62,7 +58,7 @@ const TimeLine = () => {
                 </div>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <span style={{ color: "white" }}>
-                    Add friend to see some posts
+                    Add friends to see posts
                   </span>
                 </div>
               </div>
