@@ -5,16 +5,57 @@ import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+import { CircularProgress } from "@mui/material";
+import { acceptAddFriend, rejectAddFriend } from "../../services/userService";
 
 const cx = classNames.bind(styles);
 
 const FriendRequest = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
-  const [isFriend, setIsFriend] = useState(props.user?.is_friend);
-  const [isSent, setIsSent] = useState(props.user?.is_sent_request);
+  const [isFriend, setIsFriend] = useState(
+    props.listType === 1 ? props.item.is_friend : false
+  );
+  const [isSent, setIsSent] = useState(
+    props.listType === 1 ? props.item.is_friend_request_sent : false
+  );
+
+  const [decisionLoading, setDecisionLoading] = useState(false);
 
   const handleAddFriend = () => {
     setIsSent(!isSent);
+  };
+
+  const handleAccept = async () => {
+    try {
+      setDecisionLoading(true);
+      const response = await acceptAddFriend(
+        props.item._id,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        props.setRequestDecision(props.item._id, "ACCEPT");
+        setDecisionLoading(false);
+      }
+    } catch (err) {
+      console.error("accept ", err);
+      setDecisionLoading(false);
+    }
+  };
+  const handleReject = async () => {
+    try {
+      setDecisionLoading(true);
+      const response = await rejectAddFriend(
+        props.item._id,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        props.setRequestDecision(props.item._id, "REJECT");
+        setDecisionLoading(false);
+      }
+    } catch (err) {
+      console.error("reject ", err);
+      setDecisionLoading(false);
+    }
   };
 
   return (
@@ -22,40 +63,62 @@ const FriendRequest = (props) => {
       <div className={cx("profile-modal__user_avatar")}>
         <img
           style={{ width: "44px", height: "44px" }}
-          src={getAvatarUrl(props.user?.profile_url)}
+          src={getAvatarUrl(props.item.profile_picture)}
           alt=""
         />
       </div>
       <div className={cx("profile-modal__user__info")}>
         <span className={cx("profile-modal__username")}>
-          {props.user?.username}
+          {props.item.username}
         </span>
         <span className={cx("profile-modal__relation")}>
-          {props.user?.full_name}
+          {props.item.full_name}
         </span>
       </div>
       <div>
-        {props.friendRequests ? (
+        {decisionLoading ? (
+          <CircularProgress size={20} />
+        ) : props.listType === 2 ? (
           <>
-            <button className={cx("profile-modal__button__accept")}>
-              <CheckIcon />
-            </button>
-            <button className={cx("profile-modal__button")}>
-              <ClearIcon />
-            </button>
+            {props.decision === "ACCEPT" ? (
+              <span style={{ color: "white" }}>Accept</span>
+            ) : props.decision === "REJECT" ? (
+              <span style={{ color: "white" }}>Reject</span>
+            ) : (
+              <>
+                <button
+                  onClick={handleAccept}
+                  className={cx("profile-modal__button__accept")}
+                  disabled={decisionLoading}
+                >
+                  <CheckIcon />
+                </button>
+                <button
+                  onClick={handleReject}
+                  className={cx("profile-modal__button")}
+                  disabled={decisionLoading}
+                >
+                  <ClearIcon />
+                </button>
+              </>
+            )}
           </>
-        ) : props.myProfile ? null : isFriend ? null : (
-          <button
-            onClick={handleAddFriend}
-            className={
-              isSent
-                ? cx("profile-modal__button")
-                : cx("profile-modal__button__accept")
-            }
-          >
-            {isSent ? "Sent" : "Add"}
-          </button>
-        )}
+        ) : props.listType === 1 ? (
+          <>
+            {props.myProfile || isFriend ? null : (
+              <button
+                onClick={handleAddFriend}
+                className={
+                  isSent
+                    ? cx("profile-modal__button")
+                    : cx("profile-modal__button__accept")
+                }
+              >
+                {isSent ? "Sent" : "Add"}
+              </button>
+            )}
+          </>
+        ) : null}
       </div>
     </div>
   );

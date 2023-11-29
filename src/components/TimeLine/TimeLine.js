@@ -7,11 +7,12 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import { getHomePosts } from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
 import { addPosts, setPosts } from "../../context/StateAction";
-import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
+import { CircularProgress } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
-function TimeLine() {
+const TimeLine = () => {
   const privateHttpRequest = usePrivateHttpClient();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -30,7 +31,7 @@ function TimeLine() {
       if (postsCount > 0 && page === 1) dispatch(setPosts(data.posts));
       else if (postsCount > 0) dispatch(addPosts(data.posts));
 
-      setHasMore(postsCount > 0);
+      setHasMore(postsCount > 0 && postsCount === 10);
     };
     getPosts();
   }, [page]);
@@ -46,28 +47,27 @@ function TimeLine() {
       <div className={cx("timeline__left")}>
         <div className={cx("timeline__posts")}>
           {privateHttpRequest.isLoading ? (
-            <span style={{ color: "white" }}>
-              ................................................... Loading
-              posts...
-            </span>
-          ) : (
-            postsArray.length > 0 ? (
+            <CircularProgress size={50} />
+          ) : postsArray.length > 0 ? (
             postsArray.map(([postId, post]) => (
               <Post key={postId} post={post} />
             ))
-          ) : (<div className={cx("no__post")}>
-            <div>
-              <div style={{ display: "flex", justifyContent: "center"}}>
-                <ImageNotSupportedIcon style={{ color: "white", width: "100px", height: "100px" }}/>
-              </div>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <span style={{ color: "white" }}>
-                  Add friend to see some posts
-                </span>
+          ) : (
+            <div className={cx("no__post")}>
+              <div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <ImageNotSupportedIcon
+                    style={{ color: "white", width: "100px", height: "100px" }}
+                  />
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <span style={{ color: "white" }}>
+                    Add friend to see some posts
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-          ))}
+          )}
         </div>
       </div>
       <div className={cx("timeline__right")}>
@@ -75,6 +75,6 @@ function TimeLine() {
       </div>
     </div>
   );
-}
+};
 
 export default TimeLine;

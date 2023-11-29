@@ -52,6 +52,54 @@ export const getFriendRequestsList = async (
   }
 };
 
+export const sendAddFriend = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/users/friend-requests/send/${userId}`,
+      "patch"
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const acceptAddFriend = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/users/friend-requests/accept/${userId}`,
+      "patch"
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const removeAddFriend = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/users/friend-requests/remove/${userId}`,
+      "patch"
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const rejectAddFriend = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/users/friend-requests/reject/${userId}`,
+      "patch"
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const login = async (loginForm, sendRequest) => {
   try {
     const response = await sendRequest("/auth/login", "post", loginForm, {
