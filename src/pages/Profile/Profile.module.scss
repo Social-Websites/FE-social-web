@@ -23,7 +23,7 @@ body {
   }
   .profile__content {
     height: 774px;
-    width: 85%;
+    width: 90%;
     padding: 30px 20px;
 
     .profile__header {
@@ -168,6 +168,7 @@ body {
     .profile__posts {
       display: flex;
       flex-wrap: wrap;
+      flex-direction: row; /* Chiều ngang */
     }
   }
 }

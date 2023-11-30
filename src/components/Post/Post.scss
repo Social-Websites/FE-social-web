@@ -316,16 +316,31 @@ post-modal .btn-post-modal {
 }
 
 .profile__post {
-  width: 32.75%;
-  margin: 0.27%;
+  // display: flex;
+  // justify-content: center;
+  // max-height: 260px;
+  // width: 32.75%;
+  // margin: 0.27%;
+  flex-basis: 32.75%; /* Chia 2 phần bằng nhau */
+  margin: 0.27%; /* Khoảng cách giữa các phần tử */
+  position: relative;
   &:hover {
     opacity: 0.7;
     cursor: pointer;
   }
 }
+.profile__post::before {
+  content: "";
+  display: block;
+  padding-top: 100%; /* Tạo hình vuông */
+}
 .profile__post > img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  flex-basis: 33.3%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .post-comment {
@@ -341,8 +356,7 @@ post-modal .btn-post-modal {
 
     .post-comment-user-avatar {
       position: relative;
-      display: flex;
-      align-items: center;
+      display: inline-block;
       width: 44px;
       height: 44px;
     }
@@ -354,14 +368,13 @@ post-modal .btn-post-modal {
     .post-comment-user-info {
       width: 85%;
       display: flex;
-      align-items: center;
+      display: inline-block;
       word-wrap: break-word;
       .post-comment-content {
         width: 100px;
         max-width: max-content;
         white-space: pre-line;
         word-wrap: break-word;
-
         color: white;
         font-weight: 400;
         font-size: 14px;

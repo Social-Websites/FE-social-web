@@ -1,13 +1,17 @@
 import classNames from 'classnames/bind';
 import React from "react";
 import styles from "./SearchUser.module.scss";
-
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles)
 
-function SearchUser({ u }) {
+function SearchUser({ u, setOpen, open }) {
+  const navigate = useNavigate()
   return (
-    <div className={cx("open__user")}>
+    <div className={cx("open__user")} onClick={() => {
+          setOpen(!open);
+          navigate(`/${u?.username}`, { replace: true });
+        }}>
         <img
             className={cx("open__user_avatar")}
             style={{borderRadius: "50%"}}

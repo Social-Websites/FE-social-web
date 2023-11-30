@@ -189,10 +189,25 @@ function NavBar({ onScrollToTop }) {
     const handleGetNotification = async (data) => {
       console.log("Nhận được thông báo:", data);
       console.log("open:", open);
-      setNotification((prevNotifications) => [data, ...prevNotifications]);
-      if (open !== "Notification")
-        setUnreadNotification((prevCount) => prevCount + 1);
-      else {
+      if (data.remove == true) {
+        setNotification((prevNotifications) =>
+          prevNotifications.filter((notification) => notification._id !== data.content_id)
+        );
+      } else{
+        setNotification((prevNotifications) => [data, ...prevNotifications]);
+      }
+
+      if (open !== "Notification"){
+        const check = notification.find((notification) => notification._id === data.content_id);
+        console.log(check);
+        console.log(check?.read);
+        if(!check?.read){
+          if(!data.remove)
+            setUnreadNotification((prevCount) => prevCount + 1);
+          else
+            setUnreadNotification((prevCount) => prevCount - 1);
+        }
+      } else {
         try {
           const result = await notificationsService.addReader();
           if (result !== null) {
@@ -202,6 +217,7 @@ function NavBar({ onScrollToTop }) {
           console.log(err);
         }
       }
+      
     };
 
     socket.current?.on("getNotification", handleGetNotification);
@@ -288,6 +304,8 @@ function NavBar({ onScrollToTop }) {
       else setOpen("");
     } else setOpen("Search");
   };
+
+
   const handleNotification = async () => {
     if (unreadNotification !== 0) {
       try {
@@ -854,7 +872,7 @@ function NavBar({ onScrollToTop }) {
                 ) : (
                   <div>
                     {searchedUsers.map((u) => (
-                      <SearchUser u={u} key={u._id} />
+                      <SearchUser u={u} setOpen={setOpen} open={open} key={u._id} />
                     ))}
                   </div>
                 )}
