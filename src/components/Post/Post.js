@@ -558,7 +558,7 @@ function Post({ post }) {
                         </div>
                       </div>
                     </div>
-                    <div style={{ padding: "0px 10px", height:"34%" }}>
+                    <div style={{ padding: "0px 10px", height:"20%" }}>
                       <span>{reactsCount} likes</span>
                       <br />
                       <span

@@ -21,12 +21,15 @@ import {
 import FriendRequest from "../../components/FriendRequest";
 import { getUserPosts } from "../../services/postServices";
 import ProfilePost from "../../components/Post/ProfilePost";
+import { useContext } from "react";
+import { StateContext } from "../../context/StateContext";
 
 const cx = classNames.bind(styles);
 
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
+  const {socket} = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const navigate = useNavigate();
 
@@ -193,6 +196,12 @@ function Profile() {
     } catch (err) {
       setFriendButtonLoading(false);
       console.error(privateHttpRequest.error);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [userData._id],
+        type: "request",
+      });
     }
   };
 
@@ -206,6 +215,12 @@ function Profile() {
       if (response.message) setIsSentFriendRequest(false);
     } catch (err) {
       console.error(privateHttpRequest.error);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [userData._id],
+        type: "remove",
+      });
     }
   };
   const handleUnfriendQuestion = async () => {
@@ -258,7 +273,7 @@ function Profile() {
         <Sidenav />
       </div>
       <div className={cx("profile__right")}>
-        !profileLoading &&
+        {/* !profileLoading && */}
         <div className={cx("profile__content")}>
           <div className={cx("profile__header")}>
             <div className={cx("profile_avatar")}>
@@ -374,9 +389,11 @@ function Profile() {
             {profilePostsLoading ? (
               <CircularProgress size={50} />
             ) : userPosts.length === 0 ? (
+              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <span style={{ color: "white", fontWeight: 1000 }}>
                 No posts yet
               </span>
+              </div>
             ) : hasMorePost ? (
               userPosts.map((post, i) => (
                 <ProfilePost key={i} creator={userData} post={post} />
