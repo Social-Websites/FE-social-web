@@ -17,6 +17,7 @@ import {
   getUserFriendsListByUsername,
   removeAddFriend,
   sendAddFriend,
+  unFriend,
 } from "../../services/userService";
 import FriendRequest from "../../components/FriendRequest";
 import { getUserPosts } from "../../services/postServices";
@@ -29,7 +30,7 @@ const cx = classNames.bind(styles);
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
-  const {socket} = useContext(StateContext);
+  const { socket } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const navigate = useNavigate();
 
@@ -37,6 +38,7 @@ function Profile() {
   const [isSentFriendRequest, setIsSentFriendRequest] = useState(
     userData?.is_friend_request_sent
   );
+
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
   const [hasMoreFriends, setHasMoreFriends] = useState(true);
@@ -177,7 +179,6 @@ function Profile() {
   // }, [ postPage]);
 
   const isOwnProfile = user?.username === userData?.username;
-  const isFriend = /*true;*/ userData?.is_friend;
 
   // useEffect(() => {
   //   console.log("own ", isOwnProfile);
@@ -205,7 +206,24 @@ function Profile() {
     }
   };
 
-  const handleUnFriend = async () => {};
+  const handleUnFriend = async () => {
+    if (unFQuestion) {
+      handleUnfriendQuestion();
+      try {
+        setFriendButtonLoading(true);
+        const response = await unFriend(
+          userData._id,
+          privateHttpRequest.privateRequest
+        );
+        if (response.message)
+          setUserData((prev) => ({ ...prev, is_friend: false }));
+        setFriendButtonLoading(false);
+      } catch (err) {
+        setFriendButtonLoading(false);
+        console.error(privateHttpRequest.error);
+      }
+    }
+  };
   const handleRemoveRequest = async () => {
     try {
       const response = await removeAddFriend(
@@ -223,7 +241,7 @@ function Profile() {
       });
     }
   };
-  const handleUnfriendQuestion = async () => {
+  const handleUnfriendQuestion = () => {
     setUnFQuestion(!unFQuestion);
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
@@ -289,14 +307,14 @@ function Profile() {
                 {isOwnProfile ? null : (
                   <button
                     onClick={
-                      isFriend
+                      userData?.is_friend
                         ? handleUnfriendQuestion
                         : isSentFriendRequest
                         ? handleRemoveRequest
                         : handleAddFriend
                     }
                     className={
-                      !isFriend && !isSentFriendRequest
+                      !userData?.is_friend && !isSentFriendRequest
                         ? cx("profile__button__blue")
                         : cx("profile__button")
                     }
@@ -305,7 +323,7 @@ function Profile() {
                     <span style={{ display: "flex", alignItems: "center" }}>
                       {friendButtonLoading ? (
                         <CircularProgress size={15} />
-                      ) : isFriend ? (
+                      ) : userData?.is_friend ? (
                         <>
                           Friends <ExpandMoreIcon />
                         </>
@@ -389,10 +407,16 @@ function Profile() {
             {profilePostsLoading ? (
               <CircularProgress size={50} />
             ) : userPosts.length === 0 ? (
-              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-              <span style={{ color: "white", fontWeight: 1000 }}>
-                No posts yet
-              </span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <span style={{ color: "white", fontWeight: 1000 }}>
+                  No posts yet
+                </span>
               </div>
             ) : hasMorePost ? (
               userPosts.map((post, i) => (
@@ -411,12 +435,6 @@ function Profile() {
           ></div>
 
           <div className={cx("more-content")}>
-            <div
-              className={cx("more-content-element")}
-              style={{ borderBottomWidth: 3, cursor: "default" }}
-            >
-              Are you sure?
-            </div>
             <div
               className={cx("more-content-element")}
               style={{ color: "#ed4956" }}
@@ -468,7 +486,7 @@ function Profile() {
                     yourId={user._id}
                     listType={1}
                     myProfile={isOwnProfile}
-                    isFriend={friend?.is_friend ? true : false}
+                    isFriend={friend?.is_your_friend ? true : false}
                     isSent={friend?.is_friend_request_sent ? true : false}
                     setIsSent={setRequestSent}
                     item={friend}

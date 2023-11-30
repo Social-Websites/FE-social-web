@@ -100,6 +100,18 @@ export const rejectAddFriend = async (userId, sendRequest) => {
   }
 };
 
+export const unFriend = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/users/auth-user/unfriend/${userId}`,
+      "patch"
+    );
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const login = async (loginForm, sendRequest) => {
   try {
     const response = await sendRequest("/auth/login", "post", loginForm, {
