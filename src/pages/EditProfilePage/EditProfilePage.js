@@ -15,8 +15,7 @@ const EditProfilePage = () => {
   const { user } = useContext(StateContext);
 
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const timer = useRef();
+  const [uploadProfileImgLoading, setUploadProfileImgLoading] = useState(false);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -28,11 +27,8 @@ const EditProfilePage = () => {
   };
 
   const handleUploadProfileImg = () => {
-    if (!loading) {
-      setLoading(true);
-      timer.current = window.setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+    if (!uploadProfileImgLoading) {
+      setUploadProfileImgLoading(true);
     }
   };
 
@@ -56,12 +52,14 @@ const EditProfilePage = () => {
                 style={{
                   width: "44px",
                   height: "44px",
-                  filter: loading ? "brightness(70%)" : "brightness(100%)",
+                  filter: uploadProfileImgLoading
+                    ? "brightness(70%)"
+                    : "brightness(100%)",
                 }}
                 src={getAvatarUrl(user?.profile_picture)}
                 alt=""
               />
-              {loading && (
+              {uploadProfileImgLoading && (
                 <CircularProgress
                   size={30}
                   sx={{
