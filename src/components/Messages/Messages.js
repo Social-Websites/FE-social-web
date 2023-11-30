@@ -57,6 +57,7 @@ function Messages({ style }) {
     
   }, [messages]);
 
+
   useEffect(() => {
     console.log(socket, currentChat._id);
     console.log(checkCurrentChatIdRef.current);
@@ -86,13 +87,14 @@ function Messages({ style }) {
   useEffect(() => {
     setFetching(true);
     console.log("day" + fetching + isLoadingMsg);
+    console.log("Current_Chat",currentChat._id);
+    console.log("messages",messages);
     const fetchData = async () => {
       try {
-        if(messages){
-          const data = await messageService.getMessages(currentChat._id, 0);
-          dispatch({ type: "SET_MESSAGES", payload: data });
-          firstChat.current = true;
-        }
+        console.log("Current_Chat",currentChat._id);
+        const data = await messageService.getMessages(currentChat._id, 0);
+        dispatch({ type: "SET_MESSAGES", payload: data });
+        firstChat.current = true;
       } catch (error) {
         console.log(error);
         setFetching(false);
@@ -124,7 +126,7 @@ function Messages({ style }) {
       <div style={{justifyContent: "center", display:"flex"}}>
         {loadMore ? (<DonutLargeIcon className={loadMore? cx("loading-icon") : null} style={{color: "#A8A8A8", marginTop: "10px"}}/>) : null}
       </div>
-      {messages.map((m) => {
+      {messages && messages.map((m) => {
         if (m.content || m.media) {
           return <Message message={m} key={m._id} />;
         }

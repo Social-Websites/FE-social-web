@@ -53,7 +53,7 @@ function ConversationChat({c, onClick}) {
                 socketEventRef.current = true;
             }
         }
-    }, [socket.current]);
+    }, [socket?.current]);
 
     const handleMsgRecieve = (data) => {
         if ( data.conversationId == c._id) {

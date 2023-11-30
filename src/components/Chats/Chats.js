@@ -12,6 +12,7 @@ function Chats() {
 
     const [conversations, setConversation] = useState([])
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+    const [isPetching, setIsPetching] = useState(false);
     const  {user, dispatch}  = useContext(StateContext);
 
     const searchCons = async (e) => {
@@ -47,10 +48,14 @@ function Chats() {
         if(user){
             const fetchData = async () => {
                 try {
+                    setIsPetching(true);
                     const data = await conversationService.getUserConversations(user._id);
                     setConversation(data);
                 } catch (error) {
+                    setIsPetching(false);
                     console.error(error);
+                } finally {
+                    setIsPetching(false);
                 }
             };
             fetchData();
@@ -59,7 +64,7 @@ function Chats() {
 
     function handleClick(con) {
         dispatch({ type: "CURRENT_CHAT", payload: con });
-        console.log("Chon conversation")
+        console.log("Chon conversation", con._id);
     };
 
     
@@ -78,7 +83,7 @@ function Chats() {
             <div className={cx("chats__content")} >
                 {isLoadingSearch ? (
                 <SearchUserLoading />
-                ) : (
+                ) : ( !isPetching ? (
                 conversations.length > 0 ? (conversations.map((con) => (
                     <ConversationChat 
                         key={con._id}
@@ -94,7 +99,9 @@ function Chats() {
                     }}
                     >No messages
                     </span>
-                </div>))}
+                </div>)) : (
+                <SearchUserLoading />
+                )) }
             </div>
         </div>
     )
