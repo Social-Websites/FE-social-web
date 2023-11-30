@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import { React, useState, useEffect, useRef } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import styles from "./FriendRequest.module.scss";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -7,6 +7,7 @@ import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { CircularProgress } from "@mui/material";
 import { acceptAddFriend, rejectAddFriend } from "../../services/userService";
+import { StateContext } from "../../context/StateContext";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
@@ -15,6 +16,7 @@ const FriendRequest = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
 
   const [decisionLoading, setDecisionLoading] = useState(false);
+  const {user, socket} = useContext(StateContext);
 
   const handleAddFriend = () => {
     props.setIsSent(props.item._id);
@@ -34,6 +36,13 @@ const FriendRequest = (props) => {
     } catch (err) {
       console.error("accept ", err);
       setDecisionLoading(false);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [props.item._id],
+        reponse: true,
+        type: "accept",
+      });
     }
   };
   const handleReject = async () => {
@@ -50,6 +59,13 @@ const FriendRequest = (props) => {
     } catch (err) {
       console.error("reject ", err);
       setDecisionLoading(false);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [props.item._id],
+        reponse: false,
+        type: "reject",
+      });
     }
   };
 

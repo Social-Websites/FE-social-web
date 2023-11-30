@@ -152,6 +152,7 @@ function Profile() {
     );
   }, []);
 
+
   const setRequestSent = useCallback((recordId) => {
     // Update UI optimistically
     setFriends((prev) =>

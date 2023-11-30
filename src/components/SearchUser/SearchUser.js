@@ -15,7 +15,9 @@ function SearchUser({ u, setOpen, open }) {
         <img
             className={cx("open__user_avatar")}
             style={{borderRadius: "50%"}}
-            src={u?.profile_picture}
+            src={u?.profile_picture === ""
+              ? "/static-resources/default-avatar.jpg"
+              : u?.profile_picture}
             alt=""
         />  
         <div className={cx("open__user__info")}>

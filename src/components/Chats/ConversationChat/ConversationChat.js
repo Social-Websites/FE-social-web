@@ -103,7 +103,9 @@ function ConversationChat({c, onClick}) {
             <div className={cx("chats__user_avatar")}>
                 <img
                     style={{width: "44px",height: "44px"}}
-                    src={c.img}
+                    src={c.img === ""
+                    ? "/static-resources/default-avatar.jpg"
+                    : c.img}
                     alt=""
                 />
                 {isOnline ? (<span></span>):null}
