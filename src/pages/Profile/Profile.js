@@ -30,7 +30,7 @@ const cx = classNames.bind(styles);
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
-  const { socket } = useContext(StateContext);
+  const { socket, dispatch } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const navigate = useNavigate();
 
@@ -278,6 +278,25 @@ function Profile() {
     }
   };
 
+  const handleMessage = async () => {
+    try{
+      const con = {
+        userIds: [userData._id], 
+        name: userData.full_name, 
+        img: userData.profile_picture, 
+        online: false,
+      }
+      await dispatch({ type: "CURRENT_CHAT", payload: con });
+      await dispatch({ type: "SET_MESSAGES", payload: [] });
+      console.log("Chon conversation", con._id);
+    } catch (error){
+      console.log(error);
+    } finally {
+      navigate("/chat");
+    }
+    
+  };
+
   const avatarUrl =
     userData?.profile_picture === ""
       ? "/static-resources/default-avatar.jpg"
@@ -344,7 +363,7 @@ function Profile() {
                     <span>Edit profile</span>
                   </button>
                 ) : (
-                  <button className={cx("profile__button")}>
+                  <button className={cx("profile__button")} onClick={handleMessage}>
                     <span>Message</span>
                   </button>
                 )}

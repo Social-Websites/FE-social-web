@@ -1,41 +1,23 @@
-import React,{useContext, useEffect, useState} from "react";
+import React,{useContext, useState} from "react";
 import style from "./NotificationItem.module.scss";
 import classNames from "classnames/bind";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { acceptAddFriend, rejectAddFriend } from "../../services/userService";
-import {getUserByUsername} from "../../services/userService";
 import { StateContext } from "../../context/StateContext";
 const cx = classNames.bind(style);
 function NotificationItem({n}) {
   const navigate = useNavigate()
   const privateHttpRequest = usePrivateHttpClient();
-  const [userData, setUserData] = useState(null);
   const [decisionLoading, setDecisionLoading] = useState(null);
   const {user, socket} = useContext(StateContext);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await getUserByUsername(
-          n.senderName,
-          privateHttpRequest.privateRequest
-        );
-        setUserData(response);
-      } catch (err) {
-        console.log(err.message);
-      } 
-    };
-    fetchUser();
-  }, []);
-  useEffect(() => {console.log(userData)}, [userData]);
-  
   const handleAccept = async () => {
     try {
       setDecisionLoading(true);
       const response = await acceptAddFriend(
-        userData._id,
+        n.sender_id,
         privateHttpRequest.privateRequest
       );
       if (response.message) {
@@ -47,7 +29,7 @@ function NotificationItem({n}) {
     } finally {
       socket.current.emit("sendNotification", {
         sender_id: user?._id,
-        receiver_id: [userData._id],
+        receiver_id: [n.sender_id],
         reponse: true,
         type: "accept",
       });
@@ -57,7 +39,7 @@ function NotificationItem({n}) {
     try {
       setDecisionLoading(true);
       const response = await rejectAddFriend(
-        userData._id,
+        n.sender_id,
         privateHttpRequest.privateRequest
       );
       if (response.message) {
@@ -69,7 +51,7 @@ function NotificationItem({n}) {
     } finally {
       socket.current.emit("sendNotification", {
         sender_id: user?._id,
-        receiver_id: [userData._id],
+        receiver_id: [n.sender_id],
         reponse: false,
         type: "reject",
       });
@@ -97,11 +79,11 @@ function NotificationItem({n}) {
               <div className={cx("open__user__info")}>
                   <a className={cx("open__username")} onClick={() => {navigate(`/${n.senderName}`, { replace: true });}
         }>{n.senderName}</a>
-                  <span className={cx("open__relation")}>{decisionLoading ? ( decisionLoading == "accept" ? " is accepted by you" : " is rejected by you") : n.content}</span>
+                  <span className={cx("open__relation")}>{decisionLoading ? ( decisionLoading === "accept" ? " is accepted by you" : " is rejected by you") : n.content}</span>
               </div>
           </div>
-          {(n.content_id == null && n.reponse == null) && 
-          ( decisionLoading ? ( decisionLoading == true ?
+          {(n.content_id === null && n.reponse === null) && 
+          ( decisionLoading ? ( decisionLoading === true ?
             (<div style={{display: "flex", alignItems: "center", marginLeft: "10px"}}>
               <CircularProgress size={20} />
               </div>

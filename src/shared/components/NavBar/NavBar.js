@@ -231,6 +231,7 @@ function NavBar({ onScrollToTop }) {
   useEffect(() => {
     if (locate !== "/chat") {
       dispatch({ type: "CURRENT_CHAT", payload: null });
+      dispatch({ type: "SET_MESSAGES", payload: null });
     }
   }, [locate]);
 

@@ -9,11 +9,10 @@ import SearchUserLoading from "../SearchUserLoading";
 
 const cx = classNames.bind(styles);
 function Chats() {
-
-    const [conversations, setConversation] = useState([])
+    // const [conversations, setConversation] = useState([])
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [isPetching, setIsPetching] = useState(false);
-    const  {user, dispatch}  = useContext(StateContext);
+    const  {conversations,user, dispatch}  = useContext(StateContext);
 
     const searchCons = async (e) => {
         const data = e.target.value;
@@ -21,7 +20,8 @@ function Chats() {
           const result = await conversationService.searchCons(user._id,data);
           console.log(result);
           if (result !== null) {
-            setConversation(result);
+            dispatch({ type: "SET_CONVERSATIONS", payload: result });
+            // setConversation(result);
             setIsLoadingSearch(false);
           }
         } catch (err) {
@@ -50,7 +50,8 @@ function Chats() {
                 try {
                     setIsPetching(true);
                     const data = await conversationService.getUserConversations(user._id);
-                    setConversation(data);
+                    dispatch({ type: "SET_CONVERSATIONS", payload: data });
+                    // setConversation(data);
                 } catch (error) {
                     setIsPetching(false);
                     console.error(error);
