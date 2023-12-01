@@ -21,6 +21,7 @@ import {
 } from "../../services/userService";
 import FriendRequest from "../../components/FriendRequest";
 import { getUserPosts } from "../../services/postServices";
+import { checkCon } from "../../services/conversationService";
 import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
@@ -280,15 +281,22 @@ function Profile() {
 
   const handleMessage = async () => {
     try{
-      const con = {
-        userIds: [userData._id], 
-        name: userData.full_name, 
-        img: userData.profile_picture, 
-        online: false,
+      const result = await checkCon(user._id, userData._id)
+      if(result){
+        dispatch({ type: "CURRENT_CHAT", payload: result });
       }
-      await dispatch({ type: "CURRENT_CHAT", payload: con });
-      await dispatch({ type: "SET_MESSAGES", payload: [] });
-      console.log("Chon conversation", con._id);
+      else{
+        const con = {
+          userIds: [userData._id], 
+          name: userData.full_name, 
+          img: userData.profile_picture, 
+          online: false,
+        }
+        dispatch({ type: "CURRENT_CHAT", payload: con });
+        dispatch({ type: "SET_MESSAGES", payload: [] });
+        console.log("Chon conversation", con._id);
+      }
+      
     } catch (error){
       console.log(error);
     } finally {
