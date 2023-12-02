@@ -112,6 +112,17 @@ export const unFriend = async (userId, sendRequest) => {
   }
 };
 
+export const updateUserProfile = async (data, sendRequest) => {
+  try {
+    const response = await sendRequest("/users/auth-user", "patch", data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const login = async (loginForm, sendRequest) => {
   try {
     const response = await sendRequest("/auth/login", "post", loginForm, {

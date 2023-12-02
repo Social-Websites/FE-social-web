@@ -43,8 +43,8 @@ const DashboardBody = () => {
       graphCardInfo: {
         id: "new-users",
         data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: blue[500],
-        bgColor: blue[50],
+        brColor: "rgba(33, 150, 243, 0.8)",
+        bgColor: "rgba(33, 150, 243, 0.2)",
       },
     },
     {
@@ -55,8 +55,8 @@ const DashboardBody = () => {
       graphCardInfo: {
         id: "new-posts",
         data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: lightGreen[300],
-        bgColor: lightGreen[50],
+        brColor: "rgba(0, 128, 0, 0.4)",
+        bgColor: "rgba(0, 128, 0, 0.1)",
       },
     },
     {
@@ -67,8 +67,8 @@ const DashboardBody = () => {
       graphCardInfo: {
         id: "new-groups",
         data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: amber[500],
-        bgColor: amber[50],
+        brColor: "rgba(255, 193, 7, 1)",
+        bgColor: "rgba(255, 193, 7, 0.2)",
       },
     },
   ];

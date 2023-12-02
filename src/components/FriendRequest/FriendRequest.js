@@ -16,7 +16,7 @@ const FriendRequest = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
 
   const [decisionLoading, setDecisionLoading] = useState(false);
-  const {user, socket} = useContext(StateContext);
+  const { user, socket } = useContext(StateContext);
 
   const handleAddFriend = () => {
     props.setIsSent(props.item._id);
@@ -111,9 +111,9 @@ const FriendRequest = (props) => {
         ) : props.listType === 2 ? (
           <>
             {props.decision === "ACCEPT" ? (
-              <span style={{ color: "white" }}>Accept</span>
+              <span style={{ color: "white" }}>Accepted</span>
             ) : props.decision === "REJECT" ? (
-              <span style={{ color: "white" }}>Reject</span>
+              <span style={{ color: "white" }}>Rejected</span>
             ) : (
               <>
                 <button

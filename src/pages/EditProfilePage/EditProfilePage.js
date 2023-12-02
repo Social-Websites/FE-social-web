@@ -17,12 +17,48 @@ const EditProfilePage = () => {
   const [modal, setModal] = useState(false);
   const [uploadProfileImgLoading, setUploadProfileImgLoading] = useState(false);
 
+  const [images, setImages] = useState([]);
+  const fileInputRef = useRef(null);
+
   const toggleModal = () => {
     setModal(!modal);
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
+    }
+  };
+
+  //Validate file
+  const notValidFile = (file) => {
+    //image/jpg,image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm
+    return (
+      file.type !== "image/jpg" &&
+      file.type !== "image/jpeg" &&
+      file.type !== "image/png" &&
+      file.type !== "image/webp"
+    );
+  };
+
+  const selectFiles = () => {
+    fileInputRef.current.click();
+  };
+
+  const onFileSelect = (event) => {
+    const files = event.target.files;
+    if (files.length === 0) return;
+    for (let i = 0; i < files.length; i++) {
+      if (notValidFile(files[i])) continue;
+      if (!images.some((e) => e.name === files[i].name)) {
+        setImages((prevImages) => [
+          ...prevImages,
+          {
+            name: files[i].name,
+            url: URL.createObjectURL(files[i]),
+            file: files[i],
+          },
+        ]);
+      }
     }
   };
 
@@ -77,6 +113,15 @@ const EditProfilePage = () => {
               <span className={cx("editProfile__username")}>
                 {user?.username}
               </span>
+              <input
+                type="file"
+                accept="image/jpg,image/jpeg,image/png,image/webp"
+                multiple
+                ref={fileInputRef}
+                onChange={onFileSelect}
+                id="myFileInput"
+                style={{ display: "none" }}
+              />
               <span
                 onClick={handleUploadProfileImg}
                 className={cx("editProfile__changeAvatar")}
