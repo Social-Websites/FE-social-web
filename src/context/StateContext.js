@@ -11,6 +11,7 @@ const INITIAL_STATE = {
   error: false,
   currentChat: null,
   posts: new Map(),
+  conversations: [],
   messages: [],
   socket: undefined,
 };
@@ -39,6 +40,7 @@ export const StateContextProvider = ({ children }) => {
         error: state.error,
         currentChat: state.currentChat,
         posts: state.posts,
+        conversations: state.conversations,
         messages: state.messages,
         socket: state.socket,
         dispatch,

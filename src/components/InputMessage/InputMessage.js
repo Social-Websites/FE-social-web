@@ -9,6 +9,7 @@ import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { StateContext } from "../../context/StateContext";
 import * as messageService from "../../services/messageService"
+import * as conversationService from "../../services/conversationService"
 import { storage, ref, getDownloadURL, uploadBytesResumable } from "../../config/firebase";
 
 
@@ -61,6 +62,7 @@ function InputMessage ({onSelectedFile}) {
       }
       const result =  await messageService.sendMessage(newMessage);
       socket.current.emit("send-msg", newMessage)
+      dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
       dispatch({type: "ADD_MESSAGE", payload: newMessage,
         fromSelf: true,
       })
@@ -72,6 +74,50 @@ function InputMessage ({onSelectedFile}) {
       console.log(err);
     }
   }
+
+
+  const handleCreateConversationWithIcon = async () => {
+    console.log(currentChat);
+    try{
+      const newConversation = {
+        userIds: [...currentChat.userIds, user._id],
+      };
+      const con = await conversationService.createConversation(newConversation);
+      const newCon = {
+        _id: con._id,
+        userIds: currentChat.userIds, 
+        name: currentChat.name, 
+        img: currentChat.img, 
+        lastMsg: "You: ❤️",
+      }
+      
+      dispatch({ type: "ADD_CONVERSATION", payload: newCon });
+      dispatch({ type: "CURRENT_CHAT", payload: newCon });
+      
+      const newMessage = {
+        conversationId: currentChat._id,
+        recieve_ids: currentChat.userIds,
+        sender_id: user._id,
+        img: user.profile_picture,
+        content: "❤️",
+        media: img,
+      }
+      const result =  await messageService.sendMessage(newMessage);
+      socket.current.emit("send-msg", newMessage)
+      dispatch({type: "ADD_MESSAGE", payload: newMessage,
+        fromSelf: true,
+      })
+      if (result !== null) {
+        setText("") ;
+        setImg([]);
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
   const handleSendMessage = async () => {
     // const promises = [];
     const promises = img.map((image) => {
@@ -121,6 +167,101 @@ function InputMessage ({onSelectedFile}) {
         };
         const result = await messageService.sendMessage(newMessage);
         socket.current.emit("send-msg", newMessage)
+        dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
+        dispatch({type: "ADD_MESSAGE", payload: newMessage,
+          fromSelf: true,
+        })
+        
+        if (result !== null) {
+          setText("") ;
+          setImg([]);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    await ReturnHeight();
+  };
+
+
+
+  const handleCreateConversationWithMsg = async () => {
+    // const promises = [];
+    const promises = img.map((image) => {
+      const name = Date.now();
+      const storageRef  = ref(storage,`images/${name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image.file);
+      // promises.push(uploadTask);
+      // console.log(promises);
+      return new Promise((resolve, reject) => {
+        uploadTask.on('state_changed', 
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setProgress(progress);
+          },
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+          () => {
+            console.log("Toi r");
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url) => {
+              console.log(url);
+              resolve(url);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+          }
+        );
+      });
+    });
+    
+    try{
+      const urls = await Promise.allSettled(promises)
+      const urlStrings = urls.map((url) => url.value.toString());
+      console.log(currentChat);
+      try{
+        const newConversation = {
+          userIds: [...currentChat.userIds, user._id],
+        };
+        const con = await conversationService.createConversation(newConversation);
+        let newCon;
+        if(urlStrings)
+          newCon = {
+            _id: con._id,
+            userIds: currentChat.userIds, 
+            name: currentChat.name, 
+            img: currentChat.img, 
+            lastMsg: "You: Image",
+          }
+        else
+          newCon = {
+            _id: con._id,
+            userIds: currentChat.userIds, 
+            name: currentChat.name, 
+            img: currentChat.img, 
+            lastMsg: "You: " + text,
+          }
+        
+        dispatch({ type: "ADD_CONVERSATION", payload: newCon });
+        dispatch({ type: "CURRENT_CHAT", payload: newCon });
+
+        const newMessage = {
+          conversationId: con._id,
+          recieve_ids: currentChat.userIds,
+          sender_id: user._id,
+          img: user.profile_picture,
+          content: text,
+          media: urlStrings,
+        };
+        const result = await messageService.sendMessage(newMessage);
+
+        socket.current.emit("send-msg", newMessage)
         dispatch({type: "ADD_MESSAGE", payload: newMessage,
           fromSelf: true,
         })
@@ -135,6 +276,18 @@ function InputMessage ({onSelectedFile}) {
       console.log(err);
     }
     await ReturnHeight();
+  };
+
+
+  const handleEnter = async (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter (như xuống dòng)
+      console.log("Enter .....");
+      if(currentChat._id)
+        await handleSendMessage();
+      else
+        await handleCreateConversationWithMsg();
+    }
   };
 
   function selectFiles() {
@@ -220,6 +373,7 @@ function InputMessage ({onSelectedFile}) {
             </div>}
           <input
               type="text"
+              onKeyUp={handleEnter}
               placeholder="Type something..."
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -238,7 +392,7 @@ function InputMessage ({onSelectedFile}) {
                 onClick={selectFiles} 
                 style={{color: "white",cursor: "pointer", marginRight: "10px"}}/>
           </div>
-          { text || img.length !== 0 ? (<SendIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={handleSendMessage}/>) : (<FavoriteBorderOutlinedIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={handleSendIcon}/>)}
+          { text || img.length !== 0 ? (<SendIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat._id ? handleSendMessage : handleCreateConversationWithMsg}/>) : (<FavoriteBorderOutlinedIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat?._id ? handleSendIcon : handleCreateConversationWithIcon}/>)}
         </div>
       </div>
     </div>

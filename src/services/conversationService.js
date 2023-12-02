@@ -19,3 +19,23 @@ export const searchCons = async (uId,search) => {
       throw new Error("Đã xảy ra lỗi search cons");
     }
   };
+
+  export const checkCon = async (uId,searchuId) => {
+    try {
+      const response = await httprequest.get(`/conversation/check?userId=${uId}&userSearchId=${searchuId}`);
+      return response;
+    } catch (error) {
+      console.log("Lỗi search cons:", error);
+      throw new Error("Đã xảy ra lỗi search cons");
+    }
+  };
+
+export const createConversation = async (data) => {
+  try {
+    const response = await httprequest.post(`/conversation/create`, data);
+    return response;
+  } catch (error) {
+    console.log("Lỗi create con:", error);
+    throw new Error("Đã xảy ra lỗi create con");
+  }
+};

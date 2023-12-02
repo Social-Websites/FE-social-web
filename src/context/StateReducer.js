@@ -48,6 +48,22 @@ const StateReducer = (state, action) => {
         ...state,
         socket: action.payload,
       };
+    case "SET_CONVERSATIONS":
+      return {
+        ...state,
+        conversations: action.payload,
+      };
+    case "ADD_CONVERSATION":
+      return {
+        ...state,
+        conversations: [action.payload, ...state.conversations],
+      };
+    case "FIRST_CONVERSATION":
+      const updatedConversations = state.conversations.filter(conversation => conversation?._id !== action.payload?._id);
+      return {
+        ...state,
+        conversations: [action.payload, ...updatedConversations],
+      };
     case "SET_MESSAGES":
       return {
         ...state,

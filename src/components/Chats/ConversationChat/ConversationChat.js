@@ -57,6 +57,8 @@ function ConversationChat({c, onClick}) {
 
     const handleMsgRecieve = (data) => {
         if ( data.conversationId == c._id) {
+            console.log("toi day chua" + c);
+            dispatch({ type: "FIRST_CONVERSATION", payload: c });
             if (data.media.length > 0) setHasNotification("Image");
             else setHasNotification(data.content);
             setUnread(true);
@@ -99,7 +101,7 @@ function ConversationChat({c, onClick}) {
     
 
     return (
-        <div className={cx("chats__user")} onClick={onClick}>
+        <div className={cx("chats__user")} onClick={onClick} style={currentChat?._id == c._id ? {backgroundColor: "rgba(255, 255, 255, 0.128)"} : null}>
             <div className={cx("chats__user_avatar")}>
                 <img
                     style={{width: "44px",height: "44px"}}
@@ -109,7 +111,6 @@ function ConversationChat({c, onClick}) {
                     alt=""
                 />
                 {isOnline ? (<span></span>):null}
-                
             </div>
 
             {unread ? (<div className={cx("chats__user__info")}>

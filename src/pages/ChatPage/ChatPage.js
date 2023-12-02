@@ -61,11 +61,12 @@ function ChatPage() {
     useEffect(() => {
         setIsOnline(currentChat?.online);
         console.log("online chua");
+        console.log(currentChat?.online);
         if(currentChat){
             console.log("online chua");
             socket.current.on("getOnlineUser", (data) => {
                 console.log(data)
-                if(currentChat.userIds.includes(data.user_id)){
+                if(currentChat.userIds.includes(data.user_id) && data.user_id != user._id){
                     setIsOnline(true);
                 }
             });
@@ -74,6 +75,8 @@ function ChatPage() {
 
     useEffect(() => {
         setIsOnline(currentChat?.online);
+        console.log("offline chua");
+        console.log(currentChat?.online);
         if(currentChat){
             socket.current.on("getOfflineUser", (data) => {
                 console.log(data)
@@ -108,7 +111,9 @@ function ChatPage() {
                     <div className={cx("chatInfo__user_avatar")}>
                         <img
                             style={{width: "44px",height: "44px"}}
-                            src={currentChat?.img}
+                            src={currentChat?.img  === ""
+                            ? "/static-resources/default-avatar.jpg"
+                            : currentChat?.img}
                             alt=""
                         />
                         {isOnline ? (<span></span>):null}

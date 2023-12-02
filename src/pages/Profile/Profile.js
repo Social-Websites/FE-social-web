@@ -21,6 +21,7 @@ import {
 } from "../../services/userService";
 import FriendRequest from "../../components/FriendRequest";
 import { getUserPosts } from "../../services/postServices";
+import { checkCon } from "../../services/conversationService";
 import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
@@ -30,7 +31,7 @@ const cx = classNames.bind(styles);
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
-  const { socket } = useContext(StateContext);
+  const { socket, dispatch } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const navigate = useNavigate();
 
@@ -278,6 +279,32 @@ function Profile() {
     }
   };
 
+  const handleMessage = async () => {
+    try{
+      const result = await checkCon(user._id, userData._id)
+      if(result){
+        dispatch({ type: "CURRENT_CHAT", payload: result });
+      }
+      else{
+        const con = {
+          userIds: [userData._id], 
+          name: userData.full_name, 
+          img: userData.profile_picture, 
+          online: false,
+        }
+        dispatch({ type: "CURRENT_CHAT", payload: con });
+        dispatch({ type: "SET_MESSAGES", payload: [] });
+        console.log("Chon conversation", con._id);
+      }
+      
+    } catch (error){
+      console.log(error);
+    } finally {
+      navigate("/chat");
+    }
+    
+  };
+
   const avatarUrl =
     userData?.profile_picture === ""
       ? "/static-resources/default-avatar.jpg"
@@ -344,7 +371,7 @@ function Profile() {
                     <span>Edit profile</span>
                   </button>
                 ) : (
-                  <button className={cx("profile__button")}>
+                  <button className={cx("profile__button")} onClick={handleMessage}>
                     <span>Message</span>
                   </button>
                 )}
