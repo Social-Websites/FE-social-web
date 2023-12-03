@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import { React, useState, useEffect, useContext } from "react";
+import { React, useState, useEffect, useContext, forwardRef } from "react";
 import styles from "./FriendRequest.module.scss";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const FriendRequest = (props) => {
+const FriendRequest = forwardRef((props, ref) => {
   const privateHttpRequest = usePrivateHttpClient();
 
   const [decisionLoading, setDecisionLoading] = useState(false);
@@ -69,7 +69,89 @@ const FriendRequest = (props) => {
     }
   };
 
-  return (
+  return ref ? (
+    <div ref={ref} className={cx("profile-modal__user")}>
+      <div className={cx("profile-modal__user_avatar")}>
+        <Link
+          to={`/${props.item.username}`}
+          className={cx("profile-modal__user_avatar")}
+          style={{
+            position: "inherit",
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <img
+            style={{ width: "44px", height: "44px" }}
+            src={getAvatarUrl(props.item.profile_picture)}
+            alt=""
+          />
+        </Link>
+      </div>
+      <div className={cx("profile-modal__user__info")}>
+        <Link
+          to={`/${props.item.username}`}
+          style={{
+            position: "inherit",
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <span className={cx("profile-modal__username")}>
+            {props.item.username}
+          </span>
+        </Link>
+        <span className={cx("profile-modal__relation")}>
+          {props.item.full_name}
+        </span>
+      </div>
+      <div>
+        {decisionLoading ? (
+          <CircularProgress size={20} />
+        ) : props.listType === 2 ? (
+          <>
+            {props.decision === "ACCEPT" ? (
+              <span style={{ color: "white" }}>Accepted</span>
+            ) : props.decision === "REJECT" ? (
+              <span style={{ color: "white" }}>Rejected</span>
+            ) : (
+              <>
+                <button
+                  onClick={handleAccept}
+                  className={cx("profile-modal__button__accept")}
+                  disabled={decisionLoading}
+                >
+                  <CheckIcon />
+                </button>
+                <button
+                  onClick={handleReject}
+                  className={cx("profile-modal__button")}
+                  disabled={decisionLoading}
+                >
+                  <ClearIcon />
+                </button>
+              </>
+            )}
+          </>
+        ) : props.listType === 1 ? (
+          <>
+            {props.myProfile ||
+            props.isFriend ||
+            props.yourId === props.item._id ? null : props.isSent ? (
+              <span style={{ color: "white" }}>Sent</span>
+            ) : (
+              <button
+                onClick={handleAddFriend}
+                className={cx("profile-modal__button__accept")}
+              >
+                Add Friend
+              </button>
+            )}
+          </>
+        ) : null}
+      </div>
+    </div>
+  ) : (
     <div className={cx("profile-modal__user")}>
       <div className={cx("profile-modal__user_avatar")}>
         <Link
@@ -152,6 +234,6 @@ const FriendRequest = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default FriendRequest;

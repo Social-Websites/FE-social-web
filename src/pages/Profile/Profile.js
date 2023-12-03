@@ -60,6 +60,66 @@ function Profile() {
   const [profilePostsLoading, setProfilePostsLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
 
+  const observer = useRef();
+  const lastPostRef = useCallback(
+    (node) => {
+      if (profilePostsLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMorePost) {
+          console.log("Last post");
+          setPostPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [profilePostsLoading, hasMorePost]
+  );
+
+  const modalItemObserver = useRef();
+  const lastFriendRef = useCallback(
+    (node) => {
+      if (modalLoading) return;
+
+      console.log("có observe");
+
+      if (modalItemObserver.current) modalItemObserver.current.disconnect();
+
+      modalItemObserver.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMoreFriends) {
+          console.log("Last friend");
+          setFriendsPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) modalItemObserver.current.observe(node);
+    },
+    [modalLoading, hasMoreFriends]
+  );
+
+  const lastFriendRequestRef = useCallback(
+    (node) => {
+      if (modalLoading) return;
+
+      console.log("có observe");
+
+      if (modalItemObserver.current) modalItemObserver.current.disconnect();
+
+      modalItemObserver.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMoreFriendRequests) {
+          console.log("Last friend request");
+          setFriendRequestsPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) modalItemObserver.current.observe(node);
+    },
+    [modalLoading, hasMoreFriendRequests]
+  );
+
   const fetchUser = useCallback(async () => {
     try {
       setProfileLoading(true);
@@ -80,29 +140,32 @@ function Profile() {
     }
   }, [username]);
 
-  const getInitPosts = useCallback(async () => {
+  const getProfilePosts = useCallback(async () => {
     try {
       setProfilePostsLoading(true);
       const data = await getUserPosts(
         username,
-        1,
+        postPage,
         15,
         privateHttpRequest.privateRequest
       );
 
-      const postsCount = data.posts.length;
+      if (data) {
+        const postsCount = data.posts.length;
+        setHasMorePost(postsCount > 0 && postsCount === 15);
 
-      if (postsCount > 0) setUserPosts(data.posts);
-
-      setHasMorePost(postsCount > 0);
+        if (postsCount > 0 && postPage === 1) setUserPosts(data.posts);
+        else setUserPosts((prev) => [...prev, ...data.posts]);
+      }
       setProfilePostsLoading(false);
     } catch (err) {
       setProfilePostsLoading(false);
       console.error("profile posts ", err);
     }
-  }, [username]);
+  }, [username, postPage]);
 
-  const getInitFriends = useCallback(async () => {
+  const getFriends = useCallback(async () => {
+    console.log("friends load");
     try {
       setModalLoading(true);
       const data = await getUserFriendsListByUsername(
@@ -112,18 +175,23 @@ function Profile() {
         privateHttpRequest.privateRequest
       );
 
-      const recordsCount = data.friends.length;
+      if (data) {
+        const recordsCount = data.friends.length;
 
-      if (recordsCount > 0) setFriends(data.friends);
+        setHasMoreFriends(recordsCount > 0 && recordsCount === 20);
+        if (recordsCount > 0 && friends.length === 0) setFriends(data.friends);
+        if (recordsCount > 0 && friends.length > 0)
+          setFriends((prev) => [...prev, ...data.friends]);
+      }
 
-      setHasMoreFriends(recordsCount > 0 && recordsCount === 20);
       setModalLoading(false);
     } catch (err) {
       setModalLoading(false);
     }
   }, [username, friendsPage]);
 
-  const getInitFriendRequests = useCallback(async () => {
+  const getFriendRequests = useCallback(async () => {
+    console.log("friends request load");
     try {
       setModalLoading(true);
       const data = await getFriendRequestsList(
@@ -132,11 +200,15 @@ function Profile() {
         privateHttpRequest.privateRequest
       );
 
-      const recordsCount = data.friend_requests.length;
+      if (data) {
+        const recordsCount = data.friend_requests.length;
 
-      if (recordsCount > 0) setFriendRequests(data.friend_requests);
-
-      setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+        setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+        if (recordsCount > 0 && friends.length === 0)
+          setFriendRequests(data.friend_requests);
+        if (recordsCount > 0 && friends.length > 0)
+          setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+      }
       setModalLoading(false);
     } catch (err) {
       setModalLoading(false);
@@ -166,25 +238,33 @@ function Profile() {
 
   useEffect(() => {
     fetchUser();
-    getInitPosts();
 
+    setUserPosts([]);
+    setPostPage(1);
+    setHasMorePost(true);
+    setFriendRequests([]);
+    setFriends([]);
+    setFriendsPage(1);
+    setFriendRequestsPage(1);
+    if (modal) toggleModal();
     // Gỡ bỏ title khi component unmount (nếu cần)
     return () => {
-      setUserPosts([]);
       document.title = "NestMe"; // Đặt lại title khi component unmount
     };
   }, [username]);
 
-  // useEffect(() => {
+  useEffect(() => {
+    getProfilePosts();
+  }, [username, postPage]);
 
-  // }, [ postPage]);
+  useEffect(() => {
+    if (listType === 1 && modal) getFriends();
+  }, [listType, username, friendsPage, modal]);
+  useEffect(() => {
+    if (listType === 2 && modal) getFriendRequests();
+  }, [listType, friendRequestsPage, modal]);
 
   const isOwnProfile = user?.username === userData?.username;
-
-  // useEffect(() => {
-  //   console.log("own ", isOwnProfile);
-  //   console.log("friend ", isFriend);
-  // }, [isOwnProfile, isFriend]);
 
   const handleAddFriend = async () => {
     try {
@@ -255,22 +335,18 @@ function Profile() {
     setListType(1);
 
     toggleModal();
-
-    console.log("get friends");
-    await getInitFriends();
   };
 
   const handleGetUserFriendRequestsList = async () => {
     setListType(2);
 
     toggleModal();
-
-    console.log("get friend requests");
-    await getInitFriendRequests();
   };
 
   const toggleModal = () => {
     setModal(!modal);
+    setFriendRequests([]);
+    setFriends([]);
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
@@ -434,9 +510,20 @@ function Profile() {
             </a>
           </div>
           <div className={cx("profile__posts")}>
-            {profilePostsLoading ? (
-              <CircularProgress size={50} />
-            ) : userPosts.length === 0 ? (
+            {userPosts.length > 0 ? (
+              userPosts.map((post, i) => {
+                if (userPosts.length === i + 1)
+                  return (
+                    <ProfilePost
+                      ref={lastPostRef}
+                      key={i}
+                      creator={userData}
+                      post={post}
+                    />
+                  );
+                return <ProfilePost key={i} creator={userData} post={post} />;
+              })
+            ) : (
               <div
                 style={{
                   display: "flex",
@@ -448,11 +535,8 @@ function Profile() {
                   No posts yet
                 </span>
               </div>
-            ) : hasMorePost ? (
-              userPosts.map((post, i) => (
-                <ProfilePost key={i} creator={userData} post={post} />
-              ))
-            ) : null}
+            )}
+            {profilePostsLoading && <CircularProgress size={50} />}
           </div>
         </div>
       </div>
@@ -506,40 +590,74 @@ function Profile() {
             <div className={cx("profile-modal-content-header")}>
               {listType === 1 ? "Friends" : "Friend requests"}
             </div>
-            {modalLoading ? (
-              <CircularProgress size={40} />
-            ) : listType === 1 && friends.length > 0 ? (
+            {listType === 1 && friends.length > 0 ? (
               <div className={cx("profile-modal-content-users")}>
-                {friends.map((friend, i) => (
-                  <FriendRequest
-                    key={i}
-                    yourId={user._id}
-                    listType={1}
-                    myProfile={isOwnProfile}
-                    isFriend={friend?.is_your_friend ? true : false}
-                    isSent={friend?.is_friend_request_sent ? true : false}
-                    setIsSent={setRequestSent}
-                    item={friend}
-                  />
-                ))}
+                {friends.map((friend, i) => {
+                  if (friends.length === i + 1)
+                    return (
+                      <FriendRequest
+                        ref={lastFriendRef}
+                        key={i}
+                        yourId={user._id}
+                        listType={1}
+                        myProfile={isOwnProfile}
+                        isFriend={friend?.is_your_friend ? true : false}
+                        isSent={friend?.is_friend_request_sent ? true : false}
+                        setIsSent={setRequestSent}
+                        item={friend}
+                      />
+                    );
+                  return (
+                    <FriendRequest
+                      key={i}
+                      yourId={user._id}
+                      listType={1}
+                      myProfile={isOwnProfile}
+                      isFriend={friend?.is_your_friend ? true : false}
+                      isSent={friend?.is_friend_request_sent ? true : false}
+                      setIsSent={setRequestSent}
+                      item={friend}
+                    />
+                  );
+                })}
               </div>
             ) : listType === 2 && friendRequests.length > 0 ? (
               <div className={cx("profile-modal-content-users")}>
-                {friendRequests.map((friendRequest, i) => (
-                  <FriendRequest
-                    key={i}
-                    listType={2}
-                    item={friendRequest}
-                    decision={
-                      friendRequest?.decision ? friendRequest.decision : ""
-                    }
-                    setRequestDecision={setRequestDecision}
-                  />
-                ))}
+                {friendRequests.map((friendRequest, i) => {
+                  if (friendRequests.length === i + 1)
+                    return (
+                      <FriendRequest
+                        ref={lastFriendRequestRef}
+                        key={i}
+                        listType={2}
+                        item={friendRequest}
+                        decision={
+                          friendRequest?.decision ? friendRequest.decision : ""
+                        }
+                        setRequestDecision={setRequestDecision}
+                      />
+                    );
+                  return (
+                    <FriendRequest
+                      key={i}
+                      listType={2}
+                      item={friendRequest}
+                      decision={
+                        friendRequest?.decision ? friendRequest.decision : ""
+                      }
+                      setRequestDecision={setRequestDecision}
+                    />
+                  );
+                })}
               </div>
-            ) : (
+            ) : modalLoading ? null : (
               <div className={cx("profile-modal-content-no-users")}>
                 <span>No {listType === 1 ? "friends" : "friend requests"}</span>
+              </div>
+            )}
+            {modalLoading && (
+              <div className={cx("profile-modal-content-no-users")}>
+                <CircularProgress />
               </div>
             )}
           </div>

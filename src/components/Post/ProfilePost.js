@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import classNames from "classnames/bind";
 import styles from "./Post.scss";
 import CommentInput from "../Comment/CommentInput";
@@ -19,12 +26,13 @@ import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import ReactIcon from "../ReactIcon/ReactIcon";
 import { StateContext } from "../../context/StateContext";
-import { updatePostReact, updateReactsCount } from "../../context/StateAction";
+import { updateReactsCount } from "../../context/StateAction";
 import { getPostComments } from "../../services/postServices";
+import { CircularProgress } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
-const ProfilePost = ({ post, creator }) => {
+const ProfilePost = forwardRef(({ post, creator }, ref) => {
   const avatarUrl =
     creator.profile_picture === ""
       ? "/static-resources/default-avatar.jpg"
@@ -46,10 +54,34 @@ const ProfilePost = ({ post, creator }) => {
   const [reactsCount, setReactsCount] = useState(post.reacts_count);
 
   const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
   const [page, setPage] = useState(1);
   const [isFirstMount, setIsFirstMount] = useState(true);
+  const [hadMounted, setHadMounted] = useState(false);
+
+  const observer = useRef();
+  const lastCommentRef = useCallback(
+    (node) => {
+      if (commentsLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMoreComments) {
+          console.log("Last comment");
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [commentsLoading, hasMoreComments]
+  );
 
   const loadComments = useCallback(async () => {
+    console.log("comment bị loading nè");
+    setCommentsLoading(true);
     try {
       const response = await getPostComments(
         post._id,
@@ -57,10 +89,19 @@ const ProfilePost = ({ post, creator }) => {
         30,
         privateHttpRequest.privateRequest
       );
-      setComments((prevComments) => [...prevComments, ...response.comments]);
+      if (response) {
+        setHasMoreComments(response.comments > 0 && response.comments === 30);
+        setComments((prevComments) => [...prevComments, ...response.comments]);
+      }
+      setCommentsLoading(false);
     } catch (err) {
+      setCommentsLoading(false);
       console.error("Error loading comments: ", err);
     }
+  }, [post._id, page]);
+
+  useEffect(() => {
+    if (hadMounted && !isFirstMount) loadComments();
   }, [post._id, page]);
 
   useEffect(() => {
@@ -76,6 +117,7 @@ const ProfilePost = ({ post, creator }) => {
     setModal(!modal);
     if (isFirstMount) {
       loadComments();
+      setHadMounted(true);
       setIsFirstMount(false);
     }
     if (document.body.style.overflow !== "hidden") {
@@ -122,6 +164,7 @@ const ProfilePost = ({ post, creator }) => {
       <div onClick={toggleModal} className={cx("profile__post")}>
         <img src={post.media[0]} />
       </div>
+      {ref ? <div ref={ref}></div> : null}
       {modal && (
         <div className={cx("post-modal active-post-modal")}>
           <div
@@ -285,54 +328,99 @@ const ProfilePost = ({ post, creator }) => {
                         </span>
                       </div>
                     </div>
-                    {privateHttpRequest.isLoading ? (
-                      <span style={{ color: "white" }}>
-                        Loading comments...
-                      </span>
-                    ) : (
-                      comments.length > 0 &&
-                      comments.map((comment) => (
-                        <div
-                          key={comment._id}
-                          className={cx("post-comment-user")}
-                        >
-                          <div className={cx("post-comment-user-avatar")}>
-                            <Link
-                              to={`/${comment.user.username}`}
-                              className={cx("post-comment-user-avatar")}
-                              style={{
-                                position: "inherit",
-                                textDecoration: "none",
-                                color: "inherit",
-                              }}
+                    {comments.length > 0 &&
+                      comments.map((comment, i) => {
+                        if (comments.length === i + 1) {
+                          return (
+                            <div
+                              ref={lastCommentRef}
+                              key={comment._id}
+                              className={cx("post-comment-user")}
                             >
-                              <img
-                                style={{ width: "30px", height: "30px" }}
-                                src={getAvatarUrl(comment.user.profile_picture)}
-                                alt=""
-                              />
-                            </Link>
-                          </div>
-                          <div className={cx("post-comment-user-info")}>
-                            <Link
-                              to={`/${comment.user.username}`}
-                              style={{
-                                position: "inherit",
-                                textDecoration: "none",
-                                color: "inherit",
-                              }}
-                            >
-                              <span className={cx("post-comment-username")}>
-                                {comment.user.username}
+                              <div className={cx("post-comment-user-avatar")}>
+                                <Link
+                                  to={`/${comment.user.username}`}
+                                  className={cx("post-comment-user-avatar")}
+                                  style={{
+                                    position: "inherit",
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  <img
+                                    style={{ width: "30px", height: "30px" }}
+                                    src={getAvatarUrl(
+                                      comment.user.profile_picture
+                                    )}
+                                    alt=""
+                                  />
+                                </Link>
+                              </div>
+                              <div className={cx("post-comment-user-info")}>
+                                <Link
+                                  to={`/${comment.user.username}`}
+                                  style={{
+                                    position: "inherit",
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  <span className={cx("post-comment-username")}>
+                                    {comment.user.username}
+                                  </span>
+                                </Link>
+                                <span className={cx("post-comment-content")}>
+                                  {comment.comment}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div
+                            key={comment._id}
+                            className={cx("post-comment-user")}
+                          >
+                            <div className={cx("post-comment-user-avatar")}>
+                              <Link
+                                to={`/${comment.user.username}`}
+                                className={cx("post-comment-user-avatar")}
+                                style={{
+                                  position: "inherit",
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                }}
+                              >
+                                <img
+                                  style={{ width: "30px", height: "30px" }}
+                                  src={getAvatarUrl(
+                                    comment.user.profile_picture
+                                  )}
+                                  alt=""
+                                />
+                              </Link>
+                            </div>
+                            <div className={cx("post-comment-user-info")}>
+                              <Link
+                                to={`/${comment.user.username}`}
+                                style={{
+                                  position: "inherit",
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                }}
+                              >
+                                <span className={cx("post-comment-username")}>
+                                  {comment.user.username}
+                                </span>
+                              </Link>
+                              <span className={cx("post-comment-content")}>
+                                {comment.comment}
                               </span>
-                            </Link>
-                            <span className={cx("post-comment-content")}>
-                              {comment.comment}
-                            </span>
+                            </div>
                           </div>
-                        </div>
-                      ))
-                    )}
+                        );
+                      })}
+                    {commentsLoading && <CircularProgress size={40} />}
                   </div>
                   <div
                     className={cx("post__footer")}
@@ -346,7 +434,7 @@ const ProfilePost = ({ post, creator }) => {
                   >
                     <div
                       className={cx("post__footerIcons")}
-                      style={{ padding: "0px 10px", height:"33%" }}
+                      style={{ padding: "0px 10px", height: "33%" }}
                     >
                       <div className={cx("post__iconsMain")}>
                         <ReactIcon
@@ -373,7 +461,7 @@ const ProfilePost = ({ post, creator }) => {
                         </div>
                       </div>
                     </div>
-                    <div style={{ padding: "0px 10px", height:"20%" }}>
+                    <div style={{ padding: "0px 10px", height: "20%" }}>
                       <span>{reactsCount} likes</span>
                       <br />
                       <span
@@ -393,7 +481,8 @@ const ProfilePost = ({ post, creator }) => {
                       setComments={setComments}
                       emojiPickerPos="right"
                       style={{
-                        padding: "0px 10px", height:"31%",
+                        padding: "0px 10px",
+                        height: "31%",
                         borderTop: "#353535 solid 0.5px",
                       }}
                       className={cx("input")}
@@ -407,6 +496,6 @@ const ProfilePost = ({ post, creator }) => {
       )}
     </>
   );
-};
+});
 
 export default ProfilePost;

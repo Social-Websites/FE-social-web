@@ -15,26 +15,27 @@ import { StateContext } from "../../context/StateContext";
 import { addPosts, setPosts } from "../../context/StateAction";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import { CircularProgress } from "@mui/material";
+import useLoadMorePosts from "./Load-more-hook";
 
 const cx = classNames.bind(styles);
 
 const TimeLine = () => {
   const privateHttpRequest = usePrivateHttpClient();
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
+  const { loadMoreLoading, hasMore } = useLoadMorePosts(page);
   const { posts, dispatch } = useContext(StateContext);
 
   const observer = useRef();
   const lastPostRef = useCallback(
     (node) => {
-      if (privateHttpRequest.isLoading) return;
+      if (loadMoreLoading) return;
 
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           console.log("Last post");
+          setPage((prev) => prev + 1);
         }
       });
 
@@ -43,23 +44,20 @@ const TimeLine = () => {
     [loadMoreLoading, hasMore]
   );
 
-  useEffect(() => {
-    const getPosts = async () => {
-      const data = await getHomePosts(
-        page,
-        10,
-        privateHttpRequest.privateRequest
-      );
+  const getPosts = useCallback(async () => {
+    try {
+      const data = await getHomePosts(1, 10, privateHttpRequest.privateRequest);
 
       const postsCount = data.posts.length;
 
       if (postsCount > 0 && page === 1) dispatch(setPosts(data.posts));
-      else if (postsCount > 0) dispatch(addPosts(data.posts));
-
-      setHasMore(postsCount > 0 && postsCount === 10);
-    };
-    getPosts();
-  }, [page]);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+  useEffect(() => {
+    if (page === 1) getPosts();
+  }, []);
 
   const postsArray = [...posts.entries()];
 
@@ -70,9 +68,11 @@ const TimeLine = () => {
           {privateHttpRequest.isLoading ? (
             <CircularProgress size={50} />
           ) : postsArray.length > 0 ? (
-            postsArray.map(([postId, post]) => (
-              <Post key={postId} post={post} />
-            ))
+            postsArray.map(([postId, post], i) => {
+              if (postsArray.length === i + 1)
+                return <Post ref={lastPostRef} key={postId} post={post} />;
+              return <Post key={postId} post={post} />;
+            })
           ) : (
             <div className={cx("no__post")}>
               <div>
@@ -90,6 +90,19 @@ const TimeLine = () => {
             </div>
           )}
           {loadMoreLoading && <CircularProgress size={50} />}
+          {!hasMore && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: 20,
+              }}
+            >
+              <span style={{ color: "white", fontSize: 20, fontWeight: 600 }}>
+                Add more friends to see more posts
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <div className={cx("timeline__right")}>
