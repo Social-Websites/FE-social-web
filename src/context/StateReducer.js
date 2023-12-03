@@ -59,7 +59,9 @@ const StateReducer = (state, action) => {
         conversations: [action.payload, ...state.conversations],
       };
     case "FIRST_CONVERSATION":
-      const updatedConversations = state.conversations.filter(conversation => conversation?._id !== action.payload?._id);
+      const updatedConversations = state.conversations.filter(
+        (conversation) => conversation?._id !== action.payload?._id
+      );
       return {
         ...state,
         conversations: [action.payload, ...updatedConversations],
@@ -179,6 +181,31 @@ const StateReducer = (state, action) => {
         ...state,
         user: action.payload,
       };
+
+    case "SET_USER_FIELDS":
+      // action.payload có thể là { user_info: { bio: "hello from website", gender: "male", ... }, user_setting: { setting1: "value1", ... }, full_name: "new name", ... }
+      const updatedUser = { ...state.user };
+
+      for (const key in action.payload) {
+        const fieldValue = action.payload[key];
+
+        if (typeof fieldValue === "object" && fieldValue !== null) {
+          // Nếu là object, duyệt qua tất cả các keys bên trong và áp dụng chúng
+          updatedUser[key] = {
+            ...updatedUser[key],
+            ...fieldValue,
+          };
+        } else {
+          // Nếu không phải object, áp dụng trực tiếp vào updatedUser
+          updatedUser[key] = fieldValue;
+        }
+      }
+
+      return {
+        ...state,
+        user: updatedUser,
+      };
+
     case "SET_AUTH":
       return {
         ...state,

@@ -8,17 +8,29 @@ import { StateContext } from "../../context/StateContext";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { CircularProgress } from "@mui/material";
 import { green } from "@mui/material/colors";
+import { updateUserProfile } from "../../services/userService";
+import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+import {
+  getDownloadURL,
+  ref,
+  storage,
+  uploadBytesResumable,
+} from "../../config/firebase";
+import { updateUserProfileFields } from "../../context/StateAction";
 
 const cx = classNames.bind(styles);
 
 const EditProfilePage = () => {
-  const { user } = useContext(StateContext);
+  const { user, dispatch } = useContext(StateContext);
+  const privateHttpRequest = usePrivateHttpClient();
 
   const [modal, setModal] = useState(false);
   const [uploadProfileImgLoading, setUploadProfileImgLoading] = useState(false);
+  const [updateProfileLoading, setUpdateProfileLoading] = useState(false);
 
-  const [images, setImages] = useState([]);
   const fileInputRef = useRef(null);
+  const [bio, setBio] = useState(user?.user_info.bio);
+  const [bioModified, setBioModified] = useState(false);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -40,31 +52,115 @@ const EditProfilePage = () => {
     );
   };
 
+  const updateBio = async () => {
+    setUpdateProfileLoading(true);
+    try {
+      const respone = await updateUserProfile(
+        { user_info: { bio: bio } },
+        privateHttpRequest.privateRequest
+      );
+      if (respone?.message !== null) {
+        dispatch(updateUserProfileFields({ user_info: { bio: bio } }));
+        setBioModified(false);
+        setUpdateProfileLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setUpdateProfileLoading(false);
+    }
+  };
+
   const selectFiles = () => {
     fileInputRef.current.click();
   };
 
-  const onFileSelect = (event) => {
+  const onFileSelect = async (event) => {
+    if (modal) {
+      toggleModal();
+    }
+    setUploadProfileImgLoading(true);
     const files = event.target.files;
     if (files.length === 0) return;
-    for (let i = 0; i < files.length; i++) {
-      if (notValidFile(files[i])) continue;
-      if (!images.some((e) => e.name === files[i].name)) {
-        setImages((prevImages) => [
-          ...prevImages,
-          {
-            name: files[i].name,
-            url: URL.createObjectURL(files[i]),
-            file: files[i],
-          },
-        ]);
+
+    const validFiles = Array.from(files).filter((file) => !notValidFile(file));
+
+    if (validFiles.length === 0) return;
+
+    const selectedImage = {
+      name: validFiles[0].name,
+      url: URL.createObjectURL(validFiles[0]),
+      file: validFiles[0],
+    };
+
+    const name = Date.now();
+    const storageRef = ref(storage, `images/${name}`);
+    const uploadTask = uploadBytesResumable(storageRef, selectedImage.file);
+
+    const uploadPromise = new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        null,
+        (error) => {
+          console.log(error);
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((url) => {
+              console.log(url);
+              resolve(url);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(error);
+            });
+        }
+      );
+    });
+
+    try {
+      const url = await uploadPromise;
+
+      const urlString = url.toString();
+      const respone = await updateUserProfile(
+        { profile_picture: urlString },
+        privateHttpRequest.privateRequest
+      );
+      if (respone?.message !== null) {
+        dispatch(updateUserProfileFields({ profile_picture: urlString }));
+        setUploadProfileImgLoading(false);
       }
+    } catch (err) {
+      console.error(err);
+      setUploadProfileImgLoading(false);
     }
   };
 
   const handleUploadProfileImg = () => {
     if (!uploadProfileImgLoading) {
-      setUploadProfileImgLoading(true);
+      if (user?.profile_picture === "") {
+        selectFiles();
+      } else {
+        toggleModal();
+      }
+    }
+  };
+
+  const removePhoto = async () => {
+    if (modal) toggleModal();
+    setUploadProfileImgLoading(true);
+    try {
+      const respone = await updateUserProfile(
+        { profile_picture: "" },
+        privateHttpRequest.privateRequest
+      );
+      if (respone?.message !== null) {
+        dispatch(updateUserProfileFields({ profile_picture: "" }));
+        setUploadProfileImgLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setUploadProfileImgLoading(false);
     }
   };
 
@@ -101,9 +197,8 @@ const EditProfilePage = () => {
                   sx={{
                     color: "blueviolet",
                     position: "absolute",
-                    top: 7,
-                    left: 120.5,
-                    zIndex: 1,
+                    marginTop: "6.6px",
+                    marginRight: "6.7px",
                   }}
                 />
               )}
@@ -135,25 +230,53 @@ const EditProfilePage = () => {
               <span>Bio</span>
             </div>
             <div className={cx("editProfile__content__info__textarea")}>
-              <textarea placeholder="Bio..."></textarea>
+              <textarea
+                value={bio}
+                onChange={(e) => {
+                  setBio(e.target.value);
+                  setBioModified(true);
+                }}
+                placeholder="Bio..."
+              ></textarea>
             </div>
           </div>
           <div className={cx("editProfile__content__info")}>
             <div className={cx("editProfile__content__info__subject")}>
               <span></span>
             </div>
-            <div className={cx("editProfile__content__info__button")}>
+            <div
+              className={cx("editProfile__content__info__button")}
+              style={{
+                position: "relative",
+              }}
+            >
               <Button
                 sx={{
                   fontFamily: "inherit",
                   textTransform: "none",
                   ":hover": {
-                    opacity: 0.85,
+                    opacity: 0.8,
                   },
+                  opacity: !bioModified || updateProfileLoading ? 0.5 : 1,
                 }}
+                onClick={updateBio}
+                disabled={!bioModified || updateProfileLoading}
               >
                 Submit
               </Button>
+              {updateProfileLoading && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: "white",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    marginTop: "-12px",
+                    marginLeft: "-8px",
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -171,14 +294,21 @@ const EditProfilePage = () => {
               className={cx("more-content-element")}
               style={{ borderBottomWidth: 3, cursor: "default" }}
             >
-              Are you sure?
+              Change Profile Photo
             </div>
             <div
               className={cx("more-content-element")}
-              style={{ color: "#ed4956" }}
-              onClick={toggleModal}
+              style={{ color: "#0095f6", fontWeight: 700 }}
+              onClick={selectFiles}
             >
-              UnFriend
+              Upload photo
+            </div>
+            <div
+              className={cx("more-content-element")}
+              style={{ color: "#ed4956", fontWeight: 700 }}
+              onClick={removePhoto}
+            >
+              Remove current photo
             </div>
             <div className={cx("more-content-element")} onClick={toggleModal}>
               Cancel

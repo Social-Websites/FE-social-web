@@ -16,9 +16,11 @@ const Setting = () => {
       <div className={cx("settings__content")}>
         <div
           className={cx("settings__content__element")}
-          style={locate === "/accounts/edit" ? { background: "#262626" } : null}
+          style={
+            locate === "/user-info/edit" ? { background: "#262626" } : null
+          }
           onClick={() => {
-            navigate("/accounts/edit", { replace: true });
+            navigate("/user-info/edit", { replace: true });
           }}
         >
           Edit profile

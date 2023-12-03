@@ -153,7 +153,6 @@ function Profile() {
     );
   }, []);
 
-
   const setRequestSent = useCallback((recordId) => {
     // Update UI optimistically
     setFriends((prev) =>
@@ -280,29 +279,26 @@ function Profile() {
   };
 
   const handleMessage = async () => {
-    try{
-      const result = await checkCon(user._id, userData._id)
-      if(result){
+    try {
+      const result = await checkCon(user._id, userData._id);
+      if (result) {
         dispatch({ type: "CURRENT_CHAT", payload: result });
-      }
-      else{
+      } else {
         const con = {
-          userIds: [userData._id], 
-          name: userData.full_name, 
-          img: userData.profile_picture, 
+          userIds: [userData._id],
+          name: userData.full_name,
+          img: userData.profile_picture,
           online: false,
-        }
+        };
         dispatch({ type: "CURRENT_CHAT", payload: con });
         dispatch({ type: "SET_MESSAGES", payload: [] });
         console.log("Chon conversation", con._id);
       }
-      
-    } catch (error){
+    } catch (error) {
       console.log(error);
     } finally {
       navigate("/chat");
     }
-    
   };
 
   const avatarUrl =
@@ -371,7 +367,10 @@ function Profile() {
                     <span>Edit profile</span>
                   </button>
                 ) : (
-                  <button className={cx("profile__button")} onClick={handleMessage}>
+                  <button
+                    className={cx("profile__button")}
+                    onClick={handleMessage}
+                  >
                     <span>Message</span>
                   </button>
                 )}
@@ -392,6 +391,9 @@ function Profile() {
               </div>
               <div className={cx("profile__user__3")}>
                 <span>{userData?.full_name}</span>
+              </div>
+              <div className={cx("profile__user__3")}>
+                <span>{userData?.user_info.bio}</span>
               </div>
             </div>
           </div>

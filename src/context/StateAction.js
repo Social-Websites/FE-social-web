@@ -77,3 +77,7 @@ export const updateReactsCount = (react) => ({
   type: "UPDATE_REACTS_COUNT",
   payload: react,
 });
+export const updateUserProfileFields = (updateFields) => ({
+  type: "SET_USER_FIELDS",
+  payload: updateFields,
+});

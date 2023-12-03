@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Post from "../Post/Post";
 import Suggestions from "../Suggestions/Suggestions";
 import classNames from "classnames/bind";
@@ -16,7 +22,26 @@ const TimeLine = () => {
   const privateHttpRequest = usePrivateHttpClient();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const { posts, dispatch } = useContext(StateContext);
+
+  const observer = useRef();
+  const lastPostRef = useCallback(
+    (node) => {
+      if (privateHttpRequest.isLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          console.log("Last post");
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loadMoreLoading, hasMore]
+  );
 
   useEffect(() => {
     const getPosts = async () => {
@@ -64,6 +89,7 @@ const TimeLine = () => {
               </div>
             </div>
           )}
+          {loadMoreLoading && <CircularProgress size={50} />}
         </div>
       </div>
       <div className={cx("timeline__right")}>
