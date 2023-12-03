@@ -28,12 +28,19 @@
 }
 
 .wrapper {
-  height: 100vh;
+  // height: 100%;
   background: #efefef;
   padding: 16px 16px 0px 272px;
   @media (max-width: 900px) {
     padding: 16px 16px;
   }
+}
+
+.simplebar-placeholder{
+  display: none;
+}
+.css-nw5nzo{
+  padding-top: 20px !important;
 }
 
 .nav-links {

@@ -23,11 +23,11 @@ const SideNavAdminData = ({ handleDrawerClose }) => {
       icon: <DashboardIcon />,
     },
     {
-      label: "Người dùng",
+      label: "Users",
       link: "users",
       icon: <PermIdentityIcon />,
     },
-    { label: "Bài viết", link: "posts", icon: <ArticleIcon /> },
+    { label: "Posts", link: "posts", icon: <ArticleIcon /> },
   ];
 
   return (
