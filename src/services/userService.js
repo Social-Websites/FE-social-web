@@ -9,6 +9,16 @@ export const getUser = async (sendRequest) => {
   }
 };
 
+export const getSuggestedUsers = async (sendRequest) => {
+  try {
+    const response = await sendRequest("/users/suggested");
+    return response?.data;
+  } catch (err) {
+    console.log("Lỗi lấy thong tin gợi ý:", err);
+    throw err;
+  }
+};
+
 export const getUserByUsername = async (username, sendRequest) => {
   try {
     const response = await sendRequest(`/users/${username}`);
