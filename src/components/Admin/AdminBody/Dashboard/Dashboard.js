@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -27,55 +27,19 @@ import {
   red,
 } from "@mui/material/colors";
 import UserOverview from "./UserOverview";
-import useHttpClient from "../../../../shared/hook/http-hook/public-http-hook";
+import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 
 const cx = classNames.bind(styles);
 
 const DashboardBody = () => {
-  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+  const privateHttpClient = usePrivateHttpClient();
+  const [displayData, setDisplayData] = useState([]);
 
-  const displayData = [
-    {
-      label: "Người dùng mới",
-      value: randomValueGenerator({ digit: 100 }),
-      icon: <ArrowDropUpIcon />,
-      iconLabel: "8%",
-      graphCardInfo: {
-        id: "new-users",
-        data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: "rgba(33, 150, 243, 0.8)",
-        bgColor: "rgba(33, 150, 243, 0.2)",
-      },
-    },
-    {
-      label: "Bài viết mới",
-      value: randomValueGenerator({ digit: 1000 }),
-      icon: <ArrowDropUpIcon />,
-      iconLabel: "5%",
-      graphCardInfo: {
-        id: "new-posts",
-        data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: "rgba(0, 128, 0, 0.4)",
-        bgColor: "rgba(0, 128, 0, 0.1)",
-      },
-    },
-    {
-      label: "Nhóm mới",
-      value: randomValueGenerator({ digit: 50 }),
-      icon: <ArrowDropDownIcon />,
-      iconLabel: "10%",
-      graphCardInfo: {
-        id: "new-groups",
-        data: ArrayDataGenerator({ count: 9, digit: 100 }),
-        brColor: "rgba(255, 193, 7, 1)",
-        bgColor: "rgba(255, 193, 7, 0.2)",
-      },
-    },
-  ];
+  useEffect(() => {}, []);
 
   return (
     <Box>
-      <PageHeader label="Dashboard" pageTitle="Tổng quan trong ngày" />
+      <PageHeader label="Dashboard" pageTitle="Quick Overview" />
 
       <Grid container spacing={1}>
         {displayData.map((item, i) => (
