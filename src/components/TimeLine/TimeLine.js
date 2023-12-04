@@ -66,7 +66,9 @@ const TimeLine = () => {
       <div className={cx("timeline__left")}>
         <div className={cx("timeline__posts")}>
           {privateHttpRequest.isLoading ? (
-            <CircularProgress size={50} />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress size={50} />
+            </div>
           ) : postsArray.length > 0 ? (
             postsArray.map(([postId, post], i) => {
               if (postsArray.length === i + 1)

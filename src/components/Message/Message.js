@@ -25,7 +25,9 @@ function Message({ message }) {
       {message.sender_id === user._id ? null : (
         <div className={cx("messageInfo")}>
           <img
-            src={message.img}
+            src={message.img === ""
+            ? "/static-resources/default-avatar.jpg"
+            : message.img}
             alt=""
           />
         </div>

@@ -130,56 +130,6 @@ function NotificationItem({ n }) {
             </button>
           </div>
         ))}
-
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div className={cx("open__user__info")}>
-          <a
-            className={cx("open__username")}
-            onClick={() => {
-              navigate(`/${n.senderName}`, { replace: true });
-            }}
-          >
-            {n.senderName}
-          </a>
-          <span className={cx("open__relation")}>
-            {decisionLoading
-              ? decisionLoading == "accept"
-                ? " is accepted by you"
-                : " is rejected by you"
-              : n.content}
-          </span>
-        </div>
-      </div>
-      {n.content_id == null &&
-        n.reponse == null &&
-        (decisionLoading ? (
-          decisionLoading == true ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "10px",
-              }}
-            >
-              <CircularProgress size={20} />
-            </div>
-          ) : null
-        ) : (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <button
-              onClick={handleAccept}
-              className={cx("profile-modal__button__accept")}
-            >
-              ACCEPT
-            </button>
-            <button
-              onClick={handleReject}
-              className={cx("profile-modal__button")}
-            >
-              REJECT
-            </button>
-          </div>
-        ))}
     </div>
   );
 }
