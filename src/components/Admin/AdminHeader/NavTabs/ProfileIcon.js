@@ -31,8 +31,8 @@ const ProfileIcon = () => {
   };
 
   const dropDownData = [
-    { label: "Cài đặt", icon: <SettingsIcon /> },
-    { label: "Đăng xuất", icon: <LogoutIcon /> },
+    { label: "Settings", icon: <SettingsIcon /> },
+    { label: "Logout", icon: <LogoutIcon /> },
   ];
 
   return (

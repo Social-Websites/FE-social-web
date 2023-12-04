@@ -13,7 +13,7 @@ const NavBarAdmin = ({ handleDrawerToggle }) => {
     <AppBar position="sticky">
       <Toolbar className={cx("toolbar")}>
         <Typography variant="h6" className={cx("logo")}>
-          Instagram
+          Administrator
         </Typography>
         {/* <Hidden mdDown> */}
         <Box

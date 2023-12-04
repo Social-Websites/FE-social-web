@@ -28,6 +28,8 @@ import {
 } from "@mui/material/colors";
 import UserOverview from "./UserOverview";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
+import { getQuickOverview } from "../../../../services/adminServices";
+import ListComponent from "./ListComponent";
 
 const cx = classNames.bind(styles);
 
@@ -35,7 +37,19 @@ const DashboardBody = () => {
   const privateHttpClient = usePrivateHttpClient();
   const [displayData, setDisplayData] = useState([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await getQuickOverview(privateHttpClient.privateRequest);
+
+        if (data) setDisplayData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    getData();
+  }, []);
 
   return (
     <Box>
@@ -70,16 +84,19 @@ const DashboardBody = () => {
                   <Button
                     size="small"
                     className={cx("ratio-btn")}
-                    startIcon={item.icon}
+                    startIcon={
+                      item.iconLabel >= 0 ? (
+                        <ArrowDropUpIcon />
+                      ) : (
+                        <ArrowDropDownIcon />
+                      )
+                    }
                     style={{
-                      color:
-                        item.graphCardInfo.id[4] === "u" ||
-                        item.graphCardInfo.id[4] === "p"
-                          ? green[600]
-                          : red[500],
+                      color: item.iconLabel >= 0 ? green["A700"] : red[500],
                     }}
                   >
-                    {item.iconLabel}
+                    {item.iconLabel >= 0 ? item.iconLabel : item.iconLabel * -1}
+                    %
                   </Button>
                 </Typography>
               </CardContent>
@@ -89,6 +106,8 @@ const DashboardBody = () => {
       </Grid>
 
       <UserOverview />
+
+      <ListComponent />
     </Box>
   );
 };

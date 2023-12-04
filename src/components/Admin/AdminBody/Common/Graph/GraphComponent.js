@@ -14,7 +14,7 @@ const CardGraph = (props) => {
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: "CardChart",
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         datasets: [
           {
             label: props.id,
