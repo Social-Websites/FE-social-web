@@ -1,8 +1,6 @@
 import { React, useCallback, useMemo, useState } from 'react';
 import { subDays, subHours } from 'date-fns';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import AddIcon from '@mui/icons-material/Add';
+import VerticalAlignBottomOutlinedIcon from '@mui/icons-material/VerticalAlignBottomOutlined';
 import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/material';
 import { PostSearch } from "./PostSeach";
 import { PostTable } from "./PostTable";
@@ -223,17 +221,7 @@ const PostsManage = () => {
                     color="inherit"
                     startIcon={(
                       <SvgIcon fontSize="small">
-                        <KeyboardArrowUpIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <KeyboardArrowDownIcon />
+                        <VerticalAlignBottomOutlinedIcon />
                       </SvgIcon>
                     )}
                   >
@@ -241,18 +229,7 @@ const PostsManage = () => {
                   </Button>
                 </Stack>
               </Stack>
-              <div>
-                <Button
-                  startIcon={(
-                    <SvgIcon fontSize="small">
-                      <AddIcon />
-                    </SvgIcon>
-                  )}
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div>
+              
             </Stack>
             <PostSearch />
             <PostTable

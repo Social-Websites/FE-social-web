@@ -100,8 +100,7 @@ function NotificationItem({ n }) {
           </span>
         </div>
       </div>
-      {n.content_id === null &&
-        n.reponse === null &&
+      {(!n.content_id && !n.reponse) &&
         (decisionLoading ? (
           decisionLoading === true ? (
             <div
@@ -114,7 +113,7 @@ function NotificationItem({ n }) {
               <CircularProgress size={20} />
             </div>
           ) : null
-        ) : (
+        ) : ( 
           <div style={{ display: "flex", alignItems: "center" }}>
             <button
               onClick={handleAccept}
