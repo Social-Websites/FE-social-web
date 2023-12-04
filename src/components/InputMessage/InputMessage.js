@@ -3,6 +3,7 @@ import style from "./InputMessage.module.scss";
 import classNames from 'classnames/bind';
 import EmojiPicker from 'emoji-picker-react';
 import SendIcon from '@mui/icons-material/Send';
+import { CircularProgress} from "@mui/material";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
@@ -22,6 +23,7 @@ function InputMessage ({onSelectedFile}) {
   const emojiPickerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const [sending, setSending] = useState(false);
   
 
   const  {user, currentChat, socket, dispatch}  = useContext(StateContext);
@@ -114,7 +116,7 @@ function InputMessage ({onSelectedFile}) {
 
     } catch (err) {
       console.log(err);
-    }
+    } 
   }
 
 
@@ -153,6 +155,7 @@ function InputMessage ({onSelectedFile}) {
     });
     
     try{
+      setSending(true);
       const urls = await Promise.allSettled(promises)
       const urlStrings = urls.map((url) => url.value.toString());
       console.log(currentChat);
@@ -181,6 +184,8 @@ function InputMessage ({onSelectedFile}) {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setSending(false);
     }
     await ReturnHeight();
   };
@@ -222,6 +227,7 @@ function InputMessage ({onSelectedFile}) {
     });
     
     try{
+      setSending(true);
       const urls = await Promise.allSettled(promises)
       const urlStrings = urls.map((url) => url.value.toString());
       console.log(currentChat);
@@ -274,6 +280,8 @@ function InputMessage ({onSelectedFile}) {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setSending(false);
     }
     await ReturnHeight();
   };
@@ -284,9 +292,13 @@ function InputMessage ({onSelectedFile}) {
       event.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter (như xuống dòng)
       console.log("Enter .....");
       if(currentChat._id)
-        await handleSendMessage();
+        if((text.trim() !== "" || img.length != 0) && sending == false){
+          await handleSendMessage();
+        }
       else
-        await handleCreateConversationWithMsg();
+        if((text.trim() !== "" || img.length != 0) && sending == false){
+          await handleCreateConversationWithMsg();
+        }
     }
   };
 
@@ -362,7 +374,7 @@ function InputMessage ({onSelectedFile}) {
               onClick={() => deleteImage(index)}/>
           </div>
           ))}
-          <progress value={progress} max="100" />
+          {/* <progress value={progress} max="100" /> */}
       </div>) : null}
       
       <div style={{height:"auto", display: "flex", alignItems: "center", justifyContent: "center"}}>
@@ -380,6 +392,7 @@ function InputMessage ({onSelectedFile}) {
           />
           <div className={cx("send")}>
               <input
+                accept="image/*"
                 type="file"
                 multiple
                 style={{ display: "none" }}
@@ -392,7 +405,7 @@ function InputMessage ({onSelectedFile}) {
                 onClick={selectFiles} 
                 style={{color: "white",cursor: "pointer", marginRight: "10px"}}/>
           </div>
-          { text || img.length !== 0 ? (<SendIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat._id ? handleSendMessage : handleCreateConversationWithMsg}/>) : (<FavoriteBorderOutlinedIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat?._id ? handleSendIcon : handleCreateConversationWithIcon}/>)}
+          { text || img.length !== 0 ? (sending ? <CircularProgress size={20} /> : <SendIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat._id ? handleSendMessage : handleCreateConversationWithMsg}/>) : (<FavoriteBorderOutlinedIcon type="submit" style={{color: "white", cursor: "pointer"}} onClick={currentChat?._id ?  handleSendIcon : handleCreateConversationWithIcon}/>)}
         </div>
       </div>
     </div>
