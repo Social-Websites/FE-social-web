@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import post from "../../../../../../BE-social-web/models/post";
 
 const ListComponent = ({ users, posts }) => {
   return (

@@ -29,8 +29,18 @@ export const getUserPosts = async (
 ) => {
   try {
     const response = await sendRequest(
-      `/posts/${username}?page=${page}?limit=${limit}`
+      `/posts/user/${username}?page=${page}?limit=${limit}`
     );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getPost = async (postId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/posts/${postId}`);
 
     return response?.data;
   } catch (err) {

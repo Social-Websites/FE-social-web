@@ -132,10 +132,10 @@ const Post = forwardRef(({ post }, ref) => {
 
   const toggleMore = () => {
     setMore(!more);
-    if (document.body.style.overflow !== "hidden") {
+    if (more === true && document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = "";
     }
   };
 
@@ -168,6 +168,11 @@ const Post = forwardRef(({ post }, ref) => {
       }
     });
   }
+
+  const goToPost = () => {
+    if (more) toggleMore();
+    navigate(`/p/${post._id}`, { replace: true });
+  };
 
   return (
     <div className={cx("post")}>
@@ -718,7 +723,9 @@ const Post = forwardRef(({ post }, ref) => {
               Report
             </div>
             <div className={cx("more-content-element")}>Add friend</div>
-            <div className={cx("more-content-element")}>Go to post</div>
+            <div onClick={goToPost} className={cx("more-content-element")}>
+              Go to post
+            </div>
             <div className={cx("more-content-element")}>Cancel</div>
           </div>
         </div>

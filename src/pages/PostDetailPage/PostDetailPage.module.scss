@@ -1,196 +1,193 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: black;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: black;
 }
 .postpage {
-    display: flex;
-    flex-direction: row;
-    background-color: black;
-    height: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: black;
+  height: 100%;
 }
 
 .postpage__navWraper {
-    position: relative;
-    width:240px;
+  position: relative;
+  width: 240px;
 }
 
 .postpage__content {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
 
 .container-post {
-    margin-top: 20px;
-    border: #606060 solid 1px;
-    border-radius: 10px 10px 10px 10px;
+  margin-top: 20px;
+  border: #606060 solid 1px;
+  // border-radius: 10px 10px 10px 10px;
+  display: flex;
+  background-color: black;
+  width: 85%;
+  .image-post {
     display: flex;
-    background-color: black;
-    width: 85%;
-    .image-post {
-        display: flex;
-        overflow: hidden;
-        flex: 0.8;
-        max-width: 900px;
-        max-height: 750px;
-        .img-post-slider {
-        object-fit: none;
-        display: block;
-        flex-shrink: 0;
-        flex-grow: 0;
-        }
-        .img-post-slider-btn {
-        margin-right: 10px;
-        all: unset;
-        width: 16px;
-        height: 16px;
-        display: block;
-        position: absolute;
-        background-color: #464646;
-        color: white;
-        border-radius: 50%;
-        padding: 8px;
-        cursor: pointer;
-        transition: background-color 100ms ease-in-out;
-        }
-        .img-post-slider-btn:hover {
-        background-color: #606060;
-        transform: scale(1.05);
-        }
+    overflow: hidden;
+    flex: 0.8;
+    max-width: 900px;
+    max-height: 750px;
+    .img-post-slider {
+      object-fit: none;
+      display: block;
+      flex-shrink: 0;
+      flex-grow: 0;
     }
-    .post-caption {
-        flex: 0.2;
-        margin-left: 1px;
-        border-left: #353535 solid 0.5px;
-        max-width: 480px;
-        min-width: 380px;
-        background-color: #000;
-        border-radius: 0px 20px 20px 0px;
-        .postInfo-user {
-        height: 10%;
-        display: flex;
-        border-bottom: #353535 solid 0.5px;
+    .img-post-slider-btn {
+      margin-right: 10px;
+      all: unset;
+      width: 16px;
+      height: 16px;
+      display: block;
+      position: absolute;
+      background-color: #464646;
+      color: white;
+      border-radius: 50%;
+      padding: 8px;
+      cursor: pointer;
+      transition: background-color 100ms ease-in-out;
+    }
+    .img-post-slider-btn:hover {
+      background-color: #606060;
+      transform: scale(1.05);
+    }
+  }
+  .post-caption {
+    flex: 0.2;
+    margin-left: 1px;
+    border-left: #353535 solid 0.5px;
+    max-width: 480px;
+    min-width: 380px;
+    background-color: #000;
+    border-radius: 0px 20px 20px 0px;
+    .postInfo-user {
+      height: 10%;
+      display: flex;
+      border-bottom: #353535 solid 0.5px;
 
-        .postInfo-user-avatar {
-            display: flex;
-            align-items: center;
-            // padding: 10px 0px 10px 16px;
-            position: relative;
-            // display: inline-block;
-        }
-        .postInfo-user-avatar > img {
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .postInfo-user-info {
-            padding: 10px 16px 10px 5px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            margin-left: 7px;
-
-            .postInfo-username {
-            left: 0;
-            color: white;
-            font-size: 14px;
-            font-weight: 550;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-                "Helvetica Neue", sans-serif;
-            }
-        }
-        }
-        .post-text {
-        width: 100%;
+      .postInfo-user-avatar {
         display: flex;
         align-items: center;
-        justify-content: center;
-        }
-        .post-text > textarea {
-        width: 90%;
-        background-color: #262626;
-        border: none;
-        resize: none;
-        height: 180px;
-        overflow: auto;
-        font-size: 16px;
-        color: white;
-        font-weight: 450;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-            Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-            sans-serif;
-        }
-        .post-text > textarea:focus {
-        outline: none;
-        }
-    }
-}
-.post-comment {
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-    height: 60%;
-  
-    .post-comment-user {
-      width: 85%;
-      display: flex;
-      padding: 8px 24px;
-  
-      .post-comment-user-avatar {
+        // padding: 10px 0px 10px 16px;
         position: relative;
-        display: inline-block;
-        width: 44px;
-        height: 44px;
+        // display: inline-block;
       }
-      .post-comment-user-avatar > img {
+      .postInfo-user-avatar > img {
         border-radius: 50%;
         object-fit: cover;
       }
-  
-      .post-comment-user-info {
-        width: 85%;
+
+      .postInfo-user-info {
+        padding: 10px 16px 10px 5px;
         display: flex;
-        display: inline-block;
-        word-wrap: break-word;
-        .post-comment-content {
-          width: 100px;
-          max-width: max-content;
-          white-space: pre-line;
-          word-wrap: break-word;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        margin-left: 7px;
+
+        .postInfo-username {
+          left: 0;
           color: white;
-          font-weight: 400;
           font-size: 14px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Helvetica, Arial, sans-serif;
-        }
-  
-        .post-comment-username {
-          margin-right: 5px;
-          color: white;
-          font-weight: 700;
-          font-size: 14px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Helvetica, Arial, sans-serif;
-          margin-bottom: 5px;
+          font-weight: 550;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+            sans-serif;
         }
       }
     }
-  }
-
-
-@media (max-width: 1064px){
-    .postpage {
-        .postpage__navWraper {
-        position: relative;
-        width: 80px;
-        }
+    .post-text {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .post-text > textarea {
+      width: 90%;
+      background-color: #262626;
+      border: none;
+      resize: none;
+      height: 180px;
+      overflow: auto;
+      font-size: 16px;
+      color: white;
+      font-weight: 450;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
+    }
+    .post-text > textarea:focus {
+      outline: none;
+    }
+  }
+}
+.post-comment {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  height: 60%;
+
+  .post-comment-user {
+    width: 85%;
+    display: flex;
+    padding: 8px 24px;
+
+    .post-comment-user-avatar {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 44px;
+    }
+    .post-comment-user-avatar > img {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-comment-user-info {
+      width: 85%;
+      display: flex;
+      display: inline-block;
+      word-wrap: break-word;
+      .post-comment-content {
+        width: 100px;
+        max-width: max-content;
+        white-space: pre-line;
+        word-wrap: break-word;
+        color: white;
+        font-weight: 400;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      .post-comment-username {
+        margin-right: 5px;
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin-bottom: 5px;
+      }
+    }
+  }
 }
 
-
+@media (max-width: 1064px) {
+  .postpage {
+    .postpage__navWraper {
+      position: relative;
+      width: 80px;
+    }
+  }
+}
