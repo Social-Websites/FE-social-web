@@ -1,14 +1,17 @@
 import { React, useCallback, useMemo, useState } from 'react';
 import { subDays, subHours } from 'date-fns';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import VerticalAlignBottomOutlinedIcon from '@mui/icons-material/VerticalAlignBottomOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/material';
 import { UserSearch } from "./UserSeach";
 import { UserTable } from "./UserTable";
 import { applyPagination } from '../../../../shared/util/apply-pagination';
 import { useSelection } from '../../../../shared/hook/use-selection';
+import Modal from 'react-bootstrap/Modal';
+import classNames from 'classnames/bind';
+import styles from './UserModal.module.scss';
 
+const cx = classNames.bind(styles);
 const now = new Date();
 const data = [
   {
@@ -173,6 +176,7 @@ const useUserIds = (users) => {
 
 
 const UsersManage = () => {
+  const [visible, setVisible] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const users = useUsers(page, rowsPerPage);
@@ -208,6 +212,7 @@ const UsersManage = () => {
             <Stack
               direction="row"
               justifyContent="space-between"
+              alignItems="center"
               spacing={4}
             >
               <Stack spacing={1}>
@@ -223,17 +228,7 @@ const UsersManage = () => {
                     color="inherit"
                     startIcon={(
                       <SvgIcon fontSize="small">
-                        <KeyboardArrowUpIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <KeyboardArrowDownIcon />
+                        <VerticalAlignBottomOutlinedIcon />
                       </SvgIcon>
                     )}
                   >
@@ -243,6 +238,7 @@ const UsersManage = () => {
               </Stack>
               <div>
                 <Button
+                  onClick={() => setVisible(true)}
                   startIcon={(
                     <SvgIcon fontSize="small">
                       <AddIcon />
@@ -270,6 +266,115 @@ const UsersManage = () => {
             />
           </Stack>
         </Container>
+        <Modal show={visible} onHide={()=>setVisible(false)} className={cx('add-employee-modal')} >
+        <Modal.Header>
+            <div className={cx('title-modal')}>Thêm nhân viên</div>
+        </Modal.Header>
+        <Modal.Body >
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Full name</div>
+                </div>
+                <input
+                    type="text"
+                    // onChange={(e) => setName(e.target.value)}
+                    className={cx('col-lg-8 col-md-8')}
+                />
+              </div>  
+            </div>
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Email</div>
+                </div>
+                <input
+                    type="email"
+                    // onChange={(e) => setEmail(e.target.value)}
+                    className={cx('col-lg-9 col-md-9')}
+                />
+              </div>  
+            </div>
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Phone</div>
+                </div>
+                <input
+                    type="text"
+                    // onChange={(e) => setPhones(e.target.value)}
+                    className={cx('col-lg-9 col-md-9')}
+                />
+              </div>
+            </div>
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Address</div>
+                </div>
+                <input
+                    type="text"
+                    // onChange={(e) => setAddresses(e.target.value)}
+                    className={cx('col-lg-9 col-md-9')}
+                />
+              </div>
+            </div>
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Date of birth</div>
+                </div>
+                <input
+                    type="date"
+                    // onChange={(e) => setDateOfbirth(e.target.value)}
+                    className={cx('col-lg-9 col-md-9')}
+                />
+              </div>
+            </div>
+            <div className={cx('row align-items-center', 'modal-content-item')}>
+              <div>
+                <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
+                    <div>Gender</div>
+                </div>
+                <span className={cx('gender')}>
+                    <input
+                        type="radio"
+                        id="male"
+                        name="gender"
+                        value="male"
+                        style={{width: "auto", margin: "10px 10px 0px 20px"}}
+                        // onChange={(e) => setGender(e.target.value)}
+                    />
+                    <label for="male">Male</label>
+                    <input
+                        type="radio"
+                        id="female"
+                        name="gender"
+                        value="female"
+                        style={{width: "auto", margin: "10px 10px 0px 20px"}}
+                        // onChange={(e) => setGender(e.target.value)}
+                    />
+                    <label for="female">Female</label>
+                </span>
+              </div>
+            </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <div style={{width: "70%", display: "flex", justifyContent: "space-between"}}>
+            <button className={cx('modal-button')} 
+              style={{backgroundColor: "#ff0000", border: "none", color: "white", borderRadius: "10px"}}
+              onClick={()=>setVisible(false)}
+            >
+                CLOSE
+            </button>
+            <button className={cx('modal-button')} 
+              style={{backgroundColor: "#1976d2", border: "none", color: "white", borderRadius: "10px"}}
+            >
+                ADD
+            </button>
+          </div>
+        </Modal.Footer>
+      </Modal>
       </Box>
     </>
   );

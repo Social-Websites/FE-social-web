@@ -85,7 +85,7 @@ function Chats() {
                 {isLoadingSearch ? (
                 <SearchUserLoading />
                 ) : ( !isPetching ? (
-                conversations.length > 0 ? (conversations.map((con) => (
+                    conversations && conversations?.length > 0 ? (conversations.map((con) => (
                     <ConversationChat 
                         key={con._id}
                         c={con}

@@ -122,168 +122,172 @@ function InputMessage ({onSelectedFile}) {
 
   const handleSendMessage = async () => {
     // const promises = [];
-    const promises = img.map((image) => {
-      const name = Date.now();
-      const storageRef  = ref(storage,`images/${name}`);
-      const uploadTask = uploadBytesResumable(storageRef, image.file);
-      // promises.push(uploadTask);
-      // console.log(promises);
-      return new Promise((resolve, reject) => {
-        uploadTask.on('state_changed', 
-        (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setProgress(progress);
-          },
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          () => {
-            console.log("Toi r");
-            getDownloadURL(uploadTask.snapshot.ref)
-            .then((url) => {
-              console.log(url);
-              resolve(url);
-            })
-            .catch((error) => {
+    if((text.trim() !== "" || img.length != 0) && sending == false){
+      const promises = img.map((image) => {
+        const name = Date.now();
+        const storageRef  = ref(storage,`images/${name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image.file);
+        // promises.push(uploadTask);
+        // console.log(promises);
+        return new Promise((resolve, reject) => {
+          uploadTask.on('state_changed', 
+          (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setProgress(progress);
+            },
+            (error) => {
               console.log(error);
               reject(error);
-            });
-          }
-        );
+            },
+            () => {
+              console.log("Toi r");
+              getDownloadURL(uploadTask.snapshot.ref)
+              .then((url) => {
+                console.log(url);
+                resolve(url);
+              })
+              .catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+            }
+          );
+        });
       });
-    });
-    
-    try{
-      setSending(true);
-      const urls = await Promise.allSettled(promises)
-      const urlStrings = urls.map((url) => url.value.toString());
-      console.log(currentChat);
+      
       try{
-          const newMessage = {
-          conversationId: currentChat._id,
-          recieve_ids: currentChat.userIds,
-          sender_id: user._id,
-          img: user.profile_picture,
-          content: text,
-          media: urlStrings,
-        };
-        const result = await messageService.sendMessage(newMessage);
-        socket.current.emit("send-msg", newMessage)
-        dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
-        dispatch({type: "ADD_MESSAGE", payload: newMessage,
-          fromSelf: true,
-        })
-        
-        if (result !== null) {
-          setText("") ;
-          setImg([]);
+        setSending(true);
+        const urls = await Promise.allSettled(promises)
+        const urlStrings = urls.map((url) => url.value.toString());
+        console.log(currentChat);
+        try{
+            const newMessage = {
+            conversationId: currentChat._id,
+            recieve_ids: currentChat.userIds,
+            sender_id: user._id,
+            img: user.profile_picture,
+            content: text,
+            media: urlStrings,
+          };
+          const result = await messageService.sendMessage(newMessage);
+          socket.current.emit("send-msg", newMessage)
+          dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
+          dispatch({type: "ADD_MESSAGE", payload: newMessage,
+            fromSelf: true,
+          })
+          
+          if (result !== null) {
+            setText("") ;
+            setImg([]);
+          }
+        } catch (err) {
+          console.log(err);
         }
       } catch (err) {
         console.log(err);
+      } finally {
+        setSending(false);
       }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setSending(false);
+      await ReturnHeight();
     }
-    await ReturnHeight();
   };
 
 
 
   const handleCreateConversationWithMsg = async () => {
-    // const promises = [];
-    const promises = img.map((image) => {
-      const name = Date.now();
-      const storageRef  = ref(storage,`images/${name}`);
-      const uploadTask = uploadBytesResumable(storageRef, image.file);
-      // promises.push(uploadTask);
-      // console.log(promises);
-      return new Promise((resolve, reject) => {
-        uploadTask.on('state_changed', 
-        (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setProgress(progress);
-          },
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          () => {
-            console.log("Toi r");
-            getDownloadURL(uploadTask.snapshot.ref)
-            .then((url) => {
-              console.log(url);
-              resolve(url);
-            })
-            .catch((error) => {
+    if((text.trim() !== "" || img.length != 0) && sending == false){
+      // const promises = [];
+      const promises = img.map((image) => {
+        const name = Date.now();
+        const storageRef  = ref(storage,`images/${name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image.file);
+        // promises.push(uploadTask);
+        // console.log(promises);
+        return new Promise((resolve, reject) => {
+          uploadTask.on('state_changed', 
+          (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setProgress(progress);
+            },
+            (error) => {
               console.log(error);
               reject(error);
-            });
-          }
-        );
+            },
+            () => {
+              console.log("Toi r");
+              getDownloadURL(uploadTask.snapshot.ref)
+              .then((url) => {
+                console.log(url);
+                resolve(url);
+              })
+              .catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+            }
+          );
+        });
       });
-    });
-    
-    try{
-      setSending(true);
-      const urls = await Promise.allSettled(promises)
-      const urlStrings = urls.map((url) => url.value.toString());
-      console.log(currentChat);
+      
       try{
-        const newConversation = {
-          userIds: [...currentChat.userIds, user._id],
-        };
-        const con = await conversationService.createConversation(newConversation);
-        let newCon;
-        if(urlStrings)
-          newCon = {
-            _id: con._id,
-            userIds: currentChat.userIds, 
-            name: currentChat.name, 
-            img: currentChat.img, 
-            lastMsg: "You: Image",
-          }
-        else
-          newCon = {
-            _id: con._id,
-            userIds: currentChat.userIds, 
-            name: currentChat.name, 
-            img: currentChat.img, 
-            lastMsg: "You: " + text,
-          }
-        
-        dispatch({ type: "ADD_CONVERSATION", payload: newCon });
-        dispatch({ type: "CURRENT_CHAT", payload: newCon });
+        setSending(true);
+        const urls = await Promise.allSettled(promises)
+        const urlStrings = urls.map((url) => url.value.toString());
+        console.log(currentChat);
+        try{
+          const newConversation = {
+            userIds: [...currentChat.userIds, user._id],
+          };
+          const con = await conversationService.createConversation(newConversation);
+          let newCon;
+          if(urlStrings)
+            newCon = {
+              _id: con._id,
+              userIds: currentChat.userIds, 
+              name: currentChat.name, 
+              img: currentChat.img, 
+              lastMsg: "You: Image",
+            }
+          else
+            newCon = {
+              _id: con._id,
+              userIds: currentChat.userIds, 
+              name: currentChat.name, 
+              img: currentChat.img, 
+              lastMsg: "You: " + text,
+            }
+          
+          dispatch({ type: "ADD_CONVERSATION", payload: newCon });
+          dispatch({ type: "CURRENT_CHAT", payload: newCon });
 
-        const newMessage = {
-          conversationId: con._id,
-          recieve_ids: currentChat.userIds,
-          sender_id: user._id,
-          img: user.profile_picture,
-          content: text,
-          media: urlStrings,
-        };
-        const result = await messageService.sendMessage(newMessage);
+          const newMessage = {
+            conversationId: con._id,
+            recieve_ids: currentChat.userIds,
+            sender_id: user._id,
+            img: user.profile_picture,
+            content: text,
+            media: urlStrings,
+          };
+          const result = await messageService.sendMessage(newMessage);
 
-        socket.current.emit("send-msg", newMessage)
-        dispatch({type: "ADD_MESSAGE", payload: newMessage,
-          fromSelf: true,
-        })
-        if (result !== null) {
-          setText("") ;
-          setImg([]);
+          socket.current.emit("send-msg", newMessage)
+          dispatch({type: "ADD_MESSAGE", payload: newMessage,
+            fromSelf: true,
+          })
+          if (result !== null) {
+            setText("") ;
+            setImg([]);
+          }
+        } catch (err) {
+          console.log(err);
         }
       } catch (err) {
         console.log(err);
+      } finally {
+        setSending(false);
       }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setSending(false);
+      await ReturnHeight();
     }
-    await ReturnHeight();
   };
 
 

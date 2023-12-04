@@ -16,6 +16,7 @@ import UnauthorizedPage from "../pages/AuthPage/UnauthorizedPage";
 import ResetPasswordForm from "../components/Auth/ResetPasswordForm";
 import EditProfilePage from "../pages/EditProfilePage";
 import ChangePassPage from "../pages/ChangePassPage";
+import PostDetailPage from "../pages/PostDetailPage";
 import AdminLoginForm from "../components/Auth/AdminLoginForm";
 // public Routes
 const publicRoutes = [
@@ -58,6 +59,7 @@ const privateRoutes = [
   { path: "/group", component: GroupPage },
   { path: "/user-info/edit", component: EditProfilePage },
   { path: "/accounts/changePass/", component: ChangePassPage },
+  { path: "/p/:id", component: PostDetailPage },
 ];
 // Private Routes
 const adminRoutes = [];
