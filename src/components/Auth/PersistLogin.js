@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import useRefreshToken from "../../shared/hook/http-hook/refresh-token";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import WelcomPage from "../../pages/AuthPage/WelcomPage";
+import useLogout from "../../shared/hook/auth-hook/logout-hook";
 
 const PersistLogin = () => {
   const [isLoad, setIsLoad] = useState(true);
   const refresh = useRefreshToken();
   const { auth, persist } = useAuth();
+  const { logout } = useLogout();
 
   const effectRan = useRef(false);
 
@@ -17,6 +19,7 @@ const PersistLogin = () => {
         try {
           await refresh();
         } catch (err) {
+          await logout();
           console.log(err);
         } finally {
           setIsLoad(false);

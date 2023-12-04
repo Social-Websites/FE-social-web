@@ -12,19 +12,19 @@ import FilledInput from "@mui/material/FilledInput";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { login } from "../../services/userService";
+import { aLogin } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const LoginPage = () => {
+const AdminLoginForm = () => {
   const { auth, persist, setAuth, setPersistLogin } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = "/";
+  const from = "/administrator/dashboard";
 
   const { isLoading, error, clearError, publicRequest } = useHttpClient();
 
@@ -50,11 +50,6 @@ const LoginPage = () => {
     username: false,
     password: false,
   });
-
-  useEffect(() => {
-    const persisting = JSON.parse(localStorage.getItem("persist") || false);
-    if (persisting) navigate(from, { replace: true });
-  }, []);
 
   useEffect(() => {
     return validateInput();
@@ -100,11 +95,11 @@ const LoginPage = () => {
     setFormValid(null);
 
     try {
-      const response = await login(formData, publicRequest);
+      const response = await aLogin(formData, publicRequest);
       const accessToken = response?.accessToken;
       if (accessToken) {
         setAuth({ accessToken });
-        setPersistLogin();
+        setPersistLogin(false);
         navigate(from, { replace: true });
         clearError();
       }
@@ -116,20 +111,14 @@ const LoginPage = () => {
     <div className={cx("main")}>
       <Paper elevation={0} square className={cx("center-screen")}>
         <div className={cx("logo--container")}>
-          <div
-            aria-disabled="false"
-            role="button"
-            tabIndex={0}
-            className={cx("cursor")}
-          >
-            <i
-              data-visualcompletion="css-img"
-              role="img"
-              aria-label="Instagram"
-              className={cx("logo--main")}
-            ></i>
-          </div>
+          <span className={cx("lock-icon")}></span>
         </div>
+        <span
+          dir="auto"
+          style={{ fontSize: 30, fontWeight: 600, marginBottom: 40 }}
+        >
+          Administrator
+        </span>
         <div className={cx("form--container")}>
           <form className={cx("form--main")}>
             <div className={cx("form--separate")}>
@@ -195,7 +184,7 @@ const LoginPage = () => {
                 )}
               </div>
             </div>
-            <Button
+            {/* <Button
               className={cx("forgot--link")}
               href="/accounts/password/reset/"
               role="link"
@@ -204,29 +193,12 @@ const LoginPage = () => {
               <span className={cx("forgot--text")} dir="auto">
                 Quên mật khẩu?
               </span>
-            </Button>
+            </Button> */}
           </form>
         </div>
-      </Paper>
-      <Paper elevation={0} square className={cx("center-screen")}>
-        <span className={cx("signup--container")} dir="auto">
-          <p className={cx("signup--question")}>
-            Bạn chưa có tài khoản hả?&nbsp;
-            <Button
-              href="/accounts/signup/"
-              className={cx("signup--link")}
-              role="link"
-              tabIndex={0}
-            >
-              <span className={cx("signup--text")} dir="auto">
-                Đăng ký
-              </span>
-            </Button>
-          </p>
-        </span>
       </Paper>
     </div>
   );
 };
 
-export default LoginPage;
+export default AdminLoginForm;

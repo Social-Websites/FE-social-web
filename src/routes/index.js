@@ -16,6 +16,7 @@ import UnauthorizedPage from "../pages/AuthPage/UnauthorizedPage";
 import ResetPasswordForm from "../components/Auth/ResetPasswordForm";
 import EditProfilePage from "../pages/EditProfilePage";
 import ChangePassPage from "../pages/ChangePassPage";
+import AdminLoginForm from "../components/Auth/AdminLoginForm";
 // public Routes
 const publicRoutes = [
   {
@@ -31,6 +32,7 @@ const publicRoutes = [
     layout: AuthPage,
     components: [
       { path: "login", component: LoginPage },
+      { path: "admin/alogin", component: AdminLoginForm },
       { path: "signup", component: SignUpPage },
       { path: "password/reset", component: ForgotPasswordPage },
       { path: "otp", component: OtpForm },

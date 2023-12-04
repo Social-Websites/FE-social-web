@@ -656,9 +656,15 @@ function Profile() {
               </div>
             )}
             {modalLoading && (
-              <div className={cx("profile-modal-content-no-users")}>
-                <CircularProgress />
-              </div>
+              <>
+                {friendsPage === 1 && friendRequestsPage === 1 ? (
+                  <div className={cx("profile-modal-content-no-users")}>
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  <CircularProgress />
+                )}
+              </>
             )}
           </div>
         </div>

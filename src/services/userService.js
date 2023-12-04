@@ -160,6 +160,17 @@ export const login = async (loginForm, sendRequest) => {
   }
 };
 
+export const aLogin = async (loginForm, sendRequest) => {
+  try {
+    const response = await sendRequest("/auth/login", "post", loginForm, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const signUp = async (signUpForm, sendRequest) => {
   try {
     const response = await sendRequest("/auth/signup", "post", signUpForm, {

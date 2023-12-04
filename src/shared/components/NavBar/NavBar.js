@@ -191,21 +191,23 @@ function NavBar({ onScrollToTop }) {
       console.log("open:", open);
       if (data.remove == true) {
         setNotification((prevNotifications) =>
-          prevNotifications.filter((notification) => notification._id !== data.content_id)
+          prevNotifications.filter(
+            (notification) => notification._id !== data.content_id
+          )
         );
-      } else{
+      } else {
         setNotification((prevNotifications) => [data, ...prevNotifications]);
       }
 
-      if (open !== "Notification"){
-        const check = notification.find((notification) => notification._id === data.content_id);
+      if (open !== "Notification") {
+        const check = notification.find(
+          (notification) => notification._id === data.content_id
+        );
         console.log(check);
         console.log(check?.read);
-        if(!check?.read){
-          if(!data.remove)
-            setUnreadNotification((prevCount) => prevCount + 1);
-          else
-            setUnreadNotification((prevCount) => prevCount - 1);
+        if (!check?.read) {
+          if (!data.remove) setUnreadNotification((prevCount) => prevCount + 1);
+          else setUnreadNotification((prevCount) => prevCount - 1);
         }
       } else {
         try {
@@ -217,7 +219,6 @@ function NavBar({ onScrollToTop }) {
           console.log(err);
         }
       }
-      
     };
 
     socket.current?.on("getNotification", handleGetNotification);
@@ -305,7 +306,6 @@ function NavBar({ onScrollToTop }) {
       else setOpen("");
     } else setOpen("Search");
   };
-
 
   const handleNotification = async () => {
     if (unreadNotification !== 0) {
@@ -564,8 +564,6 @@ function NavBar({ onScrollToTop }) {
 
   const signOut = async () => {
     await logout();
-
-    navigate("/accounts/login");
   };
 
   return (
@@ -873,7 +871,12 @@ function NavBar({ onScrollToTop }) {
                 ) : (
                   <div>
                     {searchedUsers.map((u) => (
-                      <SearchUser u={u} setOpen={setOpen} open={open} key={u._id} />
+                      <SearchUser
+                        u={u}
+                        setOpen={setOpen}
+                        open={open}
+                        key={u._id}
+                      />
                     ))}
                   </div>
                 )}
