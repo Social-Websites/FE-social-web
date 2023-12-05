@@ -132,10 +132,11 @@ const Post = forwardRef(({ post }, ref) => {
 
   const toggleMore = () => {
     setMore(!more);
-    if (more === true && document.body.style.overflow !== "hidden") {
-      document.body.style.overflow = "hidden";
+    if (!more) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow = "auto";
     }
   };
 

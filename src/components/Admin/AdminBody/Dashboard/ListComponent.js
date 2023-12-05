@@ -48,7 +48,7 @@ const ListComponent = ({ users, posts }) => {
                       <Typography variant="body1" component="h6">
                         {item.username}
                       </Typography>
-                      <Typography variant="body1" component="h6">
+                      <Typography variant="subtitle2" color="textSecondary">
                         {item.full_name}
                       </Typography>
                     </ListItemText>
