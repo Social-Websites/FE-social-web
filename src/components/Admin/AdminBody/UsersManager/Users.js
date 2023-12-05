@@ -270,7 +270,7 @@ const UsersManage = () => {
         <Modal.Header>
             <div className={cx('title-modal')}>Thêm nhân viên</div>
         </Modal.Header>
-        <Modal.Body >
+        <Modal.Body>
             <div className={cx('row align-items-center', 'modal-content-item')}>
               <div>
                 <div className={cx('col-lg-3 col-md-3', 'heading-modal')}>
