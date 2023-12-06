@@ -28,7 +28,12 @@ import {
 } from "@mui/material/colors";
 import UserOverview from "./UserOverview";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
-import { getQuickOverview } from "../../../../services/adminServices";
+import {
+  getAdminPosts,
+  getAdminUsers,
+  getQuickOverview,
+  getTopAuthors,
+} from "../../../../services/adminServices";
 import ListComponent from "./ListComponent";
 
 const cx = classNames.bind(styles);
@@ -36,6 +41,8 @@ const cx = classNames.bind(styles);
 const DashboardBody = () => {
   const privateHttpClient = usePrivateHttpClient();
   const [displayData, setDisplayData] = useState([]);
+  const [latestUsers, setLatestUsers] = useState([]);
+  const [topAuthors, setTopAuthors] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -48,11 +55,37 @@ const DashboardBody = () => {
       }
     };
 
+    const getTop5Authors = async () => {
+      try {
+        const data = await getTopAuthors(privateHttpClient.privateRequest);
+
+        if (data) setTopAuthors(data.users);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const get5LatestUsers = async () => {
+      try {
+        const data = await getAdminUsers(
+          1,
+          5,
+          privateHttpClient.privateRequest
+        );
+
+        if (data) setLatestUsers(data.users);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    getTop5Authors();
+    get5LatestUsers();
     getData();
   }, []);
 
   return (
-    <Box>
+    <Box sx={{ minHeight: "110vh" }}>
       <PageHeader label="Dashboard" pageTitle="Quick Overview" />
 
       <Grid container spacing={1}>
@@ -105,9 +138,9 @@ const DashboardBody = () => {
         ))}
       </Grid>
 
-      <UserOverview />
+      {/* <UserOverview /> */}
 
-      <ListComponent />
+      <ListComponent users={latestUsers} authors={topAuthors} />
     </Box>
   );
 };

@@ -1,19 +1,20 @@
 .wrapper {
   background: #efefef;
   padding: 16px 16px 0px 272px;
+  min-height: 88vh;
   @media (max-width: 900px) {
     padding: 16px 16px;
   }
 }
 
-.modal-content{
+.modal-content {
   background-color: white;
   max-width: 500px;
-  .modal-body{
+  .modal-body {
     height: 85%;
     overflow: auto;
   }
-  .modal-footer{
+  .modal-footer {
     margin-top: 10px;
     display: flex;
     justify-content: center;

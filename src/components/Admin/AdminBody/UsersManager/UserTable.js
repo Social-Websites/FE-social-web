@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
+import PropTypes from "prop-types";
+import { format, parseISO } from "date-fns";
 import {
   Avatar,
   Box,
@@ -12,28 +12,49 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography
-} from '@mui/material';
-import { Scrollbar } from './ScrollBar';
-import { getInitials } from '../../../../shared/util/get-initials';
+  Typography,
+} from "@mui/material";
+import { Scrollbar } from "./ScrollBar";
+import { getInitials } from "../../../../shared/util/get-initials";
+import { useMemo, useState } from "react";
+import { applyPagination } from "../../../../shared/util/apply-pagination";
+import { useSelection } from "../../../../shared/hook/use-selection";
+
+const useUsers = (data, page, rowsPerPage) => {
+  return useMemo(() => {
+    return applyPagination(data, page, rowsPerPage);
+  }, [page, rowsPerPage]);
+};
+
+const useUserIds = (users) => {
+  return useMemo(() => {
+    return users.map((user) => user._id);
+  }, [users]);
+};
 
 export const UserTable = (props) => {
   const {
     count = 0,
-    items = [],
-    onDeselectAll,
-    onDeselectOne,
+    data = [],
     onPageChange = () => {},
     onRowsPerPageChange,
-    onSelectAll,
-    onSelectOne,
     page = 0,
     rowsPerPage = 0,
-    selected = []
+    setUsersSelected,
+    selected = [],
   } = props;
 
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
+  const users = useUsers(data, page, rowsPerPage);
+  const usersIds = useUserIds(users);
+  const usersSelection = useSelection(usersIds, setUsersSelected);
+
+  const onDeselectAll = usersSelection.handleDeselectAll;
+  const onDeselectOne = usersSelection.handleDeselectOne;
+  const onSelectAll = usersSelection.handleSelectAll;
+  const onSelectOne = usersSelection.handleSelectOne;
+
+  const selectedSome = selected.length > 0 && selected.length < users.length;
+  const selectedAll = users.length > 0 && selected.length === users.length;
 
   return (
     <Card>
@@ -55,71 +76,50 @@ export const UserTable = (props) => {
                     }}
                   />
                 </TableCell>
-                <TableCell>
-                  Name
-                </TableCell>
-                <TableCell>
-                  Email
-                </TableCell>
-                <TableCell>
-                  Location
-                </TableCell>
-                <TableCell>
-                  Phone
-                </TableCell>
-                <TableCell>
-                  Signed Up
-                </TableCell>
+                <TableCell>Username</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Fullname</TableCell>
+                <TableCell>Signed Up</TableCell>
+                <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((customer) => {
-                const isSelected = selected.includes(customer.id);
-                const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
+              {users.map((user) => {
+                const isSelected = selected.includes(user._id);
+                const createdAt = format(
+                  parseISO(user.created_at),
+                  "dd/MM/yyyy"
+                );
 
                 return (
-                  <TableRow
-                    hover
-                    key={customer.id}
-                    selected={isSelected}
-                  >
+                  <TableRow hover key={user._id} selected={isSelected}>
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
-                            onSelectOne?.(customer.id);
+                            onSelectOne?.(user._id);
                           } else {
-                            onDeselectOne?.(customer.id);
+                            onDeselectOne?.(user._id);
                           }
                         }}
                       />
                     </TableCell>
                     <TableCell>
-                      <Stack
-                        alignItems="center"
-                        direction="row"
-                        spacing={2}
-                      >
-                        <Avatar src={customer.avatar}>
-                          {getInitials(customer.name)}
+                      <Stack alignItems="center" direction="row" spacing={2}>
+                        <Avatar src={user.profile_picture}>
+                          {getInitials(user.username)}
                         </Avatar>
                         <Typography variant="subtitle2">
-                          {customer.name}
+                          {user.username}
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>
-                      {customer.email}
-                    </TableCell>
-                    <TableCell>
-                      {customer.address.city}, {customer.address.state}, {customer.address.country}
-                    </TableCell>
-                    <TableCell>
-                      {customer.phone}
-                    </TableCell>
-                    <TableCell>
-                      {createdAt}
+                    <TableCell>{user.user_info.email}</TableCell>
+                    <TableCell>{user.full_name}</TableCell>
+                    <TableCell>{createdAt}</TableCell>
+                    <TableCell style={{ color: user.banned ? "red" : "green" }}>
+                      {user.banned ? "BANNED" : "ACTIVE"}
                     </TableCell>
                   </TableRow>
                 );
@@ -152,5 +152,6 @@ UserTable.propTypes = {
   onSelectOne: PropTypes.func,
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
+  selected: PropTypes.array,
+  setUsersSelected: PropTypes.func,
 };

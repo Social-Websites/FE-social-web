@@ -33,11 +33,6 @@ import { CircularProgress } from "@mui/material";
 const cx = classNames.bind(styles);
 
 const ProfilePost = forwardRef(({ post, creator }, ref) => {
-  const avatarUrl =
-    creator.profile_picture === ""
-      ? "/static-resources/default-avatar.jpg"
-      : creator.profile_picture;
-
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -289,7 +284,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                       >
                         <img
                           style={{ width: "30px", height: "30px" }}
-                          src={avatarUrl}
+                          src={getAvatarUrl(creator.profile_picture)}
                           alt={creator.username + " avatar"}
                         />
                       </Link>
@@ -314,7 +309,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                       <div className={cx("post-comment-user-avatar")}>
                         <img
                           style={{ width: "30px", height: "30px" }}
-                          src={avatarUrl}
+                          src={getAvatarUrl(creator.profile_picture)}
                           alt={creator.username + " avatar"}
                         />
                       </div>
