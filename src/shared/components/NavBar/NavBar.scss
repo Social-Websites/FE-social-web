@@ -230,7 +230,7 @@
 .overlay {
   background: rgba(4, 3, 3, 0.8);
 }
-.modal-content {
+.modal-navbar-content {
   position: absolute;
   z-index: 3;
   top: 50%;
@@ -243,6 +243,7 @@
   border-radius: 10px;
   max-width: 900px;
   min-width: 300px;
+  min-height: 400px;
   .modal-header {
     color: white;
     text-align: center;

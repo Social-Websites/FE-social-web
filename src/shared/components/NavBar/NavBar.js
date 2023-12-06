@@ -943,7 +943,7 @@ function NavBar({ onScrollToTop }) {
             />
           </div>
           {isDropping ? (
-            <div className={cx("modal-content")} style={{ height: "auto", backgroundColor: "#262626" }}>
+            <div className={cx("modal-navbar-content")} style={{ height: "auto", backgroundColor: "#262626" }}>
               <div className={cx("modal-header")} style={{ display: "flex" }}>
                 <div style={{ width: "7%", height: "22.4px" }}>
                   <WestIcon
@@ -981,6 +981,7 @@ function NavBar({ onScrollToTop }) {
                   <div
                     className={cx("image")}
                     style={{
+                      minHeight: "400px",
                       width: "100%",
                       display: "flex",
                       overflow: "hidden",
@@ -991,6 +992,7 @@ function NavBar({ onScrollToTop }) {
                         className={cx("img-slider")}
                         style={{
                           width: "100%",
+
                           transform: `translateX(-${100 * imageIndex}%)`,
                           transition: "transform 0.2s",
                           display: "flex",
@@ -1142,7 +1144,7 @@ function NavBar({ onScrollToTop }) {
               </div>
             </div>
           ) : (
-            <div className={cx("modal-content")} style={{ width: "50%", backgroundColor: "#262626" }}>
+            <div className={cx("modal-navbar-content")} style={{ width: "50%", backgroundColor: "#262626" }}>
               <div className={cx("modal-header")}>New Post</div>
               <div
                 className={cx("modal-main")}
