@@ -11,11 +11,14 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import ArticleIcon from "@mui/icons-material/Article";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink } from "react-router-dom";
+import useLogout from "../../../../shared/hook/auth-hook/logout-hook";
 
 const cx = classNames.bind(styles);
 
 const SideNavAdminData = ({ handleDrawerClose }) => {
+  const { logout } = useLogout();
   const listItemData = [
     {
       label: "Dashboard",
@@ -28,6 +31,12 @@ const SideNavAdminData = ({ handleDrawerClose }) => {
       icon: <PermIdentityIcon />,
     },
     { label: "Posts", link: "posts", icon: <ArticleIcon /> },
+    {
+      label: "Logout",
+      link: "logout",
+      handleOnClick: logout,
+      icon: <LogoutIcon />,
+    },
   ];
 
   return (
@@ -41,8 +50,9 @@ const SideNavAdminData = ({ handleDrawerClose }) => {
         >
           <ListItem
             component={NavLink}
-            to={item.link}
+            to={item?.link}
             className={cx("nav-links")}
+            onClick={item?.handleOnClick}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText>{item.label}</ListItemText>

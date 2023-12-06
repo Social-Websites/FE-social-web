@@ -55,33 +55,24 @@ function App() {
               );
             })}
           </Route>
-          <Route element={<RequireAuth admin={true} />}>
-            {adminRoutes.map((route, index) => {
-              const Page = route.component;
+        </Route>
+        <Route element={<RequireAuth admin={true} />}>
+          {adminRoutes.map((route, index) => {
+            const Pages = route.components || [];
 
-              //   let Layout;
-
-              //   if (route.layout) {
-              //       Layout = route.layout;
-              //   } else if (route.layout === null) {
-              //       Layout = Fragment;
-              //   }
-
-              return (
-                <Route
-                  key={index}
-                  path={route.path}
-                  element={
-                    //   <AuthWrapper>
-                    //   <Layout>
-                    <Page />
-                    //   </Layout>
-                    //   </AuthWrapper>
-                  }
-                />
-              );
-            })}
-          </Route>
+            const Layout = route.layout || Fragment;
+            return (
+              <Route key={index} path={route.path} element={<Layout />}>
+                {Pages.map((comp, compIndex) => (
+                  <Route
+                    key={compIndex}
+                    path={comp.path}
+                    element={<comp.component />}
+                  />
+                ))}
+              </Route>
+            );
+          })}
         </Route>
       </Routes>
       <ToastContainer

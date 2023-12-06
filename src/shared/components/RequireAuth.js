@@ -24,7 +24,7 @@ const RequireAuth = ({ admin = false }) => {
 
           userAuth = response;
 
-          console.log("user: ", userAuth);
+          //console.log("user: ", userAuth);
         } catch (err) {
           console.log(err.message);
         }
@@ -37,9 +37,12 @@ const RequireAuth = ({ admin = false }) => {
     };
   }, [auth.accessToken]);
 
-  if (admin && userAuth?.admin) {
-    if (auth?.accessToken) return <Outlet />;
-    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
+  if (admin && auth?.accessToken) {
+    if (auth?.admin) return <Outlet />;
+    else
+      return (
+        <Navigate to="/error/unauthorized" state={{ from: location }} replace />
+      );
   } else if (auth?.accessToken) {
     return <Outlet />;
   } else {

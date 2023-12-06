@@ -82,7 +82,7 @@ const PostsManage = () => {
                 </Stack> */}
               </Stack>
             </Stack>
-            <PostSearch />
+            <PostSearch setSearch={setSearch} />
             {data.length > 0 && (
               <PostTable
                 count={data.length}

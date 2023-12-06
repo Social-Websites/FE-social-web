@@ -98,7 +98,7 @@ const AdminLoginForm = () => {
       const response = await aLogin(formData, publicRequest);
       const accessToken = response?.accessToken;
       if (accessToken) {
-        setAuth({ accessToken });
+        setAuth({ accessToken: accessToken, admin: true });
         setPersistLogin(false);
         navigate(from, { replace: true });
         clearError();

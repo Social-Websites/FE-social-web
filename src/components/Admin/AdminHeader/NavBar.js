@@ -25,7 +25,7 @@ const NavBarAdmin = ({ handleDrawerToggle }) => {
             flexDirection: "row",
           }}
         >
-          <NotificationIcon />
+          {/* <NotificationIcon /> */}
           <ProfileIcon />
         </Box>
         {/* </Hidden> */}

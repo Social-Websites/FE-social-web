@@ -17,10 +17,12 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import image from "./1561280118604-Docker.png";
+import useLogout from "../../../../shared/hook/auth-hook/logout-hook";
 
 const cx = classNames.bind(styles);
 
 const ProfileIcon = () => {
+  const { logout } = useLogout();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -31,8 +33,8 @@ const ProfileIcon = () => {
   };
 
   const dropDownData = [
-    { label: "Settings", icon: <SettingsIcon /> },
-    { label: "Logout", icon: <LogoutIcon /> },
+    // { label: "Settings", icon: <SettingsIcon /> },
+    { label: "Logout", icon: <LogoutIcon />, func: logout },
   ];
 
   return (
@@ -55,7 +57,7 @@ const ProfileIcon = () => {
         }}
       >
         {dropDownData.map((item, i) => (
-          <MenuItem key={i} component={ListItem} onClick={handleClose}>
+          <MenuItem key={i} component={ListItem} onClick={item.func}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText>{item.label}</ListItemText>
           </MenuItem>

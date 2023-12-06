@@ -40,16 +40,6 @@ const publicRoutes = [
       { path: "reset-password/:token", component: ResetPasswordForm },
     ],
   },
-
-  {
-    path: "/administrator/*",
-    layout: AdminPage,
-    components: [
-      { path: "dashboard", component: DashboardBody },
-      { path: "users", component: UsersManage },
-      { path: "posts", component: PostsManage },
-    ],
-  },
 ];
 // Private Routes
 const privateRoutes = [
@@ -62,6 +52,16 @@ const privateRoutes = [
   { path: "/p/:id", component: PostDetailPage },
 ];
 // Private Routes
-const adminRoutes = [];
+const adminRoutes = [
+  {
+    path: "/administrator/*",
+    layout: AdminPage,
+    components: [
+      { path: "dashboard", component: DashboardBody },
+      { path: "users", component: UsersManage },
+      { path: "posts", component: PostsManage },
+    ],
+  },
+];
 
 export { publicRoutes, privateRoutes, adminRoutes };

@@ -18,8 +18,7 @@ const UnauthorizedPage = () => {
   return (
     <div>
       <h2>
-        Không có quyền truy cập{" "}
-        <a href="/accounts/login">Trở về trang đăng nhập</a>
+        Error 403 forbidden <a href="/accounts/login">Back to Login</a>
       </h2>
     </div>
   );

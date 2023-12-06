@@ -162,7 +162,7 @@ export const login = async (loginForm, sendRequest) => {
 
 export const aLogin = async (loginForm, sendRequest) => {
   try {
-    const response = await sendRequest("/auth/login", "post", loginForm, {
+    const response = await sendRequest("/auth/alogin", "post", loginForm, {
       headers: { "Content-Type": "application/json" },
     });
     return response?.data;

@@ -18,8 +18,7 @@ const Error404Page = () => {
   return (
     <div>
       <h2>
-        Lỗi 404 không tìm thấy trang{" "}
-        <a href="/accounts/login">Trở về trang đăng nhập</a>
+        Error 404 not found <a href="/accounts/login">Back to Login</a>
       </h2>
     </div>
   );

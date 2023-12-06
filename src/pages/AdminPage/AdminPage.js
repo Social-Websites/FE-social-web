@@ -13,6 +13,33 @@ const AdminPage = () => {
   const location = useLocation();
   const from = location?.pathname || "/administrator";
 
+  // useEffect(() => {
+  //   const confirmationMessage =
+  //     "If reload you will lost your session, you need to login again!";
+  //   const handleBeforeUnload = (event) => {
+  //     event.preventDefault();
+
+  //     event.returnValue = confirmationMessage; // Required for Chrome
+  //     return confirmationMessage;
+  //   };
+
+  //   const handleReload = (event) => {
+  //     event.returnValue = confirmationMessage; // Required for Chrome
+
+  //     if (!window.confirm(confirmationMessage)) {
+  //       event.preventDefault();
+  //     }
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   // window.addEventListener("unload", handleReload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     // window.removeEventListener("unload", handleReload);
+  //   };
+  // }, []);
+
   useEffect(() => {
     if (from === "/administrator") navigate("./dashboard");
   }, []);

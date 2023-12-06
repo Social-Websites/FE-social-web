@@ -18,7 +18,7 @@ const useLogout = () => {
     dispatch(setPosts([]));
     try {
       const response = await publicRequest("/auth/logout");
-      if (response?.data?.message) {
+      if (response?.data?.message || response.status === 204) {
         console.log(response?.data?.message);
         navigate("/accounts/login");
       }
