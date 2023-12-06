@@ -204,7 +204,7 @@ export const PostTable = (props) => {
                         <div
                           className={cx("image")}
                           style={{
-                            maxHeight: "300px",
+                            maxHeight: "220px",
                             width: "100%",
                             display: "flex",
                             overflow: "hidden",

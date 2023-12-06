@@ -19,13 +19,15 @@
 .modal-content-item:last-child{
     margin-bottom: 20px;
 }
+
+
 .post-info{
     display: flex;
     margin-top:10px;
 }
 .comment{
     overflow: auto;
-    max-height: 150px;
+    max-height: 120px;
 }
 .post-comment{
     display: flex;
