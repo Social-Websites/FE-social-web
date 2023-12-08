@@ -59,10 +59,10 @@ function Messages({ style }) {
 
 
   useEffect(() => {
-    console.log(socket, currentChat._id);
-    console.log(checkCurrentChatIdRef.current);
+    // console.log(socket, currentChat._id);
+    // console.log(checkCurrentChatIdRef.current);
     if(socket){
-      console.log("toi socket");
+      // console.log("toi socket");
       if (socket.current && !socketEventRef.current) {
         socket.current.on("msg-recieve", (data) => handleMsgRecieve(checkCurrentChatIdRef.current, data));
         socketEventRef.current = true;
@@ -86,12 +86,12 @@ function Messages({ style }) {
 
   useEffect(() => {
     setFetching(true);
-    console.log("day" + fetching + isLoadingMsg);
-    console.log("Current_Chat",currentChat._id);
-    console.log("messages",messages);
+    // console.log("day" + fetching + isLoadingMsg);
+    // console.log("Current_Chat",currentChat._id);
+    // console.log("messages",messages);
     const fetchData = async () => {
       try {
-        console.log("Current_Chat",currentChat._id);
+        // console.log("Current_Chat",currentChat._id);
         const data = await messageService.getMessages(currentChat._id, 0);
         dispatch({ type: "SET_MESSAGES", payload: data });
         firstChat.current = true;
@@ -110,10 +110,10 @@ function Messages({ style }) {
 
 
 
-  useEffect(() => {
-    console.log(currentChat);
-    checkCurrentChatIdRef.current = currentChat._id;
-  },[currentChat]);
+  // useEffect(() => {
+  //   console.log(currentChat);
+  //   checkCurrentChatIdRef.current = currentChat._id;
+  // },[currentChat]);
 
 
   

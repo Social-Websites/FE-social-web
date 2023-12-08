@@ -126,7 +126,7 @@ function NavBar({ onScrollToTop }) {
     const fetchData = async () => {
       try {
         if (notification) {
-          console.log(user?._id);
+          // console.log(user?._id);
           const data = await notificationsService.getNotifications(
             user?._id,
             0
@@ -329,7 +329,7 @@ function NavBar({ onScrollToTop }) {
     const data = e.target.value;
     try {
       const result = await usersService.searchUsers(data);
-      console.log(result);
+      // console.log(result);
       if (result !== null) {
         setSearchedUsers(result);
         setIsLoadingSearch(false);
