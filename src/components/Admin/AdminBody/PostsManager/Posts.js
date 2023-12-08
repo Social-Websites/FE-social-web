@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useContext, useState } from "react";
+import { React, useCallback, useEffect, useContext, useState, useRef } from "react";
 import { subDays, subHours } from "date-fns";
 import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
 import {
@@ -28,11 +28,12 @@ const PostsManage = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [fetchPage, setFetchPage] = useState(1);
-  const { user, socket, dispatch } = useContext(StateContext);
+  const { user, dispatch } = useContext(StateContext);
+  const socket = useRef();
 
   useEffect(() => {
     if (user) {
-      if(!socket) {
+      if (socket.current == null) {
         socket.current = io("https://nestme-server.onrender.com");
         // console.log(socket);
         socket.current.on("connect", () => {
