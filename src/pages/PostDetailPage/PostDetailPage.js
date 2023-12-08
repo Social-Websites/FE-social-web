@@ -28,8 +28,9 @@ const cx = classNames.bind(styles);
 
 const PostDetailPage = () => {
   const navigate = useNavigate();
-  const privateHttpRequest = usePrivateHttpClient();
   const { id } = useParams();
+  const { posts } = useContext(StateContext);
+  const privateHttpRequest = usePrivateHttpClient();
   const [post, setPost] = useState(null);
   const { dispatch } = useContext(StateContext);
 
@@ -75,6 +76,8 @@ const PostDetailPage = () => {
       const response = await getPost(id, privateHttpRequest.privateRequest);
       if (response) {
         setPost(response.post);
+        setIsLiked(response.post.is_user_liked);
+        setReactsCount(response.post.reacts_count);
       }
     } catch (err) {
       console.error("Error loading post: ", err);
@@ -82,7 +85,15 @@ const PostDetailPage = () => {
   }, [id]);
 
   useEffect(() => {
-    loadPost();
+    // Kiểm tra xem bài viết có tồn tại trong `posts` Map không
+    if (posts.has(id)) {
+      const foundPost = posts.get(id);
+      setPost(foundPost);
+      setIsLiked(foundPost.is_user_liked);
+      setReactsCount(foundPost.reacts_count);
+    } else {
+      loadPost();
+    }
   }, [id]);
 
   const loadComments = useCallback(async () => {
