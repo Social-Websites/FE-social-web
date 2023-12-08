@@ -88,7 +88,7 @@ const PostDetailPage = () => {
     // Kiểm tra xem bài viết có tồn tại trong `posts` Map không
     if (posts.has(id)) {
       const foundPost = posts.get(id);
-
+      setPost(foundPost);
       setIsLiked(foundPost.is_user_liked);
       setReactsCount(foundPost.reacts_count);
     } else {
