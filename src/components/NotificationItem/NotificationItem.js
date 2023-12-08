@@ -100,7 +100,7 @@ function NotificationItem({ n }) {
           </span>
         </div>
       </div>
-      {(!n.content_id && !n.reponse) &&
+      {(!n.content_id && !n.reponse && n.reponse !== false) &&
         (decisionLoading ? (
           decisionLoading === true ? (
             <div
