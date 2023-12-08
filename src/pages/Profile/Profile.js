@@ -486,7 +486,7 @@ function Profile() {
                 </span>
               </div>
             </a>
-            <a>
+            {/* <a>
               <div className={cx("choose")}>
                 <BookmarkBorderIcon className={cx("icon")} />
                 <span
@@ -507,7 +507,7 @@ function Profile() {
                   Tagged
                 </span>
               </div>
-            </a>
+            </a> */}
           </div>
           <div className={cx("profile__posts")}>
             {userPosts.length > 0 ? (
