@@ -87,7 +87,6 @@ const StateReducer = (state, action) => {
         messages: [...action.payload, ...state.messages],
       };
     case "SET_POSTS":
-      console.log("set posts: ", action.payload);
       if (!action.payload || action.payload.length === 0) {
         // Nếu action.payload là null hoặc rỗng, trả về state với posts là Map trống
         return {
@@ -101,7 +100,6 @@ const StateReducer = (state, action) => {
         posts: new Map(action.payload.map((post) => [post._id, post])),
       };
     case "ADD_CREATED_POST":
-      console.log("add created post: ", action.payload);
       return {
         ...state,
         posts: new Map([
@@ -110,7 +108,6 @@ const StateReducer = (state, action) => {
         ]),
       };
     case "ADD_POSTS":
-      console.log("add posts: ", action.payload);
       return {
         ...state,
         posts: new Map([
@@ -123,12 +120,13 @@ const StateReducer = (state, action) => {
 
       // Kiểm tra xem post có tồn tại trong state hay không
       if (state.posts.has(postId)) {
+        console.log("UPDATE_REACTS_COUNT");
         const isLiked =
           reactsCount < state.posts.get(postId).reactsCount ? false : true;
         // Tạo bản sao của post và cập nhật giá trị reactsCount
         const updatedPost = {
           ...state.posts.get(postId),
-          reactsCount,
+          reacts_count: reactsCount,
           is_user_liked: isLiked,
         };
 
@@ -141,43 +139,43 @@ const StateReducer = (state, action) => {
 
       return state;
     }
-    case "UPDATE_POST_REACT":
-      const { postId, userId, emoji } = action.payload;
+    // case "UPDATE_POST_REACT":
+    //   const { postId, userId, emoji } = action.payload;
 
-      let reactPost;
+    //   let reactPost;
 
-      // Kiểm tra xem post có tồn tại trong danh sách không
-      if (state.posts.has(postId)) {
-        // Lấy ra post từ Map
-        reactPost = state.posts.get(postId);
+    //   // Kiểm tra xem post có tồn tại trong danh sách không
+    //   if (state.posts.has(postId)) {
+    //     // Lấy ra post từ Map
+    //     reactPost = state.posts.get(postId);
 
-        // Kiểm tra xem người dùng đã thích bài viết chưa
-        const existingReact = reactPost.reacts.get(userId);
+    //     // Kiểm tra xem người dùng đã thích bài viết chưa
+    //     const existingReact = reactPost.reacts.get(userId);
 
-        console.log("post cần like", reactPost);
+    //     console.log("post cần like", reactPost);
 
-        if (existingReact) {
-          // Nếu đã thích, kiểm tra emoji
-          if (existingReact.emoji === emoji) {
-            console.log("hủy like");
-            // Nếu emoji giống nhau, hủy tương tác
-            reactPost.reacts.delete(userId);
-          } else {
-            console.log("thay đổi react");
-            // Nếu emoji khác nhau, cập nhật emoji
-            reactPost.reacts.emoji = emoji;
-          }
-        } else {
-          console.log("like bài");
-          // Nếu chưa tương tác, thêm một react mới
-          reactPost.reacts.set(userId, { user: userId, emoji: emoji });
-        }
-      }
+    //     if (existingReact) {
+    //       // Nếu đã thích, kiểm tra emoji
+    //       if (existingReact.emoji === emoji) {
+    //         console.log("hủy like");
+    //         // Nếu emoji giống nhau, hủy tương tác
+    //         reactPost.reacts.delete(userId);
+    //       } else {
+    //         console.log("thay đổi react");
+    //         // Nếu emoji khác nhau, cập nhật emoji
+    //         reactPost.reacts.emoji = emoji;
+    //       }
+    //     } else {
+    //       console.log("like bài");
+    //       // Nếu chưa tương tác, thêm một react mới
+    //       reactPost.reacts.set(userId, { user: userId, emoji: emoji });
+    //     }
+    //   }
 
-      return {
-        ...state,
-        posts: new Map([...state.posts.entries(), [reactPost._id, reactPost]]),
-      };
+    //   return {
+    //     ...state,
+    //     posts: new Map([...state.posts.entries(), [reactPost._id, reactPost]]),
+    //   };
 
     case "SET_USER":
       return {
