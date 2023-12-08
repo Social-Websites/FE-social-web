@@ -40,15 +40,15 @@ const PostDetailPage = () => {
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
 
-  const [isLiked, setIsLiked] = useState(post?.is_user_liked);
-  const [reactsCount, setReactsCount] = useState(post?.reacts_count);
+  const [isLiked, setIsLiked] = useState(false);
+  const [reactsCount, setReactsCount] = useState(0);
 
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
   const [page, setPage] = useState(1);
-  const [isFirstMount, setIsFirstMount] = useState(true);
-  const [hadMounted, setHadMounted] = useState(false);
+  // const [isFirstMount, setIsFirstMount] = useState(true);
+  // const [hadMounted, setHadMounted] = useState(false);
 
   const observer = useRef();
   const lastCommentRef = useCallback(

@@ -110,7 +110,7 @@ function NavBar({ onScrollToTop }) {
   useEffect(() => {
     if (user) {
       if (socket.current == null) {
-        socket.current = io("http://localhost:5000");
+        socket.current = io("https://nestme-server.onrender.com");
         console.log(socket);
         socket.current.on("connect", () => {
           // yêu cầu kết nối vào 1 socket mới
@@ -943,7 +943,10 @@ function NavBar({ onScrollToTop }) {
             />
           </div>
           {isDropping ? (
-            <div className={cx("modal-navbar-content")} style={{ height: "auto", backgroundColor: "#262626" }}>
+            <div
+              className={cx("modal-navbar-content")}
+              style={{ height: "auto", backgroundColor: "#262626" }}
+            >
               <div className={cx("modal-header")} style={{ display: "flex" }}>
                 <div style={{ width: "7%", height: "22.4px" }}>
                   <WestIcon
@@ -1144,7 +1147,10 @@ function NavBar({ onScrollToTop }) {
               </div>
             </div>
           ) : (
-            <div className={cx("modal-navbar-content")} style={{ width: "50%", backgroundColor: "#262626" }}>
+            <div
+              className={cx("modal-navbar-content")}
+              style={{ width: "50%", backgroundColor: "#262626" }}
+            >
               <div className={cx("modal-header")}>New Post</div>
               <div
                 className={cx("modal-main")}
