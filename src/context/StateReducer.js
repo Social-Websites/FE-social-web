@@ -87,6 +87,7 @@ const StateReducer = (state, action) => {
         messages: [...action.payload, ...state.messages],
       };
     case "SET_POSTS":
+      console.log("set posts: ", action.payload);
       if (!action.payload || action.payload.length === 0) {
         // Nếu action.payload là null hoặc rỗng, trả về state với posts là Map trống
         return {
@@ -100,6 +101,7 @@ const StateReducer = (state, action) => {
         posts: new Map(action.payload.map((post) => [post._id, post])),
       };
     case "ADD_CREATED_POST":
+      console.log("add created post: ", action.payload);
       return {
         ...state,
         posts: new Map([
@@ -108,6 +110,7 @@ const StateReducer = (state, action) => {
         ]),
       };
     case "ADD_POSTS":
+      console.log("add posts: ", action.payload);
       return {
         ...state,
         posts: new Map([
