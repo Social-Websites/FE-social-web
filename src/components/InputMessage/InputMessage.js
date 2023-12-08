@@ -52,7 +52,7 @@ function InputMessage ({onSelectedFile}) {
   }
 
   const handleSendIcon = async () => {
-    console.log(currentChat);
+    // console.log(currentChat);
     try{
       const newMessage = {
         conversationId: currentChat._id,
@@ -79,7 +79,7 @@ function InputMessage ({onSelectedFile}) {
 
 
   const handleCreateConversationWithIcon = async () => {
-    console.log(currentChat);
+    // console.log(currentChat);
     try{
       const newConversation = {
         userIds: [...currentChat.userIds, user._id],
@@ -140,10 +140,10 @@ function InputMessage ({onSelectedFile}) {
               reject(error);
             },
             () => {
-              console.log("Toi r");
+              // console.log("Toi r");
               getDownloadURL(uploadTask.snapshot.ref)
               .then((url) => {
-                console.log(url);
+                // console.log(url);
                 resolve(url);
               })
               .catch((error) => {
@@ -159,7 +159,7 @@ function InputMessage ({onSelectedFile}) {
         setSending(true);
         const urls = await Promise.allSettled(promises)
         const urlStrings = urls.map((url) => url.value.toString());
-        console.log(currentChat);
+        // console.log(currentChat);
         try{
             const newMessage = {
             conversationId: currentChat._id,
@@ -214,10 +214,10 @@ function InputMessage ({onSelectedFile}) {
               reject(error);
             },
             () => {
-              console.log("Toi r");
+              // console.log("Toi r");
               getDownloadURL(uploadTask.snapshot.ref)
               .then((url) => {
-                console.log(url);
+                // console.log(url);
                 resolve(url);
               })
               .catch((error) => {
@@ -233,7 +233,7 @@ function InputMessage ({onSelectedFile}) {
         setSending(true);
         const urls = await Promise.allSettled(promises)
         const urlStrings = urls.map((url) => url.value.toString());
-        console.log(currentChat);
+        // console.log(currentChat);
         try{
           const newConversation = {
             userIds: [...currentChat.userIds, user._id],
@@ -294,7 +294,7 @@ function InputMessage ({onSelectedFile}) {
   const handleEnter = async (event) => {
     if (event.key === "Enter") {
       event.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter (như xuống dòng)
-      console.log("Enter .....");
+      // console.log("Enter .....");
       if(currentChat._id)
         if((text.trim() !== "" || img.length != 0) && sending == false){
           await handleSendMessage();
@@ -332,7 +332,7 @@ function InputMessage ({onSelectedFile}) {
 
   async function ReturnHeight() {
     let isSelectedFile = 4;
-    console.log(img.length)
+    // console.log(img.length)
     if(img.length % 12 === 0){
       isSelectedFile = 3 ;
     }
