@@ -101,7 +101,7 @@ const ListComponent = ({ users, authors }) => {
               <ListItem
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 3fr 0.6fr 0.1fr 3fr 1.2fr 1.2fr",
+                  gridTemplateColumns: "1fr 3fr 0.6fr 0.1fr 0.1fr 3fr 1.2fr 1.2fr",
                 }}
               >
                 <ListItemIcon>
