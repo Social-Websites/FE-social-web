@@ -60,12 +60,12 @@ function ChatPage() {
 
     useEffect(() => {
         setIsOnline(currentChat?.online);
-        console.log("online chua");
-        console.log(currentChat?.online);
+        // console.log("online chua");
+        // console.log(currentChat?.online);
         if(currentChat){
             console.log("online chua");
             socket.current.on("getOnlineUser", (data) => {
-                console.log(data)
+                // console.log(data)
                 if(currentChat.userIds.includes(data.user_id) && data.user_id != user._id){
                     setIsOnline(true);
                 }
@@ -75,11 +75,11 @@ function ChatPage() {
 
     useEffect(() => {
         setIsOnline(currentChat?.online);
-        console.log("offline chua");
-        console.log(currentChat?.online);
+        // console.log("offline chua");
+        // console.log(currentChat?.online);
         if(currentChat){
             socket.current.on("getOfflineUser", (data) => {
-                console.log(data)
+                // console.log(data)
                 if(currentChat.userIds.includes(data.user_id)){
                     setIsOnline(false);
                 }
@@ -88,9 +88,9 @@ function ChatPage() {
     }, [socket?.current, currentChat]);
 
 
-    useEffect(() => {
-        console.log(currentChat);
-    },[currentChat]);
+    // useEffect(() => {
+    //     console.log(currentChat);
+    // },[currentChat]);
 
     
     

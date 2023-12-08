@@ -65,7 +65,7 @@ function Chats() {
 
     function handleClick(con) {
         dispatch({ type: "CURRENT_CHAT", payload: con });
-        console.log("Chon conversation", con._id);
+        // console.log("Chon conversation", con._id);
     };
 
     

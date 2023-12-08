@@ -23,7 +23,7 @@ function ConversationChat({c, onClick}) {
         if(socket){
             setIsOnline(c.online);
             socket.current.on("getOnlineUser", (data) => {
-                console.log(data)
+                // console.log(data)
                 if(c.userIds == data.user_id){
                     setIsOnline(true);
                 }
@@ -45,9 +45,9 @@ function ConversationChat({c, onClick}) {
 
 
     useEffect(() => {
-        console.log(socket);
+        // console.log(socket);
         if(socket){
-            console.log("toi socket");
+            // console.log("toi socket");
             if (socket.current && !socketEventRef.current) {
                 socket.current.on("msg-recieve", handleMsgRecieve);
                 socketEventRef.current = true;
@@ -67,7 +67,7 @@ function ConversationChat({c, onClick}) {
     
 
     useEffect(() => {
-        console.log(currentChat);
+        // console.log(currentChat);
         if(messages && messages.length > 0){
             if(c._id == messages[messages.length - 1].conversationId){
                 if(user._id == messages[messages.length - 1].sender_id){

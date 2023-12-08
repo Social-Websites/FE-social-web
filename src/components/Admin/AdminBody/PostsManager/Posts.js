@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useMemo, useState } from "react";
+import { React, useCallback, useEffect, useContext, useState } from "react";
 import { subDays, subHours } from "date-fns";
 import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
 import {
@@ -15,6 +15,8 @@ import { applyPagination } from "../../../../shared/util/apply-pagination";
 import { useSelection } from "../../../../shared/hook/use-selection";
 import { getAdminPosts } from "../../../../services/adminServices";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
+import { StateContext } from "../../../../context/StateContext";
+import { io } from "socket.io-client";
 
 const now = new Date();
 
@@ -26,7 +28,22 @@ const PostsManage = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [fetchPage, setFetchPage] = useState(1);
+  const { user, socket, dispatch } = useContext(StateContext);
 
+  useEffect(() => {
+    if (user) {
+      if (socket.current == null) {
+        socket.current = io("https://nestme-server.onrender.com");
+        console.log(socket);
+        socket.current.on("connect", () => {
+          // yêu cầu kết nối vào 1 socket mới
+          console.log(`You connected with socket`, Date().split("G")[0]);
+        }); // sự kiện mở kết nối socket
+        socket.current.emit("add-user", user._id);
+        dispatch({ type: "SET_SOCKET", payload: socket });
+      }
+    }
+  }, [user]);
   //const [postsSelected, setPostsSelected] = useState([]);
 
   const getData = useCallback(async () => {

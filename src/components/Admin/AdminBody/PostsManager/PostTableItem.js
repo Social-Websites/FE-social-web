@@ -18,13 +18,14 @@ import {
   Typography,
 } from "@mui/material";
 import { getInitials } from "../../../../shared/util/get-initials";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useContext, useRef, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import classNames from "classnames/bind";
 import styles from "./PostManager.module.scss";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 import { getPostComments } from "../../../../services/postServices";
 import { lockPost, unlockPost } from "../../../../services/adminServices";
+import { StateContext } from "../../../../context/StateContext";
 
 const cx = classNames.bind(styles);
 
@@ -43,6 +44,8 @@ const PostTableItem = ({ post }) => {
   const [page, setPage] = useState(1);
   const [isFirstMount, setIsFirstMount] = useState(true);
   const [hadMounted, setHadMounted] = useState(false);
+
+  const { user, socket } = useContext(StateContext);
 
   const observer = useRef();
   const lastCommentRef = useCallback(
@@ -142,7 +145,14 @@ const PostTableItem = ({ post }) => {
 
         if (response) setIsLock(!isLock);
       }
-    } catch (err) {}
+    } catch (err) {} finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [post.creator._id],
+        content_id: post._id,
+        type: "hide",
+      });
+    }
   };
 
   return (
