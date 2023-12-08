@@ -110,16 +110,10 @@ function Messages({ style }) {
 
 
 
-  // useEffect(() => {
-  //   console.log(currentChat);
-  //   checkCurrentChatIdRef.current = currentChat._id;
-  // },[currentChat]);
-
-
-  
-
-  
-
+  useEffect(() => {
+    // console.log(currentChat);
+    checkCurrentChatIdRef.current = currentChat._id;
+  },[currentChat]);
 
   return (
     <div className={cx("messages")} style={style} ref={scrollRef}>

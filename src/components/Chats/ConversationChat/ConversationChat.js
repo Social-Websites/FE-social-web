@@ -35,7 +35,7 @@ function ConversationChat({c, onClick}) {
         if(socket){
             setIsOnline(c.online);
             socket.current.on("getOfflineUser", (data) => {
-                console.log(data)
+                // console.log(data)
                 if(c.userIds == data.user_id){
                     setIsOnline(false);
                 }
