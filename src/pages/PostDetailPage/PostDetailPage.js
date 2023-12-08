@@ -89,6 +89,7 @@ const PostDetailPage = () => {
     if (posts.has(id)) {
       const foundPost = posts.get(id);
       setPost(foundPost);
+      console.log(foundPost);
       setIsLiked(foundPost.is_user_liked);
       setReactsCount(foundPost.reacts_count);
     } else {
