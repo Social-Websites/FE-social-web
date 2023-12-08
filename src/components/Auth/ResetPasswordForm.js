@@ -99,7 +99,9 @@ const ResetPasswordForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputError.passwordError || !formData.password) {
-      setFormValid("Mật khẩu phải lớn hơn 5 và nhỏ hơn 20 ký tự!");
+      setFormValid(
+        "Password must be greater than 5 and less than 20 characters!"
+      );
       return;
     }
 
@@ -144,7 +146,7 @@ const ResetPasswordForm = () => {
                       fullWidth={true}
                       variant="filled"
                     >
-                      <InputLabel htmlFor="password">Mật khẩu</InputLabel>
+                      <InputLabel htmlFor="password">Password</InputLabel>
                       <FilledInput
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -177,7 +179,7 @@ const ResetPasswordForm = () => {
                     variant="contained"
                     sx={{ bgcolor: "#03a9f4" }}
                   >
-                    <div className={cx("button--text")}>Đặt lại mật khẩu</div>
+                    <div className={cx("button--text")}>Reset Password</div>
                   </Button>
                 </div>
                 <div className={cx("input--margin")}>
@@ -198,7 +200,7 @@ const ResetPasswordForm = () => {
     return (
       <div>
         <h2>
-          {error} <a href="/accounts/login">Trở về trang đăng nhập</a>
+          {error} <a href="/accounts/login">Back to login</a>
         </h2>
       </div>
     );

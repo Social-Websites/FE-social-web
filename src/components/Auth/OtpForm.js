@@ -132,7 +132,7 @@ const OtpForm = () => {
         </span>
         <div className={cx("logo--container")}>
           <span dir="auto" style={{ fontWeight: 200 }}>
-            Nhập mã OTP xác thực vào đây
+            Enter OTP below
           </span>
         </div>
         <div className={cx("form--container")}>
@@ -153,14 +153,14 @@ const OtpForm = () => {
               </div>
 
               <p className={cx("signup--question")}>
-                Thời gian hết hạn:{" "}
+                Expire in:{" "}
                 <span style={{ fontWeight: 600 }}>
                   {twoDigits(minutesToDisplay)}:{twoDigits(secondsToDisplay)}
                 </span>
               </p>
 
               <p className={cx("signup--question")}>
-                Chưa nhận được OTP?
+                Haven't recieved OTP?
                 <br />
                 <Button
                   href=""
@@ -171,12 +171,12 @@ const OtpForm = () => {
                   onClick={resendOtp}
                 >
                   <span className={cx("signup--text")} dir="auto">
-                    Gửi lại
+                    Resend
                   </span>
                 </Button>
                 {resendSeconds > 0 ? (
                   <span>
-                    sau:{" "}
+                    in:{" "}
                     <span style={{ fontWeight: 600 }}>
                       {twoDigits(resendMinutesToDisplay)}:
                       {twoDigits(resendSecondsToDisplay)}
@@ -197,7 +197,7 @@ const OtpForm = () => {
                   disabled={!isComplete || seconds === 0}
                 >
                   <div className={cx("button--text")}>
-                    {seconds > 0 ? "Xác thực" : "Hết hạn"}
+                    {seconds > 0 ? "Verify" : "Expired"}
                   </div>
                 </Button>
               </div>

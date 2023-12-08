@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import { format, parseISO } from "date-fns";
 import {
   Avatar,
   Box,
@@ -15,10 +14,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Scrollbar } from "./ScrollBar";
-import { getInitials } from "../../../../shared/util/get-initials";
 import { useMemo, useState } from "react";
 import { applyPagination } from "../../../../shared/util/apply-pagination";
 import { useSelection } from "../../../../shared/hook/use-selection";
+import UserTableItem from "./UserTableItem";
 
 const useUsers = (data, page, rowsPerPage) => {
   return useMemo(() => {
@@ -84,46 +83,15 @@ export const UserTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => {
-                const isSelected = selected.includes(user._id);
-                const createdAt = format(
-                  parseISO(user.created_at),
-                  "dd/MM/yyyy"
-                );
-
-                return (
-                  <TableRow hover key={user._id} selected={isSelected}>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            onSelectOne?.(user._id);
-                          } else {
-                            onDeselectOne?.(user._id);
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Stack alignItems="center" direction="row" spacing={2}>
-                        <Avatar src={user.profile_picture}>
-                          {getInitials(user.username)}
-                        </Avatar>
-                        <Typography variant="subtitle2">
-                          {user.username}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{user.user_info.email}</TableCell>
-                    <TableCell>{user.full_name}</TableCell>
-                    <TableCell>{createdAt}</TableCell>
-                    <TableCell style={{ color: user.banned ? "red" : "green" }}>
-                      {user.banned ? "BANNED" : "ACTIVE"}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {users.map((user) => (
+                <UserTableItem
+                  key={user._id}
+                  user={user}
+                  onDeselectOne={onDeselectOne}
+                  onSelectOne={onSelectOne}
+                  selected={selected}
+                />
+              ))}
             </TableBody>
           </Table>
         </Box>

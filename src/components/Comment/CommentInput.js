@@ -56,8 +56,6 @@ const CommentInput = (props) => {
         ]);
         setText("");
       }
-
-      console.log("------ comment success!");
     } catch (err) {
       console.error("Error while post comment: ", err);
     } finally {
@@ -72,7 +70,6 @@ const CommentInput = (props) => {
 
   const handleEnter = async (event) => {
     if (event.key === "Enter") {
-      console.log("Enter .....");
       await handleSendComment();
     }
   };

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const Error404Page = () => {
+const Error404Page = ({ notAuthPage }) => {
   const navigate = useNavigate();
 
   const handleClick = (e) => {
@@ -16,9 +16,10 @@ const Error404Page = () => {
   };
 
   return (
-    <div>
-      <h2>
-        Error 404 not found <a href="/accounts/login">Back to Login</a>
+    <div style={{ fontFamily: "inherit", color: "inherit" }}>
+      <h2 style={{ fontFamily: "inherit", color: "inherit" }}>
+        Page not found{" "}
+        {!notAuthPage && <a href="/accounts/login">Back to Login</a>}
       </h2>
     </div>
   );

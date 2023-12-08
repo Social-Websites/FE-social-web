@@ -117,19 +117,23 @@ const SignUpPage = () => {
     e.preventDefault();
 
     if (inputError.emailError || !formData.email) {
-      setFormValid("Email không hợp lệ!");
+      setFormValid("Email not valid!");
       return;
     }
     if (inputError.fullnameError || !formData.fullname) {
-      setFormValid("Họ và tên quá ngắn!");
+      setFormValid("Fullname not valid!");
       return;
     }
     if (inputError.usernameError || !formData.username) {
-      setFormValid("Tên người dùng phải lớn hơn 5 và nhỏ hơn 15 ký tự!");
+      setFormValid(
+        "Username must be greater than 5 and less than 15 characters!"
+      );
       return;
     }
     if (inputError.passwordError || !formData.password) {
-      setFormValid("Mật khẩu phải lớn hơn 5 và nhỏ hơn 20 ký tự!");
+      setFormValid(
+        "Password must be greater than 5 and less than 20 characters!"
+      );
       return;
     }
 
@@ -190,7 +194,7 @@ const SignUpPage = () => {
                   <TextField
                     error={inputError.fullnameError}
                     id="fullname"
-                    label="Họ và tên"
+                    label="Fullname"
                     variant="filled"
                     fullWidth={true}
                     size="small"
@@ -204,7 +208,7 @@ const SignUpPage = () => {
                   <TextField
                     error={inputError.usernameError}
                     id="username"
-                    label="Tên đăng nhập"
+                    label="Username"
                     variant="filled"
                     fullWidth={true}
                     size="small"
@@ -221,7 +225,7 @@ const SignUpPage = () => {
                     fullWidth={true}
                     variant="filled"
                   >
-                    <InputLabel htmlFor="password">Mật khẩu</InputLabel>
+                    <InputLabel htmlFor="password">Password</InputLabel>
                     <FilledInput
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -250,7 +254,7 @@ const SignUpPage = () => {
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
                 >
-                  <div className={cx("button--text")}>Đăng ký</div>
+                  <div className={cx("button--text")}>Sign Up</div>
                 </Button>
               </div>
               <div className={cx("input--margin")}>
@@ -267,7 +271,7 @@ const SignUpPage = () => {
       <Paper elevation={0} square className={cx("center-screen")}>
         <span className={cx("signup--container")} dir="auto">
           <p className={cx("signup--question")}>
-            Bạn đã có tài khoản?&nbsp;
+            You have an account?&nbsp;
             <Button
               href="/accounts/login/"
               className={cx("signup--link")}
@@ -275,7 +279,7 @@ const SignUpPage = () => {
               tabIndex={0}
             >
               <span className={cx("signup--text")} dir="auto">
-                Đăng nhập
+                Login
               </span>
             </Button>
           </p>

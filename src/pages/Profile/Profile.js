@@ -7,7 +7,12 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
-import { CircularProgress } from "@mui/material";
+import {
+  CircularProgress,
+  Skeleton,
+  linearProgressClasses,
+  rgbToHex,
+} from "@mui/material";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useNavigate, useParams } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
@@ -25,12 +30,16 @@ import { checkCon } from "../../services/conversationService";
 import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
+import Error404Page from "../AuthPage/Error404Page";
+import { grey } from "@mui/material/colors";
 
 const cx = classNames.bind(styles);
 
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
+  const [notFound, setNotFound] = useState(false);
+
   const { socket, dispatch } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const navigate = useNavigate();
@@ -136,7 +145,11 @@ function Profile() {
       setProfileLoading(false);
     } catch (err) {
       setProfileLoading(false);
-      console.log(err.message);
+      console.log(err);
+      if (err.statusCode === 404) {
+        console.log("User not found!");
+        setNotFound(true);
+      }
     }
   }, [username]);
 
@@ -237,6 +250,7 @@ function Profile() {
   }, []);
 
   useEffect(() => {
+    if (notFound) setNotFound(false);
     fetchUser();
 
     setUserPosts([]);
@@ -390,155 +404,163 @@ function Profile() {
       <div className={cx("profile__navWraper")}>
         <Sidenav />
       </div>
-      <div className={cx("profile__right")}>
+      <div className={cx("profile__right")} style={{ color: "white" }}>
         {/* !profileLoading && */}
-        <div className={cx("profile__content")}>
-          <div className={cx("profile__header")}>
-            <div className={cx("profile_avatar")}>
-              <img
-                className={cx("avatar")}
-                style={{ position: "inherit" }}
-                src={avatarUrl}
-              />
-            </div>
-            <div className={cx("profile__info")}>
-              <div className={cx("profile__user")}>
-                <span>{userData?.username}</span>
-                {isOwnProfile ? null : (
-                  <button
-                    onClick={
-                      userData?.is_friend
-                        ? handleUnfriendQuestion
-                        : isSentFriendRequest
-                        ? handleRemoveRequest
-                        : handleAddFriend
-                    }
-                    className={
-                      !userData?.is_friend && !isSentFriendRequest
-                        ? cx("profile__button__blue")
-                        : cx("profile__button")
-                    }
-                    disabled={friendButtonLoading}
-                  >
-                    <span style={{ display: "flex", alignItems: "center" }}>
-                      {friendButtonLoading ? (
-                        <CircularProgress size={15} />
-                      ) : userData?.is_friend ? (
-                        <>
-                          Friends <ExpandMoreIcon />
-                        </>
-                      ) : isSentFriendRequest ? (
-                        "Sent"
-                      ) : (
-                        "Add friend"
-                      )}
-                    </span>
-                  </button>
-                )}
-                {isOwnProfile ? (
-                  <button
-                    onClick={() => navigate("/user-info/edit")}
-                    className={cx("profile__button")}
-                  >
-                    <span>Edit profile</span>
-                  </button>
-                ) : (
-                  <button
-                    className={cx("profile__button")}
-                    onClick={handleMessage}
-                  >
-                    <span>Message</span>
-                  </button>
-                )}
+        {notFound ? (
+          <Error404Page notAuthPage={true} />
+        ) : (
+          <div className={cx("profile__content")}>
+            <div className={cx("profile__header")}>
+              <div className={cx("profile_avatar")}>
+                <img
+                  className={cx("avatar")}
+                  style={{ position: "inherit" }}
+                  src={avatarUrl}
+                />
               </div>
-              <div className={cx("profile__user__2")}>
-                <span>{userData?.posts_count} Posts</span>
-                <a onClick={handleGetUserFriendsList} className={cx("follow")}>
-                  {userData?.friends_count} Friends
-                </a>
-                {isOwnProfile ? (
+              <div className={cx("profile__info")}>
+                <div className={cx("profile__user")}>
+                  <span>{userData?.username}</span>
+
+                  {isOwnProfile ? null : (
+                    <button
+                      onClick={
+                        userData?.is_friend
+                          ? handleUnfriendQuestion
+                          : isSentFriendRequest
+                          ? handleRemoveRequest
+                          : handleAddFriend
+                      }
+                      className={
+                        !userData?.is_friend && !isSentFriendRequest
+                          ? cx("profile__button__blue")
+                          : cx("profile__button")
+                      }
+                      disabled={friendButtonLoading}
+                    >
+                      <span style={{ display: "flex", alignItems: "center" }}>
+                        {friendButtonLoading ? (
+                          <CircularProgress size={15} />
+                        ) : userData?.is_friend ? (
+                          <>
+                            Friends <ExpandMoreIcon />
+                          </>
+                        ) : isSentFriendRequest ? (
+                          "Sent"
+                        ) : (
+                          "Add friend"
+                        )}
+                      </span>
+                    </button>
+                  )}
+                  {isOwnProfile ? (
+                    <button
+                      onClick={() => navigate("/user-info/edit")}
+                      className={cx("profile__button")}
+                    >
+                      <span>Edit profile</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={cx("profile__button")}
+                      onClick={handleMessage}
+                    >
+                      <span>Message</span>
+                    </button>
+                  )}
+                </div>
+                <div className={cx("profile__user__2")}>
+                  <span>{userData?.posts_count} Posts</span>
                   <a
-                    onClick={handleGetUserFriendRequestsList}
+                    onClick={handleGetUserFriendsList}
                     className={cx("follow")}
                   >
-                    {userData?.friend_requests_count} Requests
+                    {userData?.friends_count} Friends
                   </a>
-                ) : null}
-              </div>
-              <div className={cx("profile__user__3")}>
-                <span>{userData?.full_name}</span>
-              </div>
-              <div className={cx("profile__user__3")}>
-                <span>{userData?.user_info.bio}</span>
+                  {isOwnProfile ? (
+                    <a
+                      onClick={handleGetUserFriendRequestsList}
+                      className={cx("follow")}
+                    >
+                      {userData?.friend_requests_count} Requests
+                    </a>
+                  ) : null}
+                </div>
+                <div className={cx("profile__user__3")}>
+                  <span>{userData?.full_name}</span>
+                </div>
+                <div className={cx("profile__user__3")}>
+                  <span>{userData?.user_info.bio}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={cx("profile__post__tag")}>
-            <a>
-              <div className={cx("choose")}>
-                <GridOnIcon className={cx("icon")} />
-                <span
-                  className={cx("span")}
-                  style={{ textTransform: "uppercase" }}
+            <div className={cx("profile__post__tag")}>
+              <a>
+                <div className={cx("choose")}>
+                  <GridOnIcon className={cx("icon")} />
+                  <span
+                    className={cx("span")}
+                    style={{ textTransform: "uppercase" }}
+                  >
+                    Posts
+                  </span>
+                </div>
+              </a>
+              <a>
+                <div className={cx("choose")}>
+                  <BookmarkBorderIcon className={cx("icon")} />
+                  <span
+                    className={cx("span")}
+                    style={{ textTransform: "uppercase" }}
+                  >
+                    Saved
+                  </span>
+                </div>
+              </a>
+              <a>
+                <div className={cx("choose")} style={{ marginRight: "0px" }}>
+                  <PortraitOutlinedIcon className={cx("icon")} />
+                  <span
+                    className={cx("span")}
+                    style={{ textTransform: "uppercase" }}
+                  >
+                    Tagged
+                  </span>
+                </div>
+              </a>
+            </div>
+            <div className={cx("profile__posts")}>
+              {userPosts.length > 0 ? (
+                userPosts.map((post, i) => {
+                  if (userPosts.length === i + 1)
+                    return (
+                      <ProfilePost
+                        ref={lastPostRef}
+                        key={i}
+                        creator={userData}
+                        post={post}
+                      />
+                    );
+                  return <ProfilePost key={i} creator={userData} post={post} />;
+                })
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                  }}
                 >
-                  Posts
-                </span>
-              </div>
-            </a>
-            <a>
-              <div className={cx("choose")}>
-                <BookmarkBorderIcon className={cx("icon")} />
-                <span
-                  className={cx("span")}
-                  style={{ textTransform: "uppercase" }}
-                >
-                  Saved
-                </span>
-              </div>
-            </a>
-            <a>
-              <div className={cx("choose")} style={{ marginRight: "0px" }}>
-                <PortraitOutlinedIcon className={cx("icon")} />
-                <span
-                  className={cx("span")}
-                  style={{ textTransform: "uppercase" }}
-                >
-                  Tagged
-                </span>
-              </div>
-            </a>
+                  <span style={{ color: "white", fontWeight: 1000 }}>
+                    No posts yet
+                  </span>
+                </div>
+              )}
+              {profilePostsLoading && <CircularProgress size={50} />}
+            </div>
           </div>
-          <div className={cx("profile__posts")}>
-            {userPosts.length > 0 ? (
-              userPosts.map((post, i) => {
-                if (userPosts.length === i + 1)
-                  return (
-                    <ProfilePost
-                      ref={lastPostRef}
-                      key={i}
-                      creator={userData}
-                      post={post}
-                    />
-                  );
-                return <ProfilePost key={i} creator={userData} post={post} />;
-              })
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              >
-                <span style={{ color: "white", fontWeight: 1000 }}>
-                  No posts yet
-                </span>
-              </div>
-            )}
-            {profilePostsLoading && <CircularProgress size={50} />}
-          </div>
-        </div>
+        )}
       </div>
       {unFQuestion && (
         <div className={cx("profile-modal active-profile-modal")}>

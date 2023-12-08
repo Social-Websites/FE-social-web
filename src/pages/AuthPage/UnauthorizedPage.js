@@ -16,8 +16,8 @@ const UnauthorizedPage = () => {
   };
 
   return (
-    <div>
-      <h2>
+    <div style={{ fontFamily: "inherit", color: "inherit" }}>
+      <h2 style={{ fontFamily: "inherit", color: "inherit" }}>
         Error 403 forbidden <a href="/accounts/login">Back to Login</a>
       </h2>
     </div>

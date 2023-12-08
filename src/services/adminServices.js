@@ -73,3 +73,23 @@ export const createUser = async (data, sendRequest) => {
     throw err;
   }
 };
+
+export const lockPost = async (id, sendRequest) => {
+  try {
+    const response = await sendRequest(`/admin/post/lock/${id}`, "put");
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const unlockPost = async (id, sendRequest) => {
+  try {
+    const response = await sendRequest(`/admin/post/unlock/${id}`, "put");
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};

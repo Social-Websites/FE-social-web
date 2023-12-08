@@ -89,11 +89,11 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (inputError.usernameError || !formData.username) {
-      setFormValid("Tên người dùng không được để trống!");
+      setFormValid("Username is empty!");
       return;
     }
     if (inputError.passwordError || !formData.password) {
-      setFormValid("Mật khẩu không được để trống!");
+      setFormValid("Password is empty!");
       return;
     }
 
@@ -107,8 +107,7 @@ const LoginPage = () => {
         setPersistLogin();
         navigate(from, { replace: true });
         clearError();
-      }
-      setFormValid("Đăng nhập lỗi, vui lòng thử lại!");
+      } else setFormValid("Login fail, please try again later!");
     } catch (err) {}
   };
 
@@ -138,7 +137,7 @@ const LoginPage = () => {
                   <TextField
                     error={inputError.usernameError}
                     id="username"
-                    label="Tên đăng nhập"
+                    label="Username"
                     variant="filled"
                     fullWidth={true}
                     size="small"
@@ -155,7 +154,7 @@ const LoginPage = () => {
                     fullWidth={true}
                     variant="filled"
                   >
-                    <InputLabel htmlFor="password">Mật khẩu</InputLabel>
+                    <InputLabel htmlFor="password">Password</InputLabel>
                     <FilledInput
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -184,7 +183,7 @@ const LoginPage = () => {
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
                 >
-                  <div className={cx("button--text")}>Đăng nhập</div>
+                  <div className={cx("button--text")}>Login</div>
                 </Button>
               </div>
               <div className={cx("input--margin")}>
@@ -202,7 +201,7 @@ const LoginPage = () => {
               tabIndex={0}
             >
               <span className={cx("forgot--text")} dir="auto">
-                Quên mật khẩu?
+                Forgot password?
               </span>
             </Button>
           </form>
@@ -211,7 +210,7 @@ const LoginPage = () => {
       <Paper elevation={0} square className={cx("center-screen")}>
         <span className={cx("signup--container")} dir="auto">
           <p className={cx("signup--question")}>
-            Bạn chưa có tài khoản hả?&nbsp;
+            Don't have an account?&nbsp;
             <Button
               href="/accounts/signup/"
               className={cx("signup--link")}
@@ -219,7 +218,7 @@ const LoginPage = () => {
               tabIndex={0}
             >
               <span className={cx("signup--text")} dir="auto">
-                Đăng ký
+                Sign Up
               </span>
             </Button>
           </p>

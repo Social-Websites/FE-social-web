@@ -84,11 +84,11 @@ const AdminLoginForm = () => {
     e.preventDefault();
 
     if (inputError.usernameError || !formData.username) {
-      setFormValid("Tên người dùng không được để trống!");
+      setFormValid("Username is empty!");
       return;
     }
     if (inputError.passwordError || !formData.password) {
-      setFormValid("Mật khẩu không được để trống!");
+      setFormValid("Password is empty!");
       return;
     }
 
@@ -127,7 +127,7 @@ const AdminLoginForm = () => {
                   <TextField
                     error={inputError.usernameError}
                     id="username"
-                    label="Tên đăng nhập"
+                    label="Username"
                     variant="filled"
                     fullWidth={true}
                     size="small"
@@ -144,7 +144,7 @@ const AdminLoginForm = () => {
                     fullWidth={true}
                     variant="filled"
                   >
-                    <InputLabel htmlFor="password">Mật khẩu</InputLabel>
+                    <InputLabel htmlFor="password">Password</InputLabel>
                     <FilledInput
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -173,7 +173,7 @@ const AdminLoginForm = () => {
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
                 >
-                  <div className={cx("button--text")}>Đăng nhập</div>
+                  <div className={cx("button--text")}>Login</div>
                 </Button>
               </div>
               <div className={cx("input--margin")}>

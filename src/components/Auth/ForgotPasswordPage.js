@@ -57,7 +57,7 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
 
     if (inputError.usernameOrEmailError || !forgotPassForm.usernameOrEmail) {
-      setFormValid("Trường không được bỏ trống!");
+      setFormValid("Field cannot be empty!");
       return;
     }
 
@@ -80,7 +80,7 @@ const ForgotPasswordPage = () => {
         </div>
         <div className={cx("logo--container")}>
           <span dir="auto" style={{ fontWeight: 600 }}>
-            Bạn gặp sự cố khi đăng nhập?
+            Have some problem when login?
           </span>
         </div>
         <div className={cx("form--container")}>
@@ -93,7 +93,7 @@ const ForgotPasswordPage = () => {
                 <div className={cx("input--container")}>
                   <TextField
                     id="usernameOrEmail"
-                    label="Email hoặc tên đăng nhập"
+                    label="Email or username"
                     variant="filled"
                     fullWidth={true}
                     size="small"
@@ -110,9 +110,7 @@ const ForgotPasswordPage = () => {
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
                 >
-                  <div className={cx("button--text")}>
-                    Gửi liên kết lấy lại mật khẩu
-                  </div>
+                  <div className={cx("button--text")}>Get verification</div>
                 </Button>
               </div>
               <div className={cx("input--margin")}>
@@ -130,7 +128,7 @@ const ForgotPasswordPage = () => {
                     justifyContent: "center",
                   }}
                 >
-                  <div className={cx("or--text")}>HOẶC</div>
+                  <div className={cx("or--text")}>OR</div>
                 </div>
               </div>
             </div>
@@ -141,7 +139,7 @@ const ForgotPasswordPage = () => {
               tabIndex={0}
             >
               <span className={cx("forgot--text")} dir="auto">
-                Tạo tài khoản mới!
+                Create new account!
               </span>
             </Button>
           </form>
@@ -156,7 +154,7 @@ const ForgotPasswordPage = () => {
             tabIndex={0}
           >
             <span className={cx("forgot--text")} dir="auto">
-              Quay về trang đăng nhập
+              Back to login
             </span>
           </Button>
         </span>
