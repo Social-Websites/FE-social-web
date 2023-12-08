@@ -120,9 +120,10 @@ const StateReducer = (state, action) => {
 
       // Kiểm tra xem post có tồn tại trong state hay không
       if (state.posts.has(postId)) {
-        console.log("UPDATE_REACTS_COUNT");
         const isLiked =
-          reactsCount < state.posts.get(postId).reactsCount ? false : true;
+          reactsCount < state.posts.get(postId).reacts_count
+            ? false
+            : state.posts.get(postId).is_user_liked;
         // Tạo bản sao của post và cập nhật giá trị reactsCount
         const updatedPost = {
           ...state.posts.get(postId),
