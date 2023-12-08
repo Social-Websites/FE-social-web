@@ -146,7 +146,7 @@ const PostTableItem = ({ post }) => {
         if (response) setIsLock(!isLock);
       }
     } catch (err) {} finally {
-      socket.current.emit("sendNotification", {
+      socket?.current.emit("sendNotification", {
         sender_id: user?._id,
         receiver_id: [post.creator._id],
         content_id: post._id,

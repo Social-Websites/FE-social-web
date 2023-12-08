@@ -32,14 +32,14 @@ const PostsManage = () => {
 
   useEffect(() => {
     if (user) {
-      if (socket.current == null) {
-        socket.current = io("https://nestme-server.onrender.com");
+      if (socket?.current == null) {
+        socket?.current = io("https://nestme-server.onrender.com");
         console.log(socket);
-        socket.current.on("connect", () => {
+        socket?.current.on("connect", () => {
           // yêu cầu kết nối vào 1 socket mới
           console.log(`You connected with socket`, Date().split("G")[0]);
         }); // sự kiện mở kết nối socket
-        socket.current.emit("add-user", user._id);
+        socket?.current.emit("add-user", user._id);
         dispatch({ type: "SET_SOCKET", payload: socket });
       }
     }
