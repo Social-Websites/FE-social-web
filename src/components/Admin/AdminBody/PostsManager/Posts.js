@@ -32,7 +32,7 @@ const PostsManage = () => {
 
   useEffect(() => {
     if (user) {
-      if (socket?.current == null) {
+      if(!socket) {
         socket.current = io("https://nestme-server.onrender.com");
         // console.log(socket);
         socket.current.on("connect", () => {
