@@ -94,6 +94,11 @@ const PostDetailPage = () => {
     } else {
       loadPost();
     }
+    return () => {
+      setPost(null);
+      setIsLiked(false);
+      setReactsCount(0);
+    };
   }, [id]);
 
   const loadComments = useCallback(async () => {
