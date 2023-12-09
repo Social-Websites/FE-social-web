@@ -101,7 +101,7 @@ const PostsManage = () => {
               </Stack>
             </Stack>
             <PostSearch setSearch={setSearch} />
-            {data.length > 0 && (
+            {data.length > 0 && !privateHttpRequest.isLoading && (
               <PostTable
                 count={data.length}
                 data={data}

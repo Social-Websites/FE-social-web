@@ -238,7 +238,7 @@ const UsersManage = () => {
               </div>
             </Stack>
             <UserSearch setSearch={setSearch} />
-            {data.length > 0 && (
+            {data.length > 0 && !privateHttpRequest.isLoading && (
               <UserTable
                 count={data.length}
                 data={data}
