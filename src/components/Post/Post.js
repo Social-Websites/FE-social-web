@@ -632,6 +632,7 @@ const Post = forwardRef(({ post }, ref) => {
                           postId={post._id}
                           isLiked={isLiked}
                           setIsLiked={setIsLiked}
+                          reactsCount={reactsCount}
                           setReactsCount={setReactsCount}
                           className={cx("postIcon")}
                         />
