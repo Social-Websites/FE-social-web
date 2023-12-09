@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { reactPost } from "../../services/postServices";
@@ -11,6 +11,15 @@ const ReactIcon = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
   const { user, socket, dispatch } = useContext(StateContext);
 
+  useEffect(() => {
+    dispatch(
+      updateReactsCount({
+        postId: props.postId,
+        reactsCount: props.reactsCount,
+      })
+    );
+  }, [props.reactsCount]);
+
   const handleReactPost = async () => {
     try {
       props.setIsLiked(!props.isLiked);
@@ -21,14 +30,6 @@ const ReactIcon = (props) => {
         { postId: props.postId, emoji: "LOVE" },
         privateHttpRequest.privateRequest
       );
-      if (response) {
-        dispatch(
-          updateReactsCount({
-            postId: props.postId,
-            reactsCount: props.reactsCount,
-          })
-        );
-      }
     } catch (err) {
     } finally {
       socket.current.emit("sendNotification", {
