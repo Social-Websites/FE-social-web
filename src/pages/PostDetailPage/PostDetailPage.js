@@ -22,7 +22,6 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { StateContext } from "../../context/StateContext";
 import { getPost, getPostComments } from "../../services/postServices";
-import { updateReactsCount } from "../../context/StateAction";
 import { CircularProgress, Skeleton } from "@mui/material";
 const cx = classNames.bind(styles);
 
@@ -32,7 +31,6 @@ const PostDetailPage = () => {
   const { posts } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const [post, setPost] = useState(null);
-  const { dispatch } = useContext(StateContext);
 
   // const [modal, setModal] = useState(false);
   // const [more, setMore] = useState(false);
@@ -125,15 +123,6 @@ const PostDetailPage = () => {
   useEffect(() => {
     loadComments();
   }, [id, page]);
-
-  useEffect(() => {
-    dispatch(
-      updateReactsCount({
-        postId: post?._id,
-        reactsCount: reactsCount,
-      })
-    );
-  }, [reactsCount]);
 
   function showNextImage() {
     setImageIndex((index) => {
@@ -425,6 +414,7 @@ const PostDetailPage = () => {
                     postId={post?._id}
                     isLiked={isLiked}
                     setIsLiked={setIsLiked}
+                    reactsCount={reactsCount}
                     setReactsCount={setReactsCount}
                     className={cx("postIcon")}
                   />

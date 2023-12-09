@@ -123,6 +123,8 @@ const StateReducer = (state, action) => {
         const isLiked =
           reactsCount < state.posts.get(postId).reacts_count
             ? false
+            : reactsCount > state.posts.get(postId).reacts_count
+            ? true
             : state.posts.get(postId).is_user_liked;
         // Tạo bản sao của post và cập nhật giá trị reactsCount
         const updatedPost = {

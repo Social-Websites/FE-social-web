@@ -5,10 +5,11 @@ import { reactPost } from "../../services/postServices";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { pink } from "@mui/material/colors";
 import { StateContext } from "../../context/StateContext";
+import { updateReactsCount } from "../../context/StateAction";
 
 const ReactIcon = (props) => {
   const privateHttpRequest = usePrivateHttpClient();
-  const  {user, socket}  = useContext(StateContext);
+  const { user, socket, dispatch } = useContext(StateContext);
 
   const handleReactPost = async () => {
     try {
@@ -20,8 +21,16 @@ const ReactIcon = (props) => {
         { postId: props.postId, emoji: "LOVE" },
         privateHttpRequest.privateRequest
       );
-    } catch (err) {}
-    finally{
+      if (response) {
+        dispatch(
+          updateReactsCount({
+            postId: props.postId,
+            reactsCount: props.reactsCount,
+          })
+        );
+      }
+    } catch (err) {
+    } finally {
       socket.current.emit("sendNotification", {
         sender_id: user?._id,
         receiver_id: props.userId,

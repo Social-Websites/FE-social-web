@@ -27,8 +27,6 @@ import { grey, pink } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import ReactIcon from "../ReactIcon/ReactIcon";
-import { StateContext } from "../../context/StateContext";
-import { updatePostReact, updateReactsCount } from "../../context/StateAction";
 import CommentInput from "../Comment/CommentInput";
 import { getPostComments } from "../../services/postServices";
 
@@ -43,7 +41,6 @@ const Post = forwardRef(({ post }, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const privateHttpRequest = usePrivateHttpClient();
-  const { dispatch } = useContext(StateContext);
 
   const [modal, setModal] = useState(false);
   const [more, setMore] = useState(false);
@@ -104,15 +101,6 @@ const Post = forwardRef(({ post }, ref) => {
   useEffect(() => {
     if (hadMounted && !isFirstMount) loadComments();
   }, [post._id, page]);
-
-  useEffect(() => {
-    dispatch(
-      updateReactsCount({
-        postId: post._id,
-        reactsCount: reactsCount,
-      })
-    );
-  }, [reactsCount]);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -305,6 +293,7 @@ const Post = forwardRef(({ post }, ref) => {
               postId={post._id}
               isLiked={isLiked}
               setIsLiked={setIsLiked}
+              reactsCount={reactsCount}
               setReactsCount={setReactsCount}
               className={cx("postIcon")}
             />
