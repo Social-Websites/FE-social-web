@@ -11,6 +11,7 @@ import AuthPage from "../pages/AuthPage";
 import DashboardBody from "../components/Admin/AdminBody/Dashboard/Dashboard";
 import UsersManage from "../components/Admin/AdminBody/UsersManager/Users";
 import PostsManage from "../components/Admin/AdminBody/PostsManager/Posts";
+import ReportsManage from "../components/Admin/AdminBody/ReportsManager/Reports";
 import Error404Page from "../pages/AuthPage/Error404Page";
 import UnauthorizedPage from "../pages/AuthPage/UnauthorizedPage";
 import ResetPasswordForm from "../components/Auth/ResetPasswordForm";
@@ -60,6 +61,7 @@ const adminRoutes = [
       { path: "dashboard", component: DashboardBody },
       { path: "users", component: UsersManage },
       { path: "posts", component: PostsManage },
+      { path: "reports", component: ReportsManage },
     ],
   },
 ];
