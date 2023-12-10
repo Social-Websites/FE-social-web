@@ -45,9 +45,7 @@ function Profile() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
-  const [isSentFriendRequest, setIsSentFriendRequest] = useState(
-    userData?.is_friend_request_sent
-  );
+  const [isSentFriendRequest, setIsSentFriendRequest] = useState(null);
 
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -138,6 +136,7 @@ function Profile() {
       );
 
       setUserData(response);
+      console.log(response);
       const userFullname = response.full_name;
       setIsSentFriendRequest(response.is_friend_request_sent);
       // Thay đổi title khi component mount
