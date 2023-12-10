@@ -28,11 +28,11 @@ function ChatPage() {
         setTimeout(() => {
             if (containerRef.current && inputRef.current) {
                 const containerHeight = containerRef.current?.clientHeight || 0
-                console.log(containerRef.current.clientHeight)
+                // console.log(containerRef.current.clientHeight)
                 const inputHeight = inputRef.current?.clientHeight || 66;
-                console.log(inputRef.current.clientHeight)
+                // console.log(inputRef.current.clientHeight)
                 const chatInfoHeight = document.getElementById("chatInfo")?.clientHeight || 75;
-                console.log(chatInfoHeight)
+                // console.log(chatInfoHeight)
                 let remainingHeight;
                 remainingHeight = containerHeight - inputHeight - chatInfoHeight - 30 ; //-padding messages + bottom:10px
                 setRemainingHeight(remainingHeight);

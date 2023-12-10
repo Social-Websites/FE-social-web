@@ -11,6 +11,7 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import ArticleIcon from "@mui/icons-material/Article";
+import ReportGmailerrorredOutlinedIcon from '@mui/icons-material/ReportGmailerrorredOutlined';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink } from "react-router-dom";
 import useLogout from "../../../../shared/hook/auth-hook/logout-hook";
@@ -31,6 +32,7 @@ const SideNavAdminData = ({ handleDrawerClose }) => {
       icon: <PermIdentityIcon />,
     },
     { label: "Posts", link: "posts", icon: <ArticleIcon /> },
+    { label: "Reports", link: "reports", icon: <ReportGmailerrorredOutlinedIcon /> },
     {
       label: "Logout",
       link: "logout",

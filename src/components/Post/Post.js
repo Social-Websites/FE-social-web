@@ -20,6 +20,7 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import WestIcon from '@mui/icons-material/West';
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { CircularProgress, Skeleton } from "@mui/material";
 import TimeAgo from "../../shared/components/TimeAgo";
@@ -718,6 +719,50 @@ const Post = forwardRef(({ post }, ref) => {
               Go to post
             </div>
             <div className={cx("more-content-element")}>Cancel</div>
+          </div>
+        </div>
+      )}
+
+      {more && (
+        <div className={cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleMore}
+            className={cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div className={cx("more-content-header")}>
+              <WestIcon
+                className={cx("sidenav__icon")}
+                style={{
+                  width: "27px",
+                  height: "27px",
+                  color: "white",        
+                  cursor: "pointer",
+                }}
+              /> 
+              <div className={cx("more-content-title")}>Why are you reportting this post?</div>
+            </div>
+            <div className={cx("more-content-report")}>Indecent photo</div>
+            <div className={cx("more-content-report")}>Violence</div>
+            <div className={cx("more-content-report")}>Harassment</div>
+            <div className={cx("more-content-report")}>Terrorism</div>
+            <div className={cx("more-content-report")}>Hateful language, false information</div>
+            <div className={cx("more-content-report")}>Spam</div>
+            <div className={cx("more-content-report")} style={{color: "#ed4956"}}>Cancel</div>
           </div>
         </div>
       )}
