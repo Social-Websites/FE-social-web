@@ -394,6 +394,76 @@ const PostTableItem = ({ post }) => {
           </div>
         </Modal.Footer>
       </Modal>
+
+
+      <Modal
+          show={visible}
+          onHide={() => setVisible(false)}
+          className={cx("add-employee-modal")}
+        >
+          <Modal.Header>
+            <div className={cx("title-modal")}>REPORTS</div>
+            {privateHttpRequest.error && (
+              <>
+                <br />
+                <div className={cx("title-modal")}>
+                  {" "}
+                  <Alert severity="error">{privateHttpRequest.error}</Alert>
+                </div>
+              </>
+            )}
+          </Modal.Header>
+          <Modal.Body>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Indecent photo
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Violence
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Harassment
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Terrorism 
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Hateful language, false information
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+            <div className={cx("row align-items-center", "modal-content-report")}>
+                <div className={cx("col-lg-8 col-md-8", "report")}> 
+                  Spam
+                </div>
+                <div className={cx("col-lg-3 col-md-3", "count")}>
+                  2
+                </div>
+            </div>
+          </Modal.Body>
+        </Modal>
     </>
   );
 };
