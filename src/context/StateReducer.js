@@ -86,6 +86,11 @@ const StateReducer = (state, action) => {
         ...state,
         messages: [...action.payload, ...state.messages],
       };
+    case "UPDATE_MESSAGE_REMOVED":
+      return {
+        ...state,
+        messageRemoves: [...state.messageRemoves, action.payload],
+      };
     case "SET_POSTS":
       if (!action.payload || action.payload.length === 0) {
         // Nếu action.payload là null hoặc rỗng, trả về state với posts là Map trống

@@ -61,13 +61,16 @@ function InputMessage ({onSelectedFile}) {
         img: user.profile_picture,
         content: "❤️",
         media: img,
-      }
-      const result =  await messageService.sendMessage(newMessage);
-      socket.current.emit("send-msg", newMessage)
+        removed: false,
+      };
+      const result = await messageService.sendMessage(newMessage);
+      const savedMessage = {_id: result._id, ...newMessage};
+      socket.current.emit("send-msg", savedMessage)
       dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
-      dispatch({type: "ADD_MESSAGE", payload: newMessage,
+      dispatch({type: "ADD_MESSAGE", payload: savedMessage,
         fromSelf: true,
       })
+      window.alert(result._id);
       if (result !== null) {
         setText("") ;
         setImg([]);
@@ -103,10 +106,12 @@ function InputMessage ({onSelectedFile}) {
         img: user.profile_picture,
         content: "❤️",
         media: img,
+        removed: false,
       }
       const result =  await messageService.sendMessage(newMessage);
-      socket.current.emit("send-msg", newMessage)
-      dispatch({type: "ADD_MESSAGE", payload: newMessage,
+      const savedMessage = {_id: result._id, ...newMessage};
+      socket.current.emit("send-msg", savedMessage)
+      dispatch({type: "ADD_MESSAGE", payload: savedMessage,
         fromSelf: true,
       })
       if (result !== null) {
@@ -168,11 +173,13 @@ function InputMessage ({onSelectedFile}) {
             img: user.profile_picture,
             content: text,
             media: urlStrings,
+            removed: false,
           };
           const result = await messageService.sendMessage(newMessage);
-          socket.current.emit("send-msg", newMessage)
+          const savedMessage = {_id: result._id, ...newMessage};
+          socket.current.emit("send-msg", savedMessage)
           dispatch({ type: "FIRST_CONVERSATION", payload: currentChat });
-          dispatch({type: "ADD_MESSAGE", payload: newMessage,
+          dispatch({type: "ADD_MESSAGE", payload: savedMessage,
             fromSelf: true,
           })
           
@@ -267,11 +274,12 @@ function InputMessage ({onSelectedFile}) {
             img: user.profile_picture,
             content: text,
             media: urlStrings,
+            removed: false,
           };
           const result = await messageService.sendMessage(newMessage);
-
-          socket.current.emit("send-msg", newMessage)
-          dispatch({type: "ADD_MESSAGE", payload: newMessage,
+          const savedMessage = {_id: result._id, ...newMessage};
+          socket.current.emit("send-msg", savedMessage)
+          dispatch({type: "ADD_MESSAGE", payload: savedMessage,
             fromSelf: true,
           })
           if (result !== null) {

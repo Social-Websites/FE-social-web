@@ -82,6 +82,25 @@ function Messages({ style }) {
         });
       }
     }
+    socketEventRef.current = false;
+  };
+
+  useEffect(() => {
+    // console.log(socket, currentChat._id);
+    // console.log(checkCurrentChatIdRef.current);
+    if(socket){
+      console.log("toi socket", socket.current, socketEventRef.current);
+      if (socket.current && socketEventRef.current) {
+        socket.current.on("msg-deleted", (data) => handleMsgDeleted(data));
+      }
+    }
+  }, [currentChat, socket.current]);
+
+  const handleMsgDeleted = (data) => {
+    console.log(data);
+    dispatch({type: "UPDATE_MESSAGE_REMOVED", payload: data.messageId,
+      fromSelf: true,
+    });
   };
 
   useEffect(() => {

@@ -12,7 +12,7 @@ function Chats() {
     // const [conversations, setConversation] = useState([])
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [isPetching, setIsPetching] = useState(false);
-    const  {conversations,user, dispatch}  = useContext(StateContext);
+    const  {conversations,user, currentChat, dispatch}  = useContext(StateContext);
 
     const searchCons = async (e) => {
         const data = e.target.value;
@@ -64,7 +64,9 @@ function Chats() {
     }, [user]);
 
     function handleClick(con) {
-        dispatch({ type: "CURRENT_CHAT", payload: con });
+        if(currentChat !== con){
+            dispatch({ type: "CURRENT_CHAT", payload: con });
+        }
         // console.log("Chon conversation", con._id);
     };
 

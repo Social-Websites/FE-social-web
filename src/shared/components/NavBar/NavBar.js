@@ -110,7 +110,7 @@ function NavBar({ onScrollToTop }) {
   useEffect(() => {
     if (user) {
       if (socket.current == null) {
-        socket.current = io("https://nestme-server.onrender.com");
+        socket.current = io(process.env.REACT_APP_SERVER_BASE_URL);
         console.log(socket);
         socket.current.on("connect", () => {
           // yêu cầu kết nối vào 1 socket mới

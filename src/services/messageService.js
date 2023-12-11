@@ -29,3 +29,13 @@ export const addReader = async (data) => {
         throw new Error('Đã xảy ra lỗi add reader');
     }
 };
+
+export const deleteMsg = async (data) => {
+    try {
+        const response = await httprequest.put(`/messages/delete`, data);
+        return response;
+    } catch (error) {
+        console.log('Lỗi unsent message:', error);
+        throw new Error('Đã xảy ra lỗi add reader');
+    }
+};

@@ -13,6 +13,7 @@ const INITIAL_STATE = {
   posts: new Map(),
   conversations: [],
   messages: [],
+  messageRemoves: [],
   socket: undefined,
 };
 
@@ -42,6 +43,7 @@ export const StateContextProvider = ({ children }) => {
         posts: state.posts,
         conversations: state.conversations,
         messages: state.messages,
+        messageRemoves: state.messageRemoves,
         socket: state.socket,
         dispatch,
         setAuth,

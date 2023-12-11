@@ -9,7 +9,7 @@ const cx = classNames.bind(styles)
 
 function ConversationChat({c, onClick}) {
     const [hasNotification, setHasNotification] = useState("");
-    const { user, socket, messages, currentChat ,dispatch } = useContext(StateContext);
+    const { user, socket, messages, messageRemoves, currentChat ,dispatch } = useContext(StateContext);
     const [ unread , setUnread] = useState(false);
     const [ isOnline , setIsOnline] = useState(false);
     const socketEventRef = useRef(false);
@@ -50,7 +50,6 @@ function ConversationChat({c, onClick}) {
             // console.log("toi socket");
             if (socket.current && !socketEventRef.current) {
                 socket.current.on("msg-recieve", handleMsgRecieve);
-                socketEventRef.current = true;
             }
         }
     }, [socket?.current]);
@@ -63,19 +62,53 @@ function ConversationChat({c, onClick}) {
             else setHasNotification(data.content);
             setUnread(true);
         }
+        socketEventRef.current = true;
+    };
+
+    useEffect(() => {
+        // console.log(socket);
+        if(socket){
+            // console.log("toi socket");
+            if (socket.current && !socketEventRef.current) {
+                socket.current.on("msg-deleted", handleMsgDeleted);
+            }
+            
+        }
+    }, [socket?.current]);
+
+    const handleMsgDeleted = (data) => {
+        console.log("toi day chua" + data.isLastMsg);
+        if (data.conversationId == c?._id && data.isLastMsg) {
+            console.log("toi day chua" + c);
+            setHasNotification("Tin nhắn đã được thu hồi");
+        }
+        socketEventRef.current = true;
     };
     
 
     useEffect(() => {
         // console.log(currentChat);
         if(messages && messages.length > 0){
+            console.log(messageRemoves);
             if(c._id == messages[messages.length - 1].conversationId){
                 if(user._id == messages[messages.length - 1].sender_id){
-                    if(messages[messages.length - 1].media.length > 0) {setHasNotification("You: Image");}
-                    else { setHasNotification(`You: ${messages[messages.length - 1].content}`);}
+                    // console.log(messageRemoves);
+                    if(messageRemoves.includes(messages[messages.length - 1]._id) || messages[messages.length - 1].removed === true)
+                    {
+                        const data = {
+                            messageId: messages[messages.length - 1]._id,
+                            conversationId: currentChat._id,
+                            recieve_ids: currentChat.userIds,
+                            isLastMsg: true,
+                        };
+                        setHasNotification("You: Tin nhắn đã được thu hồi");
+                        socket.current.emit("delete-msg", data);
+                    } else{
+                        if(messages[messages.length - 1].media.length > 0) {setHasNotification("You: Image");}
+                        else { setHasNotification(`You: ${messages[messages.length - 1].content}`);}
+                    }
                 }
-            }
-            
+            } 
         }
         if(currentChat){
             if(currentChat._id === c._id){
@@ -97,7 +130,7 @@ function ConversationChat({c, onClick}) {
                 }
             }
         }
-    }, [messages]);
+    }, [messages, messageRemoves]);
     
 
     return (
