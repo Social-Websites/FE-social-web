@@ -419,7 +419,7 @@ const UsersManage = () => {
           <Modal.Body>
             <div className={cx("row align-items-center", "modal-content-report")}>
                 <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Giả mạo
+                  Fake user
                 </div>
                 <div className={cx("col-lg-3 col-md-3", "count")}>
                   2
@@ -427,7 +427,7 @@ const UsersManage = () => {
             </div>
             <div className={cx("row align-items-center", "modal-content-report")}>
                 <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Nội dung không phù hợp
+                  False information
                 </div>
                 <div className={cx("col-lg-3 col-md-3", "count")}>
                   2
@@ -435,7 +435,7 @@ const UsersManage = () => {
             </div>
             <div className={cx("row align-items-center", "modal-content-report")}>
                 <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Quấy rối
+                  Bullying or Harassment
                 </div>
                 <div className={cx("col-lg-3 col-md-3", "count")}>
                   2

@@ -1,8 +1,8 @@
 import * as httprequest from '../shared/util/httprequest';
 
-export const getMessages = async (conversationId, skip) => {
+export const getMessages = async (conversationId, skip, userId) => {
     try {
-        const response = await httprequest.get(`/messages/${conversationId}?skip=${skip}`);
+        const response = await httprequest.get(`/messages/${conversationId}?skip=${skip}&userId=${userId}`);
         return response;
     } catch (error) {
         console.log('Lỗi lấy thong tin message:', error);

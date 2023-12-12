@@ -13,10 +13,11 @@ const cx = classNames.bind(style);
 
 
 function Messages({ style }) {
-  const { messages, currentChat, socket, isLoadingMsg, dispatch } = useContext(StateContext);
+  const { user, messages, currentChat, socket, isLoadingMsg, dispatch } = useContext(StateContext);
   const [fetching, setFetching] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
   const socketEventRef = useRef(false);
+  const [isEventRegistered, setIsEventRegistered] = useState(false);
   const checkCurrentChatIdRef = useRef(null);
   const scrollRef = useRef(null);
   const firstChat = useRef(null);
@@ -30,7 +31,7 @@ function Messages({ style }) {
           console.log('Đã đạt đến đầu trang' + messages.length );
           try{
             setLoadMore(true);
-            const data = await messageService.getMessages(currentChat._id, messages.length);
+            const data = await messageService.getMessages(currentChat._id, messages.length, user._id);
             console.log('data' + data );
             dispatch({ type: "LOAD_MORE_MESSAGES", payload: data, fromSelf: true, });
           }catch(error){
@@ -57,18 +58,22 @@ function Messages({ style }) {
     
   }, [messages]);
 
+  useEffect(() => {
+      console.log(currentChat);
+  }, [currentChat, socket.current]);
 
   useEffect(() => {
     // console.log(socket, currentChat._id);
     // console.log(checkCurrentChatIdRef.current);
     if(socket){
-      // console.log("toi socket");
-      if (socket.current && !socketEventRef.current) {
+      console.log(socket.current + socketEventRef.current);
+      if (socket.current && !socketEventRef.current && !isEventRegistered) {
         socket.current.on("msg-recieve", (data) => handleMsgRecieve(checkCurrentChatIdRef.current, data));
         socketEventRef.current = true;
+        setIsEventRegistered(true);
       }
     }
-  }, [currentChat, socket.current]);
+  }, [currentChat, socket.current, isEventRegistered]);
 
   const handleMsgRecieve = (c,data) => {
     console.log(data);
@@ -82,8 +87,10 @@ function Messages({ style }) {
         });
       }
     }
-    socketEventRef.current = false;
+    socketEventRef.current = true;
   };
+
+  
 
   useEffect(() => {
     // console.log(socket, currentChat._id);
@@ -111,7 +118,7 @@ function Messages({ style }) {
     const fetchData = async () => {
       try {
         // console.log("Current_Chat",currentChat._id);
-        const data = await messageService.getMessages(currentChat._id, 0);
+        const data = await messageService.getMessages(currentChat._id, 0, user._id);
         dispatch({ type: "SET_MESSAGES", payload: data });
         firstChat.current = true;
       } catch (error) {
@@ -130,7 +137,7 @@ function Messages({ style }) {
 
 
   useEffect(() => {
-    // console.log(currentChat);
+    console.log(currentChat);
     checkCurrentChatIdRef.current = currentChat._id;
   },[currentChat]);
 

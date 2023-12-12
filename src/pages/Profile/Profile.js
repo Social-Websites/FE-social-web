@@ -7,6 +7,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
+
 import {
   CircularProgress,
   Skeleton,
@@ -39,6 +40,7 @@ function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
   const [notFound, setNotFound] = useState(false);
+  const [more, setMore] = useState(false);
 
   const { socket, dispatch } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
@@ -67,7 +69,7 @@ function Profile() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profilePostsLoading, setProfilePostsLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-
+  
   const observer = useRef();
   const lastPostRef = useCallback(
     (node) => {
@@ -368,6 +370,17 @@ function Profile() {
     }
   };
 
+
+  const toggleMore = () => {
+    setMore(!more);
+    if (!more) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+
   const handleMessage = async () => {
     try {
       const result = await checkCon(user._id, userData._id);
@@ -467,7 +480,14 @@ function Profile() {
                     >
                       <span>Message</span>
                     </button>
+                    
                   )}
+                  {!isOwnProfile && <button
+                      className={cx("profile__button")}
+                      onClick={toggleMore}
+                    >
+                      <span style={{color: "#ed4956"}}>Report</span>
+                    </button>}
                 </div>
                 <div className={cx("profile__user__2")}>
                   <span>{userData?.posts_count} Posts</span>
@@ -587,7 +607,38 @@ function Profile() {
           </div>
         </div>
       )}
-
+      {more && (
+        <div className={cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleMore}
+            className={cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div className={cx("more-content-header")}>
+              <div className={cx("more-content-title")}>Why are you reportting this user?</div>
+            </div>
+            <div className={cx("more-content-report")}>Fake user</div>
+            <div className={cx("more-content-report")}>False information</div>
+            <div className={cx("more-content-report")}>Bullying or Harassment</div>
+            <div className={cx("more-content-report")}>Spam</div>
+            <div className={cx("more-content-report")} style={{color: "#ed4956"}}>Cancel</div>
+          </div>
+        </div>
+      )}
       {modal && (
         <div className={cx("profile-modal active-profile-modal")}>
           <div
