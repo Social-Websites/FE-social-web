@@ -92,7 +92,7 @@ function ConversationChat({c, onClick}) {
             if(c._id == messages[messages.length - 1].conversationId){
                 if(user._id == messages[messages.length - 1].sender_id){
                     // console.log(messageRemoves);
-                    if(messageRemoves.includes(messages[messages.length - 1]._id) || messages[messages.length - 1].removed === true)
+                    if(messageRemoves?.includes(messages[messages.length - 1]._id) || messages[messages.length - 1].removed === true)
                     {
                         const data = {
                             messageId: messages[messages.length - 1]._id,
