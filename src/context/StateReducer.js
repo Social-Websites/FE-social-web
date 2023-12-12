@@ -66,6 +66,14 @@ const StateReducer = (state, action) => {
         ...state,
         conversations: [action.payload, ...updatedConversations],
       };
+    case "DELETE_CONVERSATION":
+      const deletedConversations = state.conversations.filter(
+        (conversation) => conversation?._id !== action.payload?._id
+      );
+      return {
+        ...state,
+        conversations: [...deletedConversations],
+      };
     case "SET_MESSAGES":
       return {
         ...state,
@@ -77,10 +85,17 @@ const StateReducer = (state, action) => {
         isLoadingMsg: action.payload,
       };
     case "ADD_MESSAGE":
-      return {
-        ...state,
-        messages: [...state.messages, action.payload],
-      };
+      // Kiểm tra xem tin nhắn đã tồn tại trong danh sách hay chưa
+      const isDuplicate = state.messages.some((message) => message._id === action.payload._id);
+      
+      if (!isDuplicate) {
+        return {
+          ...state,
+          messages: [...state.messages, action.payload],
+        };
+      }
+      
+      return state;
     case "LOAD_MORE_MESSAGES":
       return {
         ...state,

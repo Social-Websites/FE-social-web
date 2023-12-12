@@ -6,8 +6,12 @@ import Chats from "../../components/Chats";
 import Messages from "../../components/Messages";
 import Input from "../../components/InputMessage";
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CloseIcon from "@mui/icons-material/Close";
 import { StateContext } from "../../context/StateContext"
+import {calculatedTime} from "../../shared/util/calculatedTime"
 // import {io} from "socket.io-client";
+import * as conversationService from '../../services/conversationService';
 
 const cx = classNames.bind(styles);
 
@@ -20,9 +24,11 @@ function ChatPage() {
     const [remainingHeight, setRemainingHeight] = useState(619);
     const [isSelectedFile, setIsSelectedFile] = useState(0);
 
-  const handleIsSelectedFile = (height) => {
-    setIsSelectedFile(height);
-  };
+    const [more, setMore] = useState(false);
+
+    const handleIsSelectedFile = (height) => {
+        setIsSelectedFile(height);
+    };
     
     useLayoutEffect(() => {
         setTimeout(() => {
@@ -58,6 +64,17 @@ function ChatPage() {
     // }, [user]);
 
 
+    const toggleMore = () => {
+        setMore(!more);
+        if (!more) {
+            if (document.body.style.overflow !== "hidden")
+                document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+    };
+
+
     useEffect(() => {
         setIsOnline(currentChat?.online);
         // console.log("online chua");
@@ -71,6 +88,7 @@ function ChatPage() {
                 }
             });
         }
+        console.log(currentChat?.last_online);
     }, [socket?.current, currentChat]);
 
     useEffect(() => {
@@ -92,7 +110,22 @@ function ChatPage() {
     //     console.log(currentChat);
     // },[currentChat]);
 
-    
+    const handleDelete = async () =>{
+        console.log("xoa ne" + currentChat._id )
+        try{
+            const data = {
+                userId: user._id,
+                conversationId: currentChat._id
+            }
+            await conversationService.deleteConversation(data)
+        } catch (error){
+            console.log(error);
+        } finally{
+            dispatch({ type: "DELETE_CONVERSATION", payload: currentChat });
+            dispatch({ type: "CURRENT_CHAT", payload: null });
+            toggleMore();
+        } 
+    }
     
     return (
         <div className={cx("chatpage")}>
@@ -120,8 +153,11 @@ function ChatPage() {
                     </div>
                     <div className={cx("chatInfo__user__info")}>
                         <span className={cx("chatInfo__username")}>{currentChat?.name}</span>
-                        <span className={cx("chatInfo__relation")}>New to Instagram</span>
+                        <span className={cx("chatInfo__relation")}>{isOnline ? ("Active Now") : ("Active " + calculatedTime(currentChat.last_online) + " ago")}</span>
                     </div>
+                </div>
+                <div>
+                    <ErrorOutlineIcon style={{color: "white", cursor: "pointer"}} onClick={toggleMore}/>
                 </div>
             </div>): (<div className={cx("chatpage__messages__main")}>
                 <div>
@@ -135,20 +171,49 @@ function ChatPage() {
             
             <Messages style={isLoadingMsg? {display: "none"} : {height: remainingHeight}}/>
             <div ref={inputRef} style={isLoadingMsg? {display: "none"} : null} >
-            <Input onSelectedFile={handleIsSelectedFile} />
+                <Input onSelectedFile={handleIsSelectedFile} />
             </div>
-        </div>) : (<div className={cx("chatpage__messages")}>
-            <div className={cx("chatpage__messages__main")}>
-                <div>
-                    <div className={cx("chatpage__messages__image")}>
-                      <ChatOutlinedIcon className={cx("chatpage__messages__logo ")} />
+            </div>) : (<div className={cx("chatpage__messages")}>
+                <div className={cx("chatpage__messages__main")}>
+                    <div>
+                        <div className={cx("chatpage__messages__image")}>
+                        <ChatOutlinedIcon className={cx("chatpage__messages__logo ")} />
+                        </div>
+                        <div className={cx("chatpage__messages__text")}> <span>Your Messages</span></div>
+                        <div className={cx("chatpage__messages__text")}> <span style={{color: "#A8A8A8", fontSize: "14px"}} >Send private photos and messages to a friend or group</span></div>
                     </div>
-                    <div className={cx("chatpage__messages__text")}> <span>Your Messages</span></div>
-                    <div className={cx("chatpage__messages__text")}> <span style={{color: "#A8A8A8", fontSize: "14px"}} >Send private photos and messages to a friend or group</span></div>
                 </div>
-            </div>
-        </div>)}
-        
+            </div>)}
+            {more && (
+                <div className={cx("message-modal active-message-modal")}>
+                    <div
+                        onClick={toggleMore}
+                        className={cx("message-overlay")}
+                        style={{ alignSelf: "flex-end" }}
+                    >
+                        <CloseIcon
+                        className={cx("sidenav__icon")}
+                        style={{
+                            width: "27px",
+                            height: "27px",
+                            color: "white",
+                            margin: "12px 30px",
+                            position: "absolute",
+                            right: "0",
+                            cursor: "pointer",
+                        }}
+                        />
+                    </div>
+                    <div className={cx("more-content")}>
+                        <div className={cx("more-content-header")}>
+                            <div className={cx("more-content-title")}>Are you want delete this chat?</div>
+                        </div>
+                        <div className={cx("more-content-report")} style={{color: "#ed4956", fontWeight: "500"}}
+                            onClick={handleDelete}>Delete</div>
+                        <div className={cx("more-content-report")} onClick={toggleMore}>Cancel</div>
+                    </div>
+                </div>
+            )}    
             
         </div>
     );

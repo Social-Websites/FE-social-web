@@ -74,12 +74,12 @@ function Message({ message }) {
         </div>
       )}
       
-      {message.sender_id === user._id && ((message.removed === false && messageRemoves.includes(message._id) === false && (
+      {message.sender_id === user._id && ((message.removed === false && messageRemoves?.includes(message._id) === false && (
         <div className={cx("moreMsg")} >
           <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
         </div>
       )))}
-      {message.removed === true || messageRemoves.includes(message._id) === true ? (<div className={cx("remove")}>
+      {message.removed === true || messageRemoves?.includes(message._id) === true ? (<div className={cx("remove")}>
         <p> 
           Tin nhắn đã được thu hồi
         </p>

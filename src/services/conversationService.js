@@ -39,3 +39,23 @@ export const createConversation = async (data) => {
     throw new Error("Đã xảy ra lỗi create con");
   }
 };
+
+export const deleteConversation = async (data) => {
+  try {
+      const response = await httprequest.put(`/conversation/delete`, data);
+      return response;
+  } catch (error) {
+      console.log('Lỗi delete conversation:', error);
+      throw new Error('Đã xảy ra lỗi xóa conversation');
+  }
+};
+
+export const returnConversation = async (data) => {
+  try {
+      const response = await httprequest.put(`/conversation/return`, data);
+      return response;
+  } catch (error) {
+      console.log('Lỗi return conversation:', error);
+      throw new Error('Đã xảy ra lỗi return conversation');
+  }
+};

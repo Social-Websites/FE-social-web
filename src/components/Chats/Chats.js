@@ -12,20 +12,27 @@ function Chats() {
     // const [conversations, setConversation] = useState([])
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [isPetching, setIsPetching] = useState(false);
-    const  {conversations,user, currentChat, dispatch}  = useContext(StateContext);
-
+    const  {conversations, user, socket, currentChat, dispatch}  = useContext(StateContext);
+    const socketEventRef = useRef(false);
     const searchCons = async (e) => {
         const data = e.target.value;
         try {
-          const result = await conversationService.searchCons(user._id,data);
-          console.log(result);
-          if (result !== null) {
-            dispatch({ type: "SET_CONVERSATIONS", payload: result });
-            // setConversation(result);
-            setIsLoadingSearch(false);
-          }
+            let result;
+            if(data===""){
+                result = await conversationService.getUserConversations(user._id);
+            } else{
+                if(data.trim() !== ""){
+                    result = await conversationService.searchCons(user._id, data.trim());
+                }    
+            }
+            console.log(result);
+            if (result) {
+                dispatch({ type: "SET_CONVERSATIONS", payload: result });
+            }
         } catch (err) {
           console.log(err);
+        } finally {
+            setIsLoadingSearch(false);
         }
       };
       const debounce = (fn, delay) => {
@@ -70,6 +77,32 @@ function Chats() {
         // console.log("Chon conversation", con._id);
     };
 
+    useEffect(() => {
+        // console.log(socket, currentChat._id);
+        // console.log(checkCurrentChatIdRef.current);
+        if(socket){
+          // console.log("toi socket");
+          if (socket.current && !socketEventRef.current) {
+            socket.current.on("return-recieve", (data) => handleReturnChat(data));
+            socketEventRef.current = true;
+          }
+        }
+      }, [socket?.current]);
+    
+    const handleReturnChat = async (data) => {
+        console.log(data);
+        // const result = await conversationService.getUserConversations(user._id);
+        // console.log(result);
+        // dispatch({ type: "SET_CONVERSATIONS", payload: result });
+        dispatch({
+            type: "ADD_CONVERSATION",
+            payload: data
+        });
+    };
+    
+    useEffect(() => {
+        console.log(conversations);
+    }, [conversations]);
     
     return (
         <div className={cx("chats")} >

@@ -77,9 +77,9 @@ function ConversationChat({c, onClick}) {
     }, [socket?.current]);
 
     const handleMsgDeleted = (data) => {
-        console.log("toi day chua" + data.isLastMsg);
+        // console.log("toi day chua" + data.isLastMsg);
         if (data.conversationId == c?._id && data.isLastMsg) {
-            console.log("toi day chua" + c);
+            // console.log("toi day chua" + c);
             setHasNotification("Tin nhắn đã được thu hồi");
         }
         socketEventRef.current = true;
@@ -89,7 +89,6 @@ function ConversationChat({c, onClick}) {
     useEffect(() => {
         // console.log(currentChat);
         if(messages && messages.length > 0){
-            console.log(messageRemoves);
             if(c._id == messages[messages.length - 1].conversationId){
                 if(user._id == messages[messages.length - 1].sender_id){
                     // console.log(messageRemoves);
@@ -132,7 +131,10 @@ function ConversationChat({c, onClick}) {
         }
     }, [messages, messageRemoves]);
     
-
+    useEffect(() => {
+        console.log("hasnoti" + hasNotification + "lstmsg" +c.lastMsg)
+    }, [hasNotification, c.lastMsg]);
+    
     return (
         <div className={cx("chats__user")} onClick={onClick} style={currentChat?._id == c._id ? {backgroundColor: "rgba(255, 255, 255, 0.128)"} : null}>
             <div className={cx("chats__user_avatar")}>
