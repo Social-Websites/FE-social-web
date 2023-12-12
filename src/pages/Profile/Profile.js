@@ -9,8 +9,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 
 import {
+  Alert,
+  Backdrop,
   CircularProgress,
   Skeleton,
+  Snackbar,
   linearProgressClasses,
   rgbToHex,
 } from "@mui/material";
@@ -22,6 +25,7 @@ import {
   getUserByUsername,
   getUserFriendsListByUsername,
   removeAddFriend,
+  reportUser,
   sendAddFriend,
   unFriend,
 } from "../../services/userService";
@@ -69,7 +73,14 @@ function Profile() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profilePostsLoading, setProfilePostsLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  
+  const [reportLoading, setReportLoading] = useState(false);
+
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarNotif, setSnackBarNotif] = useState({
+    severity: "success",
+    message: "This is success message!",
+  }); //severity: success, error, info, warning
+
   const observer = useRef();
   const lastPostRef = useCallback(
     (node) => {
@@ -370,7 +381,6 @@ function Profile() {
     }
   };
 
-
   const toggleMore = () => {
     setMore(!more);
     if (!more) {
@@ -401,6 +411,34 @@ function Profile() {
       console.log(error);
     } finally {
       navigate("/chat");
+    }
+  };
+
+  const handleReportUser = async (reportReason) => {
+    try {
+      setReportLoading(true);
+      const response = await reportUser(
+        userData._id,
+        reportReason,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        setReportLoading(false);
+        if (more) toggleMore();
+        setSnackBarNotif({
+          severity: "success",
+          message: "Report user success with reason: " + reportReason,
+        });
+        setSnackBarOpen(true);
+      }
+    } catch (err) {
+      setReportLoading(false);
+      setSnackBarNotif({
+        severity: "error",
+        message: "Report user fail with reason: " + reportReason,
+      });
+      setSnackBarOpen(true);
+      console.error(privateHttpRequest.error);
     }
   };
 
@@ -480,14 +518,15 @@ function Profile() {
                     >
                       <span>Message</span>
                     </button>
-                    
                   )}
-                  {!isOwnProfile && <button
+                  {!isOwnProfile && (
+                    <button
                       className={cx("profile__button")}
                       onClick={toggleMore}
                     >
-                      <span style={{color: "#ed4956"}}>Report</span>
-                    </button>}
+                      <span style={{ color: "#ed4956" }}>Report</span>
+                    </button>
+                  )}
                 </div>
                 <div className={cx("profile__user__2")}>
                   <span>{userData?.posts_count} Posts</span>
@@ -629,13 +668,41 @@ function Profile() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>Why are you reportting this user?</div>
+              <div className={cx("more-content-title")}>
+                Why are you reportting this user?
+              </div>
             </div>
-            <div className={cx("more-content-report")}>Fake user</div>
-            <div className={cx("more-content-report")}>False information</div>
-            <div className={cx("more-content-report")}>Bullying or Harassment</div>
-            <div className={cx("more-content-report")}>Spam</div>
-            <div className={cx("more-content-report")} style={{color: "#ed4956"}}>Cancel</div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportUser("Fake user")}
+            >
+              Fake user
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportUser("False information")}
+            >
+              False information
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportUser("Bullying or Harassment")}
+            >
+              Bullying or Harassment
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportUser("Spam")}
+            >
+              Spam
+            </div>
+            <div
+              className={cx("more-content-report")}
+              style={{ color: "#ed4956" }}
+              onClick={toggleMore}
+            >
+              Cancel
+            </div>
           </div>
         </div>
       )}
@@ -742,6 +809,35 @@ function Profile() {
           </div>
         </div>
       )}
+
+      <Snackbar
+        open={snackBarOpen}
+        autoHideDuration={6000}
+        onClose={(event, reason) => {
+          setSnackBarOpen(false);
+        }}
+      >
+        <Alert
+          onClose={(event, reason) => {
+            setSnackBarOpen(false);
+          }}
+          severity={snackBarNotif.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackBarNotif.message}
+        </Alert>
+      </Snackbar>
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          background: rgbToHex("rgba(0, 0, 0, 0.1)"),
+        }}
+        open={reportLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
