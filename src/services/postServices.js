@@ -97,3 +97,20 @@ export const comment = async (postId, commentText, sendRequest) => {
     throw err;
   }
 };
+
+export const reportPost = async (postId, reason, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      "/posts/report",
+      "post",
+      { postId: postId, reason: reason },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};

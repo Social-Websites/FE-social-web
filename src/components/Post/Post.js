@@ -20,16 +20,23 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import WestIcon from '@mui/icons-material/West';
+import WestIcon from "@mui/icons-material/West";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
-import { CircularProgress, Skeleton } from "@mui/material";
+import {
+  Alert,
+  Backdrop,
+  CircularProgress,
+  Skeleton,
+  Snackbar,
+  rgbToHex,
+} from "@mui/material";
 import TimeAgo from "../../shared/components/TimeAgo";
 import { grey, pink } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import ReactIcon from "../ReactIcon/ReactIcon";
 import CommentInput from "../Comment/CommentInput";
-import { getPostComments } from "../../services/postServices";
+import { getPostComments, reportPost } from "../../services/postServices";
 
 const cx = classNames.bind(styles);
 
@@ -45,6 +52,7 @@ const Post = forwardRef(({ post }, ref) => {
 
   const [modal, setModal] = useState(false);
   const [more, setMore] = useState(false);
+  const [reportModal, setReportModal] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
@@ -58,6 +66,13 @@ const Post = forwardRef(({ post }, ref) => {
   const [page, setPage] = useState(1);
   const [isFirstMount, setIsFirstMount] = useState(true);
   const [hadMounted, setHadMounted] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
+
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarNotif, setSnackBarNotif] = useState({
+    severity: "success",
+    message: "This is success message!",
+  }); //severity: success, error, info, warning
 
   const observer = useRef();
   const lastCommentRef = useCallback(
@@ -129,6 +144,17 @@ const Post = forwardRef(({ post }, ref) => {
     }
   };
 
+  const openReport = () => {
+    if (more) toggleMore();
+    setReportModal(!reportModal);
+    if (!reportModal) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+
   function showNextImage() {
     setImageIndex((index) => {
       if (index === post?.media.length - 2) {
@@ -162,6 +188,34 @@ const Post = forwardRef(({ post }, ref) => {
   const goToPost = () => {
     if (more) toggleMore();
     navigate(`/p/${post._id}`, { replace: true });
+  };
+
+  const handleReportPost = async (reportReason) => {
+    try {
+      setReportLoading(true);
+      const response = await reportPost(
+        post._id,
+        reportReason,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        setReportLoading(false);
+        if (reportModal) openReport();
+        setSnackBarNotif({
+          severity: "success",
+          message: "Report post success with reason: " + reportReason,
+        });
+        setSnackBarOpen(true);
+      }
+    } catch (err) {
+      setReportLoading(false);
+      setSnackBarNotif({
+        severity: "error",
+        message: "Report post fail with reason: " + reportReason,
+      });
+      setSnackBarOpen(true);
+      console.error(privateHttpRequest.error);
+    }
   };
 
   return (
@@ -711,22 +765,25 @@ const Post = forwardRef(({ post }, ref) => {
             <div
               className={cx("more-content-element")}
               style={{ color: "#ed4956" }}
+              onClick={openReport}
             >
               Report
             </div>
-            <div className={cx("more-content-element")}>Add friend</div>
+
             <div onClick={goToPost} className={cx("more-content-element")}>
               Go to post
             </div>
-            <div className={cx("more-content-element")}>Cancel</div>
+            <div className={cx("more-content-element")} onClick={toggleMore}>
+              Cancel
+            </div>
           </div>
         </div>
       )}
 
-      {more && (
+      {reportModal && (
         <div className={cx("post-modal active-post-modal")}>
           <div
-            onClick={toggleMore}
+            onClick={openReport}
             className={cx("post-overlay")}
             style={{ alignSelf: "flex-end" }}
           >
@@ -745,27 +802,87 @@ const Post = forwardRef(({ post }, ref) => {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <WestIcon
-                className={cx("sidenav__icon")}
-                style={{
-                  width: "27px",
-                  height: "27px",
-                  color: "white",        
-                  cursor: "pointer",
-                }}
-              /> 
-              <div className={cx("more-content-title")}>Why are you reportting this post?</div>
+              <div className={cx("more-content-title")}>
+                Why are you reporting this post?
+              </div>
             </div>
-            <div className={cx("more-content-report")}>Indecent photo</div>
-            <div className={cx("more-content-report")}>Violence</div>
-            <div className={cx("more-content-report")}>Harassment</div>
-            <div className={cx("more-content-report")}>Terrorism</div>
-            <div className={cx("more-content-report")}>Hateful language, false information</div>
-            <div className={cx("more-content-report")}>Spam</div>
-            <div className={cx("more-content-report")} style={{color: "#ed4956"}}>Cancel</div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportPost("Indecent photo")}
+            >
+              Indecent photo
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportPost("Violence")}
+            >
+              Violence
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportPost("Harassment")}
+            >
+              Harassment
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportPost("Terrorism")}
+            >
+              Terrorism
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() =>
+                handleReportPost("Hateful language, false information")
+              }
+            >
+              Hateful language, false information
+            </div>
+            <div
+              className={cx("more-content-report")}
+              onClick={() => handleReportPost("Spam")}
+            >
+              Spam
+            </div>
+            <div
+              className={cx("more-content-report")}
+              style={{ color: "#ed4956" }}
+              onClick={openReport}
+            >
+              Cancel
+            </div>
           </div>
         </div>
       )}
+
+      <Snackbar
+        open={snackBarOpen}
+        autoHideDuration={6000}
+        onClose={(event, reason) => {
+          setSnackBarOpen(false);
+        }}
+      >
+        <Alert
+          onClose={(event, reason) => {
+            setSnackBarOpen(false);
+          }}
+          severity={snackBarNotif.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackBarNotif.message}
+        </Alert>
+      </Snackbar>
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          background: rgbToHex("rgba(0, 0, 0, 0.1)"),
+        }}
+        open={reportLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 });

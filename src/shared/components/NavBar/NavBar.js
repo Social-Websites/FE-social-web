@@ -530,7 +530,7 @@ function NavBar({ onScrollToTop }) {
 
       if (response !== null) {
         createdPostId = response.post._id;
-        console.log(response.post);
+
         dispatch(
           addCreatedPost({
             ...response.post,
