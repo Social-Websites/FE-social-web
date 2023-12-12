@@ -46,6 +46,7 @@ function Profile() {
 
   const [userData, setUserData] = useState(null);
   const [isSentFriendRequest, setIsSentFriendRequest] = useState(null);
+  //const [isFriend, setIsFriend] = useState(null);
 
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -136,9 +137,9 @@ function Profile() {
       );
 
       setUserData(response);
-      console.log(response);
       const userFullname = response.full_name;
       setIsSentFriendRequest(response.is_friend_request_sent);
+
       // Thay đổi title khi component mount
       document.title = `${userFullname} | NestMe profile`;
       setProfileLoading(false);
