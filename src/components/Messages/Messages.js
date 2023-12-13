@@ -87,7 +87,6 @@ function Messages({ style }) {
         });
       }
     }
-    socketEventRef.current = true;
   };
 
   
@@ -118,9 +117,11 @@ function Messages({ style }) {
     const fetchData = async () => {
       try {
         // console.log("Current_Chat",currentChat._id);
-        const data = await messageService.getMessages(currentChat._id, 0, user._id);
-        dispatch({ type: "SET_MESSAGES", payload: data });
-        firstChat.current = true;
+        if(currentChat._id && user._id){
+          const data = await messageService.getMessages(currentChat._id, 0, user._id);
+          dispatch({ type: "SET_MESSAGES", payload: data });
+          firstChat.current = true;
+        }
       } catch (error) {
         console.log(error);
         setFetching(false);
@@ -140,6 +141,14 @@ function Messages({ style }) {
     console.log(currentChat);
     checkCurrentChatIdRef.current = currentChat._id;
   },[currentChat]);
+
+  useEffect(() => {
+    console.log(messages);
+  },[messages]);
+
+  useEffect(() => {
+    console.log(socket.current +!socketEventRef.current + !isEventRegistered);
+  },[socket.current]);
 
   return (
     <div className={cx("messages")} style={style} ref={scrollRef}>

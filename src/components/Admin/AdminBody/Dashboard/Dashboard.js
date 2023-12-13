@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,22 +14,22 @@ import classNames from "classnames/bind";
 import styles from "../PageBody.scss";
 import PageHeader from "../Common/PageHeader/PageHeader";
 import { CardGraph } from "../Common/Graph/GraphComponent";
+// import {
+//   ArrayDataGenerator,
+//   randomValueGenerator,
+// } from "../../../../shared/util/ArrayDataGenerator";
 import {
-  ArrayDataGenerator,
-  randomValueGenerator,
-} from "../../../../shared/util/ArrayDataGenerator";
-import {
-  amber,
-  blue,
+  // amber,
+  // blue,
   green,
-  indigo,
-  lightGreen,
+  // indigo,
+  // lightGreen,
   red,
 } from "@mui/material/colors";
-import UserOverview from "./UserOverview";
+// import UserOverview from "./UserOverview";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 import {
-  getAdminPosts,
+  // getAdminPosts,
   getAdminUsers,
   getQuickOverview,
   getTopAuthors,

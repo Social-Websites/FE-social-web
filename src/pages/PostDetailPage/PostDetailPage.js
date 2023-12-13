@@ -22,11 +22,11 @@ import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook"
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { StateContext } from "../../context/StateContext";
 import { getPost, getPostComments } from "../../services/postServices";
-import { CircularProgress, Skeleton } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 const cx = classNames.bind(styles);
 
 const PostDetailPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { id } = useParams();
   const { posts } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();

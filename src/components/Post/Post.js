@@ -5,7 +5,7 @@ import {
   useState,
   useRef,
   useEffect,
-  useContext,
+  // useContext,
   useCallback,
   forwardRef,
 } from "react";
@@ -15,23 +15,23 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { Link, useNavigate } from "react-router-dom";
-import EmojiPicker from "emoji-picker-react";
-import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+// import EmojiPicker from "emoji-picker-react";
+// import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import WestIcon from "@mui/icons-material/West";
+// import WestIcon from "@mui/icons-material/West";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import {
   Alert,
   Backdrop,
   CircularProgress,
-  Skeleton,
+  // Skeleton,
   Snackbar,
   rgbToHex,
 } from "@mui/material";
 import TimeAgo from "../../shared/components/TimeAgo";
-import { grey, pink } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import ReactIcon from "../ReactIcon/ReactIcon";
@@ -47,7 +47,7 @@ const Post = forwardRef(({ post }, ref) => {
       : post.creator.profile_picture;
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const privateHttpRequest = usePrivateHttpClient();
 
   const [modal, setModal] = useState(false);

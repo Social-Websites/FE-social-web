@@ -1,35 +1,35 @@
-import { React, useCallback, useEffect, useMemo, useState } from "react";
-import { subDays, subHours } from "date-fns";
-import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
-import AddIcon from "@mui/icons-material/Add";
-import BlockIcon from "@mui/icons-material/Block";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import { React, useCallback, useEffect, useState } from "react";
+// import { subDays, subHours } from "date-fns";
+// import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
+// import AddIcon from "@mui/icons-material/Add";
+// import BlockIcon from "@mui/icons-material/Block";
+// import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
-  Alert,
+  // Alert,
   Box,
-  Button,
+  // Button,
   Container,
   Stack,
-  SvgIcon,
+  // SvgIcon,
   Typography,
 } from "@mui/material";
 import { ReportSearch } from "./ReportSeach";
 import { ReportTable } from "./ReportTable";
 
 import {
-  banUsers,
-  createUser,
+  // banUsers,
+  // createUser,
   getAdminUsers,
-  unBanUsers,
+  // unBanUsers,
 } from "../../../../services/adminServices";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 
-const now = new Date();
+// const now = new Date();
 
 const ReportsManage = () => {
   const privateHttpRequest = usePrivateHttpClient();
 
-  const [visible, setVisible] = useState(false);
+  // const [visible, setVisible] = useState(false);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -39,20 +39,20 @@ const ReportsManage = () => {
   const [fetchPage, setFetchPage] = useState(1);
 
   const [usersSelected, setUsersSelected] = useState([]);
-  const [modalData, setModalData] = useState({
-    email: "",
-    fullname: "",
-    username: "",
-    password: "",
-    admin: true,
-  });
+  // const [modalData, setModalData] = useState({
+  //   email: "",
+  //   fullname: "",
+  //   username: "",
+  //   password: "",
+  //   admin: true,
+  // });
 
-  const changeHandler = (e) => {
-    setModalData((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-  };
+  // const changeHandler = (e) => {
+  //   setModalData((prev) => ({
+  //     ...prev,
+  //     [e.target.id]: e.target.value,
+  //   }));
+  // };
 
   const getData = useCallback(async () => {
     const response = await getAdminUsers(
@@ -73,68 +73,68 @@ const ReportsManage = () => {
 
   // useEffect(() => {}, [data]);
 
-  const handleBanUsers = async () => {
-    const selectedIds = [...usersSelected]; // Sao chép usersSelected vào một mảng tạm thời
-    setUsersSelected([]);
+  // const handleBanUsers = async () => {
+  //   const selectedIds = [...usersSelected]; // Sao chép usersSelected vào một mảng tạm thời
+  //   setUsersSelected([]);
 
-    setData((prev) => []);
+  //   setData((prev) => []);
 
-    try {
-      const banPromises = selectedIds.map((id) =>
-        banUsers(id, privateHttpRequest.privateRequest)
-      );
+  //   try {
+  //     const banPromises = selectedIds.map((id) =>
+  //       banUsers(id, privateHttpRequest.privateRequest)
+  //     );
 
-      const responses = await Promise.all(banPromises);
+  //     const responses = await Promise.all(banPromises);
 
-      if (responses) await getData();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //     if (responses) await getData();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  const handleUnBanUsers = async () => {
-    const selectedIds = [...usersSelected]; // Sao chép usersSelected vào một mảng tạm thời
+  // const handleUnBanUsers = async () => {
+  //   const selectedIds = [...usersSelected]; // Sao chép usersSelected vào một mảng tạm thời
 
-    setUsersSelected([]);
+  //   setUsersSelected([]);
 
-    setData((prev) => []);
+  //   setData((prev) => []);
 
-    try {
-      const unBanPromises = selectedIds.map((id) =>
-        unBanUsers(id, privateHttpRequest.privateRequest)
-      );
+  //   try {
+  //     const unBanPromises = selectedIds.map((id) =>
+  //       unBanUsers(id, privateHttpRequest.privateRequest)
+  //     );
 
-      const responses = await Promise.all(unBanPromises);
+  //     const responses = await Promise.all(unBanPromises);
 
-      if (responses) await getData();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //     if (responses) await getData();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  const handleAddUser = async () => {
-    privateHttpRequest.clearError();
-    try {
-      const response = await createUser(
-        modalData,
-        privateHttpRequest.privateRequest
-      );
+  // const handleAddUser = async () => {
+  //   privateHttpRequest.clearError();
+  //   try {
+  //     const response = await createUser(
+  //       modalData,
+  //       privateHttpRequest.privateRequest
+  //     );
 
-      if (response) {
-        setVisible(false);
-        setModalData({
-          email: "",
-          fullname: "",
-          username: "",
-          password: "",
-          admin: true,
-        });
-        getData();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //     if (response) {
+  //       setVisible(false);
+  //       setModalData({
+  //         email: "",
+  //         fullname: "",
+  //         username: "",
+  //         password: "",
+  //         admin: true,
+  //       });
+  //       getData();
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);

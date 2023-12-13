@@ -6,15 +6,15 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
+// import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
+// import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import ChatIcon from "@mui/icons-material/Chat";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
-import { Avatar, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -38,7 +38,7 @@ import * as usersService from "../../../services/userService";
 import SearchUser from "../../../components/SearchUser";
 import SearchUserLoading from "../../../components/SearchUserLoading";
 import Notification from "../../../components/NotificationItem";
-import { addCreatedPost, setPosts } from "../../../context/StateAction";
+import { addCreatedPost } from "../../../context/StateAction";
 import * as notificationsService from "../../../services/notificationService";
 import { io } from "socket.io-client";
 import getAvatarUrl from "../../util/getAvatarUrl";
@@ -57,7 +57,7 @@ function NavBar({ onScrollToTop }) {
   const privateHttpClient = usePrivateHttpClient();
   const [creatingPost, setCreatingPost] = useState(false);
   const socket = useRef();
-  const { user, dispatch } = useContext(StateContext);
+  const { user, currentChat, dispatch } = useContext(StateContext);
   const { logout } = useLogout();
   const navigate = useNavigate();
 
@@ -106,6 +106,8 @@ function NavBar({ onScrollToTop }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+  const checkCurrentChatIdRef = useRef(null);
+
 
   useEffect(() => {
     if (user) {
@@ -127,13 +129,15 @@ function NavBar({ onScrollToTop }) {
       try {
         if (notification) {
           // console.log(user?._id);
-          const data = await notificationsService.getNotifications(
-            user?._id,
-            0
-          );
-          const unreadCount = data.filter((notification) => !notification.read);
-          setUnreadNotification(unreadCount.length);
-          setNotification(data);
+          if(user){
+            const data = await notificationsService.getNotifications(
+              user?._id,
+              0
+            );
+            const unreadCount = data.filter((notification) => !notification.read);
+            setUnreadNotification(unreadCount.length);
+            setNotification(data);
+          }
         }
       } catch (error) {
         console.log(error);
@@ -161,9 +165,20 @@ function NavBar({ onScrollToTop }) {
   }, [user]);
 
   useEffect(() => {
+    console.log(currentChat);
+    checkCurrentChatIdRef.current = currentChat?._id;
+  },[currentChat]);
+
+  useEffect(() => {
     const handleGetMsgNotification = async (data) => {
       console.log("Nhận được message:", data);
       console.log(conversationUnread);
+      if(checkCurrentChatIdRef.current === data.conversationId){
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: data
+      });
+      }
       console.log(
         conversationUnread.find((con) => con._id === data.conversationId)
       );

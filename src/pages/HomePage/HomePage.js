@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, {  useRef } from "react";
 import classNames from "classnames/bind";
 import styles from "./HomePage.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import Timeline from "../../components/TimeLine";
-import useLogout from "../../shared/hook/auth-hook/logout-hook";
+// import useLogout from "../../shared/hook/auth-hook/logout-hook";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../../services/userService";
-import useAuth from "../../shared/hook/auth-hook/auth-hook";
-import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+// import { getUser } from "../../services/userService";
+// import useAuth from "../../shared/hook/auth-hook/auth-hook";
+// import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 
 const cx = classNames.bind(styles);
 
 function HomePage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const topPage = useRef();
 

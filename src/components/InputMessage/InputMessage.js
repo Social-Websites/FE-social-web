@@ -109,7 +109,8 @@ function InputMessage ({onSelectedFile}) {
         userIds: currentChat.userIds, 
         name: currentChat.name, 
         img: currentChat.img, 
-        media:[],
+        online: con.online,
+        last_online: con.last_online,
         lastMsg: "You: ❤️",
       }
       
@@ -122,6 +123,7 @@ function InputMessage ({onSelectedFile}) {
         sender_id: user._id,
         img: user.profile_picture,
         content: "❤️",
+        media:[],
         removed: false,
       }
       const result =  await messageService.sendMessage(newMessage);
@@ -202,7 +204,7 @@ function InputMessage ({onSelectedFile}) {
           
           const result = await messageService.sendMessage(newMessage);
           const savedMessage = {_id: result._id, ...newMessage};
-          if(currentChat?.is_deleted.find(obj => obj.user_id === currentChat.userIds[0] && obj.deleted === true)){
+          if(currentChat?.is_deleted && currentChat?.is_deleted.find(obj => obj.user_id === currentChat.userIds[0] && obj.deleted === true)){
             const data = {
               conversationId: currentChat._id,
               userId: currentChat.userIds[0],
@@ -295,12 +297,14 @@ function InputMessage ({onSelectedFile}) {
           };
           const con = await conversationService.createConversation(newConversation);
           let newCon;
-          if(urlStrings)
+          if(urlStrings.length > 0)
             newCon = {
               _id: con._id,
               userIds: currentChat.userIds, 
               name: currentChat.name, 
               img: currentChat.img, 
+              online: con.online,
+              last_online: con.last_online,
               lastMsg: "You: Image",
             }
           else
@@ -309,6 +313,8 @@ function InputMessage ({onSelectedFile}) {
               userIds: currentChat.userIds, 
               name: currentChat.name, 
               img: currentChat.img, 
+              online: con.online,
+              last_online: con.last_online,
               lastMsg: "You: " + text,
             }
           
@@ -327,14 +333,15 @@ function InputMessage ({onSelectedFile}) {
           const result = await messageService.sendMessage(newMessage);
           const savedMessage = {_id: result._id, ...newMessage};
 
-
+          let lastMSG;
+          if(urlStrings.length > 0)
+            lastMSG = "Image";
+          else lastMSG = text;
           const cons = {_id: newCon._id, userIds: [user._id], name: user.full_name, img: user.profile_picture, 
-            msg_id: result._id, lastMsg: newCon.lastMsg, unread: true, online: true, last_online: currentChat.last_online,
-            recieve_ids: newCon.userIds,
-          };
+            msg_id: result._id, lastMsg: lastMSG, unread: true, online: true, last_online: currentChat.last_online,
+            recieve_ids: currentChat.userIds};
           socket.current.emit("return-chat", cons);
-
-
+          console.log(cons);
 
           socket.current.emit("send-msg", savedMessage)
           dispatch({type: "ADD_MESSAGE", payload: savedMessage,

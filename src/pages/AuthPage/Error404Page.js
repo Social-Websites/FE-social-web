@@ -1,19 +1,19 @@
 import React from "react";
-import classNames from "classnames/bind";
-import styles from "./AuthPage.scss";
+// import classNames from "classnames/bind";
+// import styles from "./AuthPage.scss";
 
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
-const cx = classNames.bind(styles);
+// const cx = classNames.bind(styles);
 
 const Error404Page = ({ notAuthPage }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleClick = (e) => {
-    e.preventdefault();
+  // const handleClick = (e) => {
+  //   e.preventdefault();
 
-    navigate("/accounts/login", { replace: true });
-  };
+  //   navigate("/accounts/login", { replace: true });
+  // };
 
   return (
     <div style={{ fontFamily: "inherit", color: "inherit" }}>

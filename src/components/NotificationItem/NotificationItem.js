@@ -76,7 +76,7 @@ function NotificationItem({ n }) {
         <div className={cx("open__user_avatar")}>
           <img
             style={{ width: "44px", height: "44px" }}
-            src={n.img === "" ? "/static-resources/default-avatar.jpg" : n.img}
+            src={!n.img ? "/static-resources/default-avatar.jpg" : n.img}
             alt=""
           />
         </div>

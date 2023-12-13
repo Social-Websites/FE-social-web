@@ -5,9 +5,9 @@ import { useEffect, useRef } from "react";
 import usePrivateHttpClient from "../hook/http-hook/private-http-hook";
 
 const RequireAuth = ({ admin = false }) => {
-  const { auth, user, setUserLogin } = useAuth();
+  const { auth,  setUserLogin } = useAuth();
   const location = useLocation();
-  const { isLoading, error, clearError, privateRequest } =
+  const { privateRequest } =
     usePrivateHttpClient();
 
   const effectRan = useRef(false);

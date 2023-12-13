@@ -12,7 +12,7 @@ import styles from "./TimeLine.scss";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { getHomePosts } from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
-import { addPosts, setPosts } from "../../context/StateAction";
+import { setPosts } from "../../context/StateAction";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import { CircularProgress } from "@mui/material";
 import useLoadMorePosts from "./Load-more-hook";

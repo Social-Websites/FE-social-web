@@ -1,6 +1,6 @@
-import { React, useCallback, useEffect, useMemo, useState } from "react";
-import { subDays, subHours } from "date-fns";
-import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
+import { React, useCallback, useEffect, useState } from "react";
+// import { subDays, subHours } from "date-fns";
+// import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import BlockIcon from "@mui/icons-material/Block";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import { UserSearch } from "./UserSeach";
 import { UserTable } from "./UserTable";
-import { applyPagination } from "../../../../shared/util/apply-pagination";
-import { useSelection } from "../../../../shared/hook/use-selection";
+// import { applyPagination } from "../../../../shared/util/apply-pagination";
+// import { useSelection } from "../../../../shared/hook/use-selection";
 import Modal from "react-bootstrap/Modal";
 import classNames from "classnames/bind";
 import styles from "./UserModal.module.scss";
@@ -29,7 +29,7 @@ import {
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 
 const cx = classNames.bind(styles);
-const now = new Date();
+// const now = new Date();
 
 const UsersManage = () => {
   const privateHttpRequest = usePrivateHttpClient();
