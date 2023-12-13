@@ -1,32 +1,29 @@
 import PropTypes from "prop-types";
-import { format, parseISO } from "date-fns";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+// import { format, parseISO } from "date-fns";
+// import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+// import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
-  Alert,
-  Avatar,
+  // Alert,
+  // Avatar,
   Box,
   Card,
-  Checkbox,
-  Stack,
+  // Checkbox,
+  // Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
+  // Typography,
 } from "@mui/material";
 import { Scrollbar } from "./ScrollBar";
-import { getInitials } from "../../../../shared/util/get-initials";
+// import { getInitials } from "../../../../shared/util/get-initials";
 import { useMemo, useState } from "react";
 import { applyPagination } from "../../../../shared/util/apply-pagination";
-import Modal from "react-bootstrap/Modal";
-import classNames from "classnames/bind";
-import styles from "./PostManager.module.scss";
+// import Modal from "react-bootstrap/Modal";
 import PostTableItem from "./PostTableItem";
 
-const cx = classNames.bind(styles);
 
 const usePosts = (data, page, rowsPerPage) => {
   return useMemo(() => {
@@ -34,11 +31,6 @@ const usePosts = (data, page, rowsPerPage) => {
   }, [page, rowsPerPage]);
 };
 
-const usePostIds = (posts) => {
-  return useMemo(() => {
-    return posts.map((post) => post.id);
-  }, [posts]);
-};
 
 export const PostTable = (props) => {
   const {
@@ -52,10 +44,8 @@ export const PostTable = (props) => {
     rowsPerPage = 0,
     //selected = [],
   } = props;
-  const [visible, setVisible] = useState({});
 
   const posts = usePosts(data, page, rowsPerPage);
-  const postsIds = usePostIds(posts);
   // const postsSelection = useSelection(postsIds);
   // const onDeselectAll = postsSelection.handleDeselectAll;
   // const onDeselectOne = postsSelection.handleDeselectOne;
@@ -64,41 +54,6 @@ export const PostTable = (props) => {
 
   // const selectedSome = selected.length > 0 && selected.length < items.length;
   // const selectedAll = items.length > 0 && selected.length === items.length;
-
-  const [images, setImages] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0);
-  const [isFirstImage, setIsFirstImage] = useState(true);
-  const [isLastImage, setIsLastImage] = useState(false);
-
-  function showNextImage() {
-    setImageIndex((index) => {
-      if (index === images.length - 2) {
-        setIsLastImage(true);
-        setIsFirstImage(false);
-        return images.length - 1;
-      } else {
-        setIsLastImage(false);
-        setIsFirstImage(false);
-        return index + 1;
-      }
-    });
-  }
-
-  function showPrevImage() {
-    setImageIndex((index) => {
-      if (index === 1) {
-        setIsLastImage(false);
-        setIsFirstImage(true);
-        console.log(index);
-        return 0;
-      } else {
-        setIsLastImage(false);
-        setIsFirstImage(false);
-        console.log(index);
-        return index - 1;
-      }
-    });
-  }
 
   return (
     <Card>

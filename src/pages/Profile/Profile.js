@@ -3,16 +3,16 @@ import classNames from "classnames/bind";
 import styles from "./Profile.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import GridOnIcon from "@mui/icons-material/GridOn";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
+// import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+// import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 
 import {
   CircularProgress,
-  Skeleton,
-  linearProgressClasses,
-  rgbToHex,
+  // Skeleton,
+  // linearProgressClasses,
+  // rgbToHex,
 } from "@mui/material";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,7 +32,6 @@ import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
 import Error404Page from "../AuthPage/Error404Page";
-import { grey } from "@mui/material/colors";
 
 const cx = classNames.bind(styles);
 

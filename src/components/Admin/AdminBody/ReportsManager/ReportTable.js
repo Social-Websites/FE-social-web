@@ -1,20 +1,20 @@
 import PropTypes from "prop-types";
 import {
-  Avatar,
+  // Avatar,
   Box,
   Card,
   Checkbox,
-  Stack,
+  // Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
+  // Typography,
 } from "@mui/material";
 import { Scrollbar } from "./ScrollBar";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { applyPagination } from "../../../../shared/util/apply-pagination";
 import { useSelection } from "../../../../shared/hook/use-selection";
 import ReportTableItem from "./ReportTableItem";
