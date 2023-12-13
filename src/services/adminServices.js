@@ -93,3 +93,23 @@ export const unlockPost = async (id, sendRequest) => {
     throw err;
   }
 };
+
+export const getUserReportsCount = async (userId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/admin/users/${userId}/reports-count`);
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getPostReportsCount = async (postId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/admin/posts/${postId}/reports-count`);
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};

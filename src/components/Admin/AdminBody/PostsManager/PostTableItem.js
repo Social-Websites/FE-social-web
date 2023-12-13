@@ -26,7 +26,11 @@ import classNames from "classnames/bind";
 import styles from "./PostManager.module.scss";
 import usePrivateHttpClient from "../../../../shared/hook/http-hook/private-http-hook";
 import { getPostComments } from "../../../../services/postServices";
-import { lockPost, unlockPost } from "../../../../services/adminServices";
+import {
+  getPostReportsCount,
+  lockPost,
+  unlockPost,
+} from "../../../../services/adminServices";
 import { StateContext } from "../../../../context/StateContext";
 
 const cx = classNames.bind(styles);
@@ -40,6 +44,8 @@ const PostTableItem = ({ post }) => {
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
+
+  const [reportsCount, setReportsCount] = useState([]);
 
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
@@ -168,11 +174,26 @@ const PostTableItem = ({ post }) => {
     }
   };
 
+  const loadReportsCount = async () => {
+    try {
+      const response = await getPostReportsCount(
+        post._id,
+        privateHttpRequest.privateRequest
+      );
+      if (response) {
+        setReportsCount(response.reports_group_count);
+        if (anchorEl) handleClose();
+        setViewReports(true);
+      }
+    } catch (err) {
+      console.error("Error loading reports: ", err);
+    }
+  };
+
   return (
     <>
       <TableRow
         hover
-        key={post._id}
         aria-controls={open ? "basic-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
@@ -217,7 +238,20 @@ const PostTableItem = ({ post }) => {
         <TableCell style={{ color: isLock ? "red" : "blue" }}>
           {isLock ? "Locked" : "Visibled"}
         </TableCell>
-        <TableCell>{post.reports_count}</TableCell>
+        <TableCell
+          style={{
+            color:
+              post.reports_count < 5
+                ? "inherit"
+                : post.reports_count >= 5 && post.reports_count < 10
+                ? "yellow"
+                : post.reports_count >= 10 && post.reports_count < 15
+                ? "orange"
+                : "red",
+          }}
+        >
+          {post.reports_count}
+        </TableCell>
       </TableRow>
       <Menu
         id="basic-menu"
@@ -241,15 +275,9 @@ const PostTableItem = ({ post }) => {
         >
           View post
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setViewReports(true);
-
-            if (anchorEl) handleClose();
-          }}
-        >
-          View reports
-        </MenuItem>
+        {post.reports_count > 0 && (
+          <MenuItem onClick={loadReportsCount}>View reports</MenuItem>
+        )}
       </Menu>
 
       <Modal
@@ -455,34 +483,19 @@ const PostTableItem = ({ post }) => {
           )}
         </Modal.Header>
         <Modal.Body>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>
-              Indecent photo
+          {reportsCount.map((item, i) => (
+            <div
+              key={i}
+              className={cx("row align-items-center", "modal-content-report")}
+            >
+              <div className={cx("col-lg-8 col-md-8", "report")}>
+                {item.reason}
+              </div>
+              <div className={cx("col-lg-3 col-md-3", "count")}>
+                {item.count}
+              </div>
             </div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>Violence</div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>Harassment</div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>Terrorism</div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>
-              Hateful language, false information
-            </div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
-          <div className={cx("row align-items-center", "modal-content-report")}>
-            <div className={cx("col-lg-8 col-md-8", "report")}>Spam</div>
-            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
-          </div>
+          ))}
         </Modal.Body>
       </Modal>
     </>

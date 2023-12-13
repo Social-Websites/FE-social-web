@@ -1,4 +1,11 @@
-import { React, useCallback, useEffect, useContext, useState, useRef } from "react";
+import {
+  React,
+  useCallback,
+  useEffect,
+  useContext,
+  useState,
+  useRef,
+} from "react";
 import { subDays, subHours } from "date-fns";
 import VerticalAlignBottomOutlinedIcon from "@mui/icons-material/VerticalAlignBottomOutlined";
 import {
@@ -34,7 +41,7 @@ const PostsManage = () => {
   useEffect(() => {
     if (user) {
       if (socket.current == null) {
-        socket.current = io("https://nestme-server.onrender.com");
+        socket.current = io(process.env.REACT_APP_SERVER_BASE_URL);
         // console.log(socket);
         socket.current.on("connect", () => {
           // yêu cầu kết nối vào 1 socket mới
