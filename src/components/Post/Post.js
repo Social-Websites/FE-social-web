@@ -94,7 +94,6 @@ const Post = forwardRef(({ post }, ref) => {
   );
 
   const loadComments = useCallback(async () => {
-    console.log("comment bị loading nè");
     setCommentsLoading(true);
     try {
       const response = await getPostComments(

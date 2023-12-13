@@ -80,6 +80,7 @@ export const UserTable = (props) => {
                 <TableCell>Fullname</TableCell>
                 <TableCell>Signed Up</TableCell>
                 <TableCell>Status</TableCell>
+                <TableCell>Reports</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

@@ -242,3 +242,20 @@ export const searchUsers = async (data) => {
     throw new Error("Đã xảy ra lỗi search users");
   }
 };
+
+export const reportUser = async (userId, reason, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      "/users/report",
+      "post",
+      { userReportId: userId, reason: reason },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
