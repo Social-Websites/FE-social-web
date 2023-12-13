@@ -126,6 +126,7 @@ export const PostTable = (props) => {
                 <TableCell>Comments</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Status</TableCell>
+                <TableCell>Reports</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

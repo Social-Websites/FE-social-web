@@ -8,6 +8,8 @@ import {
   Card,
   Checkbox,
   CircularProgress,
+  Menu,
+  MenuItem,
   Stack,
   Table,
   TableBody,
@@ -31,6 +33,7 @@ const cx = classNames.bind(styles);
 
 const PostTableItem = ({ post }) => {
   const [visible, setVisible] = useState(false);
+  const [viewReports, setViewReports] = useState(false);
   const privateHttpRequest = usePrivateHttpClient();
 
   const [images, setImages] = useState(post.media);
@@ -44,6 +47,15 @@ const PostTableItem = ({ post }) => {
   const [page, setPage] = useState(1);
   const [isFirstMount, setIsFirstMount] = useState(true);
   const [hadMounted, setHadMounted] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const { user, socket } = useContext(StateContext);
 
@@ -145,7 +157,8 @@ const PostTableItem = ({ post }) => {
 
         if (response) setIsLock(!isLock);
       }
-    } catch (err) {} finally {
+    } catch (err) {
+    } finally {
       socket.current.emit("sendNotification", {
         sender_id: user?._id,
         receiver_id: [post.creator._id],
@@ -160,14 +173,10 @@ const PostTableItem = ({ post }) => {
       <TableRow
         hover
         key={post._id}
-        onDoubleClick={() => {
-          setVisible(true);
-          if (isFirstMount) {
-            loadComments();
-            setHadMounted(true);
-            setIsFirstMount(false);
-          }
-        }}
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
       >
         {/* <TableCell padding="checkbox">
                       <Checkbox
@@ -208,7 +217,40 @@ const PostTableItem = ({ post }) => {
         <TableCell style={{ color: isLock ? "red" : "blue" }}>
           {isLock ? "Locked" : "Visibled"}
         </TableCell>
+        <TableCell>{post.reports_count}</TableCell>
       </TableRow>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            setVisible(true);
+            if (isFirstMount) {
+              loadComments();
+              setHadMounted(true);
+              setIsFirstMount(false);
+            }
+            if (anchorEl) handleClose();
+          }}
+        >
+          View post
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setViewReports(true);
+
+            if (anchorEl) handleClose();
+          }}
+        >
+          View reports
+        </MenuItem>
+      </Menu>
 
       <Modal
         show={visible}
@@ -395,75 +437,54 @@ const PostTableItem = ({ post }) => {
         </Modal.Footer>
       </Modal>
 
-
       <Modal
-          show={visible}
-          onHide={() => setVisible(false)}
-          className={cx("add-employee-modal")}
-        >
-          <Modal.Header>
-            <div className={cx("title-modal")}>REPORTS</div>
-            {privateHttpRequest.error && (
-              <>
-                <br />
-                <div className={cx("title-modal")}>
-                  {" "}
-                  <Alert severity="error">{privateHttpRequest.error}</Alert>
-                </div>
-              </>
-            )}
-          </Modal.Header>
-          <Modal.Body>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Indecent photo
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
+        show={viewReports}
+        onHide={() => setViewReports(false)}
+        className={cx("add-employee-modal")}
+      >
+        <Modal.Header>
+          <div className={cx("title-modal")}>REPORTS</div>
+          {privateHttpRequest.error && (
+            <>
+              <br />
+              <div className={cx("title-modal")}>
+                {" "}
+                <Alert severity="error">{privateHttpRequest.error}</Alert>
+              </div>
+            </>
+          )}
+        </Modal.Header>
+        <Modal.Body>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>
+              Indecent photo
             </div>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Violence
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>Violence</div>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>Harassment</div>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>Terrorism</div>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>
+              Hateful language, false information
             </div>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Harassment
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
-            </div>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Terrorism 
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
-            </div>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Hateful language, false information
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
-            </div>
-            <div className={cx("row align-items-center", "modal-content-report")}>
-                <div className={cx("col-lg-8 col-md-8", "report")}> 
-                  Spam
-                </div>
-                <div className={cx("col-lg-3 col-md-3", "count")}>
-                  2
-                </div>
-            </div>
-          </Modal.Body>
-        </Modal>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+          <div className={cx("row align-items-center", "modal-content-report")}>
+            <div className={cx("col-lg-8 col-md-8", "report")}>Spam</div>
+            <div className={cx("col-lg-3 col-md-3", "count")}>2</div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 };
