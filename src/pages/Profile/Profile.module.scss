@@ -327,8 +327,15 @@ profile-modal .btn-profile-modal {
   .more-content-report:hover{
     background: #434343;
   }
+  .more-content-element:hover{
+    background: #434343;
+  }
   .more-content-element:last-child {
     border-bottom: none;
+    border-radius: 0px 0px 10px 10px;
+  }
+  .more-content-element:first-child {
+    border-radius: 10px 10px 0px 0px;
   }
 }
 

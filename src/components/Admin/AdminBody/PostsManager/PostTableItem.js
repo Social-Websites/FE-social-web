@@ -321,7 +321,7 @@ const PostTableItem = ({ post }) => {
                       display: "block",
                       flexShrink: "0",
                       flexGrow: "0",
-                      borderRadius: "0px 0px 0px 10px",
+                      borderRadius: "0px 0px 0px 0px",
                     }}
                     src={image}
                     alt={""}

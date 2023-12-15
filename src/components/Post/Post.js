@@ -52,6 +52,7 @@ const Post = forwardRef(({ post }, ref) => {
 
   const [modal, setModal] = useState(false);
   const [more, setMore] = useState(false);
+  const [deleteCmt, setDeleteCmt] = useState(false);
   const [reportModal, setReportModal] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
@@ -136,6 +137,16 @@ const Post = forwardRef(({ post }, ref) => {
   const toggleMore = () => {
     setMore(!more);
     if (!more) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const toggleDeleteCmt = () => {
+    setDeleteCmt(!deleteCmt);
+    if (!deleteCmt) {
       if (document.body.style.overflow !== "hidden")
         document.body.style.overflow = "hidden";
     } else {
@@ -552,6 +563,9 @@ const Post = forwardRef(({ post }, ref) => {
                         </span>
                       </Link>
                     </div>
+                    <div className={cx("more")} style={{justifyContent: "end", alignItems:"center", display:"flex", width: "100%", marginRight: "15px", cursor: "pointer"}}>
+                      <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                    </div>
                   </div>
                   <div className={cx("post-comment")}>
                     <div className={cx("post-comment-user")}>
@@ -617,6 +631,9 @@ const Post = forwardRef(({ post }, ref) => {
                                   {comment.comment}
                                 </span>
                               </div>
+                              <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                                <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
+                              </div>
                             </div>
                           );
                         }
@@ -660,6 +677,9 @@ const Post = forwardRef(({ post }, ref) => {
                               <span className={cx("post-comment-content")}>
                                 {comment.comment}
                               </span>
+                            </div>
+                            <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                              <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
                             </div>
                           </div>
                         );
@@ -775,6 +795,40 @@ const Post = forwardRef(({ post }, ref) => {
             <div className={cx("more-content-element")} onClick={toggleMore}>
               Cancel
             </div>
+          </div>
+        </div>
+      )}
+
+
+      {deleteCmt && (
+        <div className={cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleDeleteCmt}
+            className={cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div
+              className={cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+              // onClick={handleUnsent}
+            >
+              Delete
+            </div>
+            <div className={cx("more-content-element")} onClick={toggleDeleteCmt}>Cancel</div>
           </div>
         </div>
       )}

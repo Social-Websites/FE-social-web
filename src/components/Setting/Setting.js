@@ -36,10 +36,10 @@ const Setting = () => {
         >
           Change Password
         </div>
-        <div className={cx("settings__content__element")}>
+        {/* <div className={cx("settings__content__element")}>
           Push notifications
         </div>
-        <div className={cx("settings__content__element")}>What you see</div>
+        <div className={cx("settings__content__element")}>What you see</div> */}
       </div>
     </div>
   );
