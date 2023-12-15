@@ -353,12 +353,14 @@
     width: 85%;
     display: flex;
     padding: 8px 24px;
+    align-items: center;
 
     .post-comment-user-avatar {
       position: relative;
-      display: inline-block;
       width: 44px;
       height: 44px;
+      display: flex;
+      align-items: center;
     }
     .post-comment-user-avatar > img {
       border-radius: 50%;
@@ -366,7 +368,7 @@
     }
 
     .post-comment-user-info {
-      width: 85%;
+      width: 80%;
       display: flex;
       display: inline-block;
       word-wrap: break-word;
@@ -393,7 +395,22 @@
       }
     }
   }
+
+  .moreCmt{
+    display: none;
+    cursor: pointer;
+  }
+  
+  .post-comment-user:hover .moreCmt{
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    margin-right: 10px;
+  }
+
 }
+
+
 
 //more
 .more-content {
@@ -453,7 +470,14 @@
   .more-content-report:hover{
     background: #434343;
   }
+  .more-content-element:hover{
+    background: #434343;
+  }
   .more-content-element:last-child {
     border-bottom: none;
+    border-radius: 0px 0px 10px 10px;
+  }
+  .more-content-element:first-child {
+    border-radius: 10px 10px 0px 0px;
   }
 }

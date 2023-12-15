@@ -11,7 +11,9 @@ import Sidenav from "../../shared/components/NavBar";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import TimeAgo from "../../shared/components/TimeAgo";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import TelegramIcon from "@mui/icons-material/Telegram";
@@ -31,6 +33,7 @@ const PostDetailPage = () => {
   const { posts } = useContext(StateContext);
   const privateHttpRequest = usePrivateHttpClient();
   const [post, setPost] = useState(null);
+  const [more, setMore] = useState(false);
 
   // const [modal, setModal] = useState(false);
   // const [more, setMore] = useState(false);
@@ -153,6 +156,17 @@ const PostDetailPage = () => {
       }
     });
   }
+
+
+  const toggleMore = () => {
+    setMore(!more);
+    if (!more) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
 
   return (
     <div className={cx("postpage")}>
@@ -350,6 +364,9 @@ const PostDetailPage = () => {
                             {comment.comment}
                           </span>
                         </div>
+                        <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                          <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                        </div>
                       </div>
                     );
                   }
@@ -463,6 +480,39 @@ const PostDetailPage = () => {
             </div>
           </div>
         </div>
+        {more && (
+        <div className={cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleMore}
+            className={cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div
+              className={cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+            >
+              Delete
+            </div>
+            <div className={cx("more-content-element")} onClick={toggleMore}>
+              Cancel
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

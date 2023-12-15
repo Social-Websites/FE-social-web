@@ -16,6 +16,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import CloseIcon from "@mui/icons-material/Close";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
@@ -120,6 +121,16 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
       document.body.style.overflow = "hidden";
     } else {
       window.history.replaceState(null, null, `/${creator.username}`);
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const toggleMore = () => {
+    setMore(!more);
+    if (!more) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
       document.body.style.overflow = "auto";
     }
   };
@@ -368,6 +379,9 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                                   {comment.comment}
                                 </span>
                               </div>
+                              <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                                <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                              </div>
                             </div>
                           );
                         }
@@ -411,6 +425,9 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                               <span className={cx("post-comment-content")}>
                                 {comment.comment}
                               </span>
+                            </div>
+                            <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                              <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
                             </div>
                           </div>
                         );

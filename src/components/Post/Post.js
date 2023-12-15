@@ -617,6 +617,9 @@ const Post = forwardRef(({ post }, ref) => {
                                   {comment.comment}
                                 </span>
                               </div>
+                              <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                                <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                              </div>
                             </div>
                           );
                         }

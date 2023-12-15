@@ -223,20 +223,6 @@ html, body {
     line-height: 1.4;
     background: #262626;
     border-radius: 10px;
-    .more-content-element {
-      text-align: center;
-      padding: 14px 10px;
-      border-bottom: #4e4d4d solid 1px;
-      color: white;
-      font-weight: 500;
-      font-size: 15px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Helvetica, Arial, sans-serif;
-      cursor: pointer;
-    }
-    .more-content-element:last-child {
-      border-bottom: none;
-    }
     
     .more-content-header {
       display:flex;
@@ -268,8 +254,9 @@ html, body {
     .more-content-report:hover{
       background: #434343;
     }
-    .more-content-element:last-child {
+    .more-content-report:last-child {
       border-bottom: none;
+      border-radius: 0px 0px 10px 10px;
     }
   }
 
