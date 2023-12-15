@@ -23,7 +23,7 @@ import CommentInput from "../../components/Comment/CommentInput";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { StateContext } from "../../context/StateContext";
-import { getPost, getPostComments } from "../../services/postServices";
+import { getPost, getPostComments, reportPost } from "../../services/postServices";
 import { CircularProgress } from "@mui/material";
 const cx = classNames.bind(styles);
 
@@ -34,6 +34,9 @@ const PostDetailPage = () => {
   const privateHttpRequest = usePrivateHttpClient();
   const [post, setPost] = useState(null);
   const [more, setMore] = useState(false);
+  const [deleteCmt, setDeleteCmt] = useState(false);
+  const [reportModal, setReportModal] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   // const [modal, setModal] = useState(false);
   // const [more, setMore] = useState(false);
@@ -50,6 +53,13 @@ const PostDetailPage = () => {
   const [page, setPage] = useState(1);
   // const [isFirstMount, setIsFirstMount] = useState(true);
   // const [hadMounted, setHadMounted] = useState(false);
+
+
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarNotif, setSnackBarNotif] = useState({
+    severity: "success",
+    message: "This is success message!",
+  }); //severity: success, error, info, warning
 
   const observer = useRef();
   const lastCommentRef = useCallback(
@@ -165,6 +175,55 @@ const PostDetailPage = () => {
         document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
+    }
+  };
+
+  const toggleDeleteCmt = () => {
+    setDeleteCmt(!deleteCmt);
+    if (!deleteCmt) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const openReport = () => {
+    if (more) toggleMore();
+    setReportModal(!reportModal);
+    if (!reportModal) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+
+  const handleReportPost = async (reportReason) => {
+    try {
+      setReportLoading(true);
+      const response = await reportPost(
+        post._id,
+        reportReason,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        setReportLoading(false);
+        if (reportModal) openReport();
+        setSnackBarNotif({
+          severity: "success",
+          message: "Report post success with reason: " + reportReason,
+        });
+        setSnackBarOpen(true);
+      }
+    } catch (err) {
+      setReportLoading(false);
+      setSnackBarNotif({
+        severity: "error",
+        message: "Report post fail with reason: " + reportReason,
+      });
+      setSnackBarOpen(true);
+      console.error(privateHttpRequest.error);
     }
   };
 
@@ -298,6 +357,9 @@ const PostDetailPage = () => {
                     </span>
                   </Link>
                 </div>
+                <div className={cx("more")} style={{justifyContent: "end", alignItems:"center", display:"flex", width: "100%", marginRight: "15px", cursor: "pointer"}}>
+                  <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                </div>
               </div>
             )}
             <div className={cx("post-comment")}>
@@ -365,7 +427,7 @@ const PostDetailPage = () => {
                           </span>
                         </div>
                         <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
-                          <MoreHorizIcon style={{color: "white"}} onClick={toggleMore}/>
+                          <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
                         </div>
                       </div>
                     );
@@ -405,6 +467,9 @@ const PostDetailPage = () => {
                         <span className={cx("post-comment-content")}>
                           {comment.comment}
                         </span>
+                      </div>
+                      <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
+                        <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
                       </div>
                     </div>
                   );
@@ -481,38 +546,146 @@ const PostDetailPage = () => {
           </div>
         </div>
         {more && (
-        <div className={cx("post-modal active-post-modal")}>
-          <div
-            onClick={toggleMore}
-            className={cx("post-overlay")}
-            style={{ alignSelf: "flex-end" }}
-          >
-            <CloseIcon
-              className={cx("sidenav__icon")}
-              style={{
-                width: "27px",
-                height: "27px",
-                color: "white",
-                margin: "12px 30px",
-                position: "absolute",
-                right: "0",
-                cursor: "pointer",
-              }}
-            />
-          </div>
-          <div className={cx("more-content")}>
+          <div className={cx("post-modal active-post-modal")}>
             <div
-              className={cx("more-content-element")}
-              style={{ color: "#ed4956" }}
+              onClick={toggleMore}
+              className={cx("post-overlay")}
+              style={{ alignSelf: "flex-end" }}
             >
-              Delete
+              <CloseIcon
+                className={cx("sidenav__icon")}
+                style={{
+                  width: "27px",
+                  height: "27px",
+                  color: "white",
+                  margin: "12px 30px",
+                  position: "absolute",
+                  right: "0",
+                  cursor: "pointer",
+                }}
+              />
             </div>
-            <div className={cx("more-content-element")} onClick={toggleMore}>
-              Cancel
+            <div className={cx("more-content")}>
+              <div
+                className={cx("more-content-element")}
+                style={{ color: "#ed4956" }}
+                onClick={openReport}
+              >
+                Report
+              </div>
+              <div className={cx("more-content-element")} onClick={toggleMore}>
+                Cancel
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+        {deleteCmt && (
+          <div className={cx("post-modal active-post-modal")}>
+            <div
+              onClick={toggleDeleteCmt}
+              className={cx("post-overlay")}
+              style={{ alignSelf: "flex-end" }}
+            >
+              <CloseIcon
+                className={cx("sidenav__icon")}
+                style={{
+                  width: "27px",
+                  height: "27px",
+                  color: "white",
+                  margin: "12px 30px",
+                  position: "absolute",
+                  right: "0",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+            <div className={cx("more-content")}>
+              <div
+                className={cx("more-content-element")}
+                style={{ color: "#ed4956" }}
+                // onClick={handleUnsent}
+              >
+                Delete
+              </div>
+              <div className={cx("more-content-element")} onClick={toggleDeleteCmt}>Cancel</div>
+            </div>
+          </div>
+        )}
+
+        {reportModal && (
+          <div className={cx("post-modal active-post-modal")}>
+            <div
+              onClick={openReport}
+              className={cx("post-overlay")}
+              style={{ alignSelf: "flex-end" }}
+            >
+              <CloseIcon
+                className={cx("sidenav__icon")}
+                style={{
+                  width: "27px",
+                  height: "27px",
+                  color: "white",
+                  margin: "12px 30px",
+                  position: "absolute",
+                  right: "0",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+            <div className={cx("more-content")}>
+              <div className={cx("more-content-header")}>
+                <div className={cx("more-content-title")}>
+                  Why are you reporting this post?
+                </div>
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() => handleReportPost("Indecent photo")}
+              >
+                Indecent photo
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() => handleReportPost("Violence")}
+              >
+                Violence
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() => handleReportPost("Harassment")}
+              >
+                Harassment
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() => handleReportPost("Terrorism")}
+              >
+                Terrorism
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() =>
+                  handleReportPost("Hateful language, false information")
+                }
+              >
+                Hateful language, false information
+              </div>
+              <div
+                className={cx("more-content-report")}
+                onClick={() => handleReportPost("Spam")}
+              >
+                Spam
+              </div>
+              <div
+                className={cx("more-content-report")}
+                style={{ color: "#ed4956" }}
+                onClick={openReport}
+              >
+                Cancel
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
