@@ -428,25 +428,28 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                                   />
                                 </Link>
                               </div>
-                              <div className={cx("post-comment-user-info")}>
-                                <Link
-                                  to={`/${comment.user.username}`}
-                                  style={{
-                                    position: "inherit",
-                                    textDecoration: "none",
-                                    color: "inherit",
-                                  }}
-                                >
-                                  <span className={cx("post-comment-username")}>
-                                    {comment.user.username}
+                              <div>
+                                <div className={cx("post-comment-user-info")}>
+                                  <Link
+                                    to={`/${comment.user.username}`}
+                                    style={{
+                                      position: "inherit",
+                                      textDecoration: "none",
+                                      color: "inherit",
+                                    }}
+                                  >
+                                    <span className={cx("post-comment-username")}>
+                                      {comment.user.username}
+                                    </span>
+                                  </Link>
+                                  <span className={cx("post-comment-content")}>
+                                    {comment.comment}
                                   </span>
-                                </Link>
-                                <span className={cx("post-comment-content")}>
-                                  {comment.comment}
-                                </span>
-                              </div>
-                              <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
-                                <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
+                                </div>
+                                <div style={{display: "flex", alignItems: "center", height: "18px"}}>
+                                  <span style={{color: "#A8A8A8", fontSize: "12px", marginRight: "12px"}}>1d</span>
+                                  <MoreHorizIcon className={cx("moreCmt")} style={{color: "white"}} onClick={toggleDeleteCmt}/>
+                                </div>
                               </div>
                             </div>
                           );
@@ -475,25 +478,28 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                                 />
                               </Link>
                             </div>
-                            <div className={cx("post-comment-user-info")}>
-                              <Link
-                                to={`/${comment.user.username}`}
-                                style={{
-                                  position: "inherit",
-                                  textDecoration: "none",
-                                  color: "inherit",
-                                }}
-                              >
-                                <span className={cx("post-comment-username")}>
-                                  {comment.user.username}
+                            <div>
+                              <div className={cx("post-comment-user-info")}>
+                                <Link
+                                  to={`/${comment.user.username}`}
+                                  style={{
+                                    position: "inherit",
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  <span className={cx("post-comment-username")}>
+                                    {comment.user.username}
+                                  </span>
+                                </Link>
+                                <span className={cx("post-comment-content")}>
+                                  {comment.comment}
                                 </span>
-                              </Link>
-                              <span className={cx("post-comment-content")}>
-                                {comment.comment}
-                              </span>
-                            </div>
-                            <div className={cx("moreCmt")} style={{width: "10px", marginLeft: "5px"}}>
-                              <MoreHorizIcon style={{color: "white"}} onClick={toggleDeleteCmt}/>
+                              </div>
+                              <div style={{display: "flex", alignItems: "center", height: "18px"}}>
+                                <span style={{color: "#A8A8A8", fontSize: "12px", marginRight: "12px"}}>1d</span>
+                                <MoreHorizIcon className={cx("moreCmt")} style={{color: "white"}} onClick={toggleDeleteCmt}/>
+                              </div>
                             </div>
                           </div>
                         );
