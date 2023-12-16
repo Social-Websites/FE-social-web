@@ -81,3 +81,11 @@ export const updateUserProfileFields = (updateFields) => ({
   type: "SET_USER_FIELDS",
   payload: updateFields,
 });
+export const setSavedPost = (postToSave) => ({
+  type: "SET_SAVED_POST",
+  payload: postToSave,
+});
+export const deleteContextPost = (postId) => ({
+  type: "DELETE_POST",
+  payload: postId,
+});

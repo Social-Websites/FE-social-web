@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./Profile.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import GridOnIcon from "@mui/icons-material/GridOn";
-// import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 // import PortraitOutlinedIcon from "@mui/icons-material/PortraitOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
@@ -30,7 +30,7 @@ import {
   unFriend,
 } from "../../services/userService";
 import FriendRequest from "../../components/FriendRequest";
-import { getUserPosts } from "../../services/postServices";
+import { getSavedPosts, getUserPosts } from "../../services/postServices";
 import { checkCon } from "../../services/conversationService";
 import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
@@ -60,6 +60,7 @@ function Profile() {
   const [friendRequestsPage, setFriendRequestsPage] = useState(1);
   const [friendsPage, setFriendsPage] = useState(1);
 
+  const [postType, setPostType] = useState(1);
   const [userPosts, setUserPosts] = useState([]);
   const [postPage, setPostPage] = useState(1);
   const [hasMorePost, setHasMorePost] = useState(true);
@@ -189,6 +190,30 @@ function Profile() {
     }
   }, [username, postPage]);
 
+  const getProfileSavedPosts = useCallback(async () => {
+    try {
+      setProfilePostsLoading(true);
+      const data = await getSavedPosts(
+        username,
+        postPage,
+        15,
+        privateHttpRequest.privateRequest
+      );
+
+      if (data) {
+        const postsCount = data.saved_posts.length;
+        setHasMorePost(postsCount > 0 && postsCount === 15);
+
+        if (postsCount > 0 && postPage === 1) setUserPosts(data.saved_posts);
+        else setUserPosts((prev) => [...prev, ...data.saved_posts]);
+      }
+      setProfilePostsLoading(false);
+    } catch (err) {
+      setProfilePostsLoading(false);
+      console.error("profile saved posts ", err);
+    }
+  }, [username, postPage]);
+
   const getFriends = useCallback(async () => {
     console.log("friends load");
     try {
@@ -280,8 +305,9 @@ function Profile() {
   }, [username]);
 
   useEffect(() => {
-    getProfilePosts();
-  }, [username, postPage]);
+    if (postType === 1) getProfilePosts();
+    else getProfileSavedPosts();
+  }, [username, postPage, postType]);
 
   useEffect(() => {
     if (listType === 1 && modal) getFriends();
@@ -548,14 +574,21 @@ function Profile() {
                   <span>{userData?.full_name}</span>
                 </div>
                 <div className={cx("profile__user__3")}>
-                  <span>{userData?.user_info.bio}</span>
+                  <span>{userData?.user_info?.bio}</span>
                 </div>
               </div>
             </div>
 
             <div className={cx("profile__post__tag")}>
               <a>
-                <div className={cx("choose")}>
+                <div
+                  className={cx("choose")}
+                  onClick={() => {
+                    setUserPosts([]);
+                    setPostPage(1);
+                    setPostType(1);
+                  }}
+                >
                   <GridOnIcon className={cx("icon")} />
                   <span
                     className={cx("span")}
@@ -565,18 +598,27 @@ function Profile() {
                   </span>
                 </div>
               </a>
-              {/* <a>
-                <div className={cx("choose")}>
-                  <BookmarkBorderIcon className={cx("icon")} />
-                  <span
-                    className={cx("span")}
-                    style={{ textTransform: "uppercase" }}
+              {isOwnProfile && (
+                <a>
+                  <div
+                    className={cx("choose")}
+                    onClick={() => {
+                      setUserPosts([]);
+                      setPostPage(1);
+                      setPostType(2);
+                    }}
                   >
-                    Saved
-                  </span>
-                </div>
-              </a>
-              <a>
+                    <BookmarkBorderIcon className={cx("icon")} />
+                    <span
+                      className={cx("span")}
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      Saved
+                    </span>
+                  </div>
+                </a>
+              )}
+              {/*<a>
                 <div className={cx("choose")} style={{ marginRight: "0px" }}>
                   <PortraitOutlinedIcon className={cx("icon")} />
                   <span
@@ -589,7 +631,7 @@ function Profile() {
               </a> */}
             </div>
             <div className={cx("profile__posts")}>
-              {userPosts.length > 0 ? (
+              {userPosts.length > 0 &&
                 userPosts.map((post, i) => {
                   if (userPosts.length === i + 1)
                     return (
@@ -601,8 +643,8 @@ function Profile() {
                       />
                     );
                   return <ProfilePost key={i} creator={userData} post={post} />;
-                })
-              ) : (
+                })}
+              {!profilePostsLoading && userPosts.length === 0 && (
                 <div
                   style={{
                     display: "flex",
@@ -774,6 +816,7 @@ function Profile() {
                           friendRequest?.decision ? friendRequest.decision : ""
                         }
                         setRequestDecision={setRequestDecision}
+                        setUserData={setUserData}
                       />
                     );
                   return (
@@ -785,6 +828,7 @@ function Profile() {
                         friendRequest?.decision ? friendRequest.decision : ""
                       }
                       setRequestDecision={setRequestDecision}
+                      setUserData={setUserData}
                     />
                   );
                 })}

@@ -38,6 +38,23 @@ export const getUserPosts = async (
   }
 };
 
+export const getSavedPosts = async (
+  username,
+  page = 1,
+  limit = 15,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/posts/user/${username}/saved-posts?page=${page}?limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const getPost = async (postId, sendRequest) => {
   try {
     const response = await sendRequest(`/posts/${postId}`);
@@ -104,6 +121,51 @@ export const reportPost = async (postId, reason, sendRequest) => {
       "/posts/report",
       "post",
       { postId: postId, reason: reason },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const savePost = async (postId, isSave, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/posts/${postId}`,
+      "post",
+      { save: isSave },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const deletePost = async (postId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/posts/${postId}`, "delete", {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const deletePostComment = async (commentId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/posts/comment/${commentId}`,
+      "delete",
       {
         headers: { "Content-Type": "application/json" },
       }
