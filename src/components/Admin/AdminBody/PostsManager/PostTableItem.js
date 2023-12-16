@@ -109,9 +109,7 @@ const PostTableItem = ({ post }) => {
     if (hadMounted && !isFirstMount) loadComments();
   }, [post._id, page]);
 
-  const [isLock, setIsLock] = useState(
-    post?.deleted_by === "ADMIN" ? true : false
-  );
+  const [isLock, setIsLock] = useState(post?.banned ? post?.banned : false);
 
   function showNextImage() {
     setImageIndex((index) => {

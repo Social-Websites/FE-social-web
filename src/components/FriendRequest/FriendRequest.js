@@ -6,7 +6,11 @@ import ClearIcon from "@mui/icons-material/Clear";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { CircularProgress } from "@mui/material";
-import { acceptAddFriend, rejectAddFriend } from "../../services/userService";
+import {
+  acceptAddFriend,
+  rejectAddFriend,
+  sendAddFriend,
+} from "../../services/userService";
 import { StateContext } from "../../context/StateContext";
 import { Link } from "react-router-dom";
 
@@ -18,8 +22,27 @@ const FriendRequest = forwardRef((props, ref) => {
   const [decisionLoading, setDecisionLoading] = useState(false);
   const { user, socket } = useContext(StateContext);
 
-  const handleAddFriend = () => {
-    props.setIsSent(props.item._id);
+  const handleAddFriend = async () => {
+    try {
+      setDecisionLoading(true);
+      const response = await sendAddFriend(
+        props.item._id,
+        privateHttpRequest.privateRequest
+      );
+      if (response.message) {
+        props.setIsSent(props.item._id);
+        setDecisionLoading(false);
+      }
+    } catch (err) {
+      setDecisionLoading(false);
+      console.error(privateHttpRequest.error);
+    } finally {
+      socket.current.emit("sendNotification", {
+        sender_id: user?._id,
+        receiver_id: [props.item._id],
+        type: "request",
+      });
+    }
   };
 
   const handleAccept = async () => {
@@ -29,8 +52,18 @@ const FriendRequest = forwardRef((props, ref) => {
         props.item._id,
         privateHttpRequest.privateRequest
       );
+
       if (response.message) {
         props.setRequestDecision(props.item._id, "ACCEPT");
+        props.setUserData((prev) => ({
+          ...prev,
+          friends_count: prev.friends_count + 1,
+        }));
+        props.setUserData((prev) => ({
+          ...prev,
+          friend_requests_count: prev.friend_requests_count - 1,
+        }));
+
         setDecisionLoading(false);
       }
     } catch (err) {

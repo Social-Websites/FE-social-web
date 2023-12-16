@@ -86,15 +86,17 @@ const StateReducer = (state, action) => {
       };
     case "ADD_MESSAGE":
       // Kiểm tra xem tin nhắn đã tồn tại trong danh sách hay chưa
-      const isDuplicate = state.messages.some((message) => message._id === action.payload._id);
-      
+      const isDuplicate = state.messages.some(
+        (message) => message._id === action.payload._id
+      );
+
       if (!isDuplicate) {
         return {
           ...state,
           messages: [...state.messages, action.payload],
         };
       }
-      
+
       return state;
     case "LOAD_MORE_MESSAGES":
       return {
@@ -127,6 +129,16 @@ const StateReducer = (state, action) => {
           ...state.posts.entries(),
         ]),
       };
+    case "DELETE_POST":
+      const postIdToDelete = action.payload;
+      const updatedPosts = new Map(state.posts);
+      updatedPosts.delete(postIdToDelete);
+
+      return {
+        ...state,
+        posts: updatedPosts,
+      };
+
     case "ADD_POSTS":
       return {
         ...state,
@@ -151,6 +163,24 @@ const StateReducer = (state, action) => {
           ...state.posts.get(postId),
           reacts_count: reactsCount,
           is_user_liked: isLiked,
+        };
+
+        // Cập nhật state.posts với post đã được cập nhật
+        return {
+          ...state,
+          posts: new Map([...state.posts, [postId, updatedPost]]),
+        };
+      }
+
+      return state;
+    }
+    case "SET_SAVED_POST": {
+      const { postId, isSaved } = action.payload;
+      // Kiểm tra xem post có tồn tại trong state hay không
+      if (state.posts.has(postId)) {
+        const updatedPost = {
+          ...state.posts.get(postId),
+          is_saved: isSaved,
         };
 
         // Cập nhật state.posts với post đã được cập nhật
