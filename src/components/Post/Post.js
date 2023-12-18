@@ -38,13 +38,13 @@ import ReactIcon from "../ReactIcon/ReactIcon";
 import CommentInput from "../Comment/CommentInput";
 import {
   deletePost,
-  deletePostComment,
   getPostComments,
   reportPost,
 } from "../../services/postServices";
 import SavePostIcon from "../SavePostIcon/SavePostIcon";
 import { StateContext } from "../../context/StateContext";
 import { deleteContextPost } from "../../context/StateAction";
+import Comment from "../Comment/Comment";
 
 const cx = classNames.bind(styles);
 
@@ -61,8 +61,8 @@ const Post = forwardRef(({ post }, ref) => {
 
   const [modal, setModal] = useState(false);
   const [more, setMore] = useState(false);
-  const [deleteCmt, setDeleteCmt] = useState(false);
   const [reportModal, setReportModal] = useState(false);
+
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
@@ -147,17 +147,6 @@ const Post = forwardRef(({ post }, ref) => {
   const toggleMore = () => {
     setMore(!more);
     if (!more) {
-      if (document.body.style.overflow !== "hidden")
-        document.body.style.overflow = "hidden";
-    } else {
-      if (!modal) document.body.style.overflow = "auto";
-    }
-  };
-
-  const toggleDeleteCmt = () => {
-    if (more) toggleMore();
-    setDeleteCmt(!deleteCmt);
-    if (!deleteCmt) {
       if (document.body.style.overflow !== "hidden")
         document.body.style.overflow = "hidden";
     } else {
@@ -646,281 +635,39 @@ const Post = forwardRef(({ post }, ref) => {
                     </div>
                     {comments.length > 0 &&
                       comments.map((comment, i) => {
-                        const handleDeletePostComment = async (
-                          commentToDelete
-                        ) => {
-                          if (!reportLoading) {
-                            try {
-                              setReportLoading(true);
-                              const response = await deletePostComment(
-                                commentToDelete._id,
-                                privateHttpRequest.privateRequest
-                              );
-                              if (response.message) {
-                                setComments((prevComments) =>
-                                  prevComments.filter(
-                                    (comment) =>
-                                      comment._id !== commentToDelete._id
-                                  )
-                                );
-                                if (deleteCmt) toggleDeleteCmt();
-                                setReportLoading(false);
-                                setSnackBarNotif({
-                                  severity: "success",
-                                  message: "Delete comment success!",
-                                });
-                                setSnackBarOpen(true);
-                              }
-                            } catch (err) {
-                              setReportLoading(false);
-                              setSnackBarNotif({
-                                severity: "error",
-                                message: "Delete comment fail: " + err,
-                              });
-                              setSnackBarOpen(true);
-                            }
-                          }
-                        };
-                        if (comments.length === i + 1) {
+                        if (comments.length === i + 1)
                           return (
-                            <>
-                              <div
-                                ref={lastCommentRef}
-                                key={comment._id}
-                                className={cx("post-comment-user")}
-                              >
-                                <div className={cx("post-comment-user-avatar")}>
-                                  <Link
-                                    to={`/${comment.user.username}`}
-                                    className={cx("post-comment-user-avatar")}
-                                    style={{
-                                      position: "inherit",
-                                      textDecoration: "none",
-                                      color: "inherit",
-                                    }}
-                                  >
-                                    <img
-                                      style={{ width: "30px", height: "30px" }}
-                                      src={getAvatarUrl(
-                                        comment.user.profile_picture
-                                      )}
-                                      alt=""
-                                    />
-                                  </Link>
-                                </div>
-                                <div>
-                                  <div className={cx("post-comment-user-info")}>
-                                    <Link
-                                      to={`/${comment.user.username}`}
-                                      style={{
-                                        position: "inherit",
-                                        textDecoration: "none",
-                                        color: "inherit",
-                                      }}
-                                    >
-                                      <span
-                                        className={cx("post-comment-username")}
-                                      >
-                                        {comment.user.username}
-                                      </span>
-                                    </Link>
-                                    <span
-                                      className={cx("post-comment-content")}
-                                    >
-                                      {comment.comment}
-                                    </span>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      height: "18px",
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        color: "#A8A8A8",
-                                        fontSize: "12px",
-                                        marginRight: "12px",
-                                      }}
-                                    >
-                                      <TimeAgo
-                                        type="admin-short"
-                                        created_at={comment.created_at}
-                                      />
-                                    </span>
-                                    {(comment.user._id === user._id ||
-                                      post.creator._id === user._id) && (
-                                      <MoreHorizIcon
-                                        className={cx("moreCmt")}
-                                        style={{ color: "white" }}
-                                        onClick={toggleDeleteCmt}
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              {deleteCmt && (
-                                <div
-                                  className={cx("post-modal active-post-modal")}
-                                >
-                                  <div
-                                    onClick={toggleDeleteCmt}
-                                    className={cx("post-overlay")}
-                                    style={{ alignSelf: "flex-end" }}
-                                  >
-                                    <CloseIcon
-                                      className={cx("sidenav__icon")}
-                                      style={{
-                                        width: "27px",
-                                        height: "27px",
-                                        color: "white",
-                                        margin: "12px 30px",
-                                        position: "absolute",
-                                        right: "0",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </div>
-                                  <div className={cx("more-content")}>
-                                    <div
-                                      className={cx("more-content-element")}
-                                      style={{ color: "#ed4956" }}
-                                      onClick={() =>
-                                        handleDeletePostComment(comment)
-                                      }
-                                    >
-                                      Delete
-                                    </div>
-                                    <div
-                                      className={cx("more-content-element")}
-                                      onClick={toggleDeleteCmt}
-                                    >
-                                      Cancel
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          );
-                        }
-                        return (
-                          <>
-                            <div
+                            <Comment
+                              cx={cx}
                               key={comment._id}
-                              className={cx("post-comment-user")}
-                            >
-                              <div className={cx("post-comment-user-avatar")}>
-                                <Link
-                                  to={`/${comment.user.username}`}
-                                  className={cx("post-comment-user-avatar")}
-                                  style={{
-                                    position: "inherit",
-                                    textDecoration: "none",
-                                    color: "inherit",
-                                  }}
-                                >
-                                  <img
-                                    style={{ width: "30px", height: "30px" }}
-                                    src={getAvatarUrl(
-                                      comment.user.profile_picture
-                                    )}
-                                    alt=""
-                                  />
-                                </Link>
-                              </div>
-                              <div>
-                                <div className={cx("post-comment-user-info")}>
-                                  <Link
-                                    to={`/${comment.user.username}`}
-                                    style={{
-                                      position: "inherit",
-                                      textDecoration: "none",
-                                      color: "inherit",
-                                    }}
-                                  >
-                                    <span
-                                      className={cx("post-comment-username")}
-                                    >
-                                      {comment.user.username}
-                                    </span>
-                                  </Link>
-                                  <span className={cx("post-comment-content")}>
-                                    {comment.comment}
-                                  </span>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    height: "18px",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      color: "#A8A8A8",
-                                      fontSize: "12px",
-                                      marginRight: "12px",
-                                    }}
-                                  >
-                                    <TimeAgo
-                                      type="admin-short"
-                                      created_at={comment.created_at}
-                                    />
-                                  </span>
-                                  {(comment.user._id === user._id ||
-                                    post.creator._id === user._id) && (
-                                    <MoreHorizIcon
-                                      className={cx("moreCmt")}
-                                      style={{ color: "white" }}
-                                      onClick={toggleDeleteCmt}
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            {deleteCmt && (
-                              <div
-                                className={cx("post-modal active-post-modal")}
-                              >
-                                <div
-                                  onClick={toggleDeleteCmt}
-                                  className={cx("post-overlay")}
-                                  style={{ alignSelf: "flex-end" }}
-                                >
-                                  <CloseIcon
-                                    className={cx("sidenav__icon")}
-                                    style={{
-                                      width: "27px",
-                                      height: "27px",
-                                      color: "white",
-                                      margin: "12px 30px",
-                                      position: "absolute",
-                                      right: "0",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </div>
-                                <div className={cx("more-content")}>
-                                  <div
-                                    className={cx("more-content-element")}
-                                    style={{ color: "#ed4956" }}
-                                    onClick={() =>
-                                      handleDeletePostComment(comment)
-                                    }
-                                  >
-                                    Delete
-                                  </div>
-                                  <div
-                                    className={cx("more-content-element")}
-                                    onClick={toggleDeleteCmt}
-                                  >
-                                    Cancel
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </>
+                              ref={lastCommentRef}
+                              comment={comment}
+                              more={more}
+                              toggleMore={toggleMore}
+                              reportLoading={reportLoading}
+                              setReportLoading={setReportLoading}
+                              modal={modal}
+                              post={post}
+                              setSnackBarNotif={setSnackBarNotif}
+                              setSnackBarOpen={setSnackBarOpen}
+                              setComments={setComments}
+                            />
+                          );
+                        return (
+                          <Comment
+                            cx={cx}
+                            key={comment._id}
+                            comment={comment}
+                            more={more}
+                            toggleMore={toggleMore}
+                            reportLoading={reportLoading}
+                            setReportLoading={setReportLoading}
+                            modal={modal}
+                            post={post}
+                            setSnackBarNotif={setSnackBarNotif}
+                            setSnackBarOpen={setSnackBarOpen}
+                            setComments={setComments}
+                          />
                         );
                       })}
                     {commentsLoading && <CircularProgress size={40} />}
