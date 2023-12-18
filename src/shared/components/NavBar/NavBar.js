@@ -14,7 +14,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
-import { CircularProgress } from "@mui/material";
+import { Alert, Backdrop, CircularProgress, Snackbar } from "@mui/material";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -80,6 +80,14 @@ function NavBar({ onScrollToTop }) {
   const [unreadNotification, setUnreadNotification] = useState(0);
   const [notification, setNotification] = useState([]);
 
+  //const [reportLoading, setReportLoading] = useState(false);
+
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarNotif, setSnackBarNotif] = useState({
+    severity: "success",
+    message: "This is success message!",
+  }); //severity: success, error, info, warning
+
   const avatarUrl = getAvatarUrl(user?.profile_picture);
 
   const toggleModal = () => {
@@ -108,7 +116,6 @@ function NavBar({ onScrollToTop }) {
   const [isLastImage, setIsLastImage] = useState(false);
   const checkCurrentChatIdRef = useRef(null);
 
-
   useEffect(() => {
     if (user) {
       if (socket.current == null) {
@@ -129,12 +136,14 @@ function NavBar({ onScrollToTop }) {
       try {
         if (notification) {
           // console.log(user?._id);
-          if(user){
+          if (user) {
             const data = await notificationsService.getNotifications(
               user?._id,
               0
             );
-            const unreadCount = data.filter((notification) => !notification.read);
+            const unreadCount = data.filter(
+              (notification) => !notification.read
+            );
             setUnreadNotification(unreadCount.length);
             setNotification(data);
           }
@@ -167,17 +176,17 @@ function NavBar({ onScrollToTop }) {
   useEffect(() => {
     console.log(currentChat);
     checkCurrentChatIdRef.current = currentChat?._id;
-  },[currentChat]);
+  }, [currentChat]);
 
   useEffect(() => {
     const handleGetMsgNotification = async (data) => {
       console.log("Nhận được message:", data);
       console.log(conversationUnread);
-      if(checkCurrentChatIdRef.current === data.conversationId){
+      if (checkCurrentChatIdRef.current === data.conversationId) {
         dispatch({
           type: "ADD_MESSAGE",
-          payload: data
-      });
+          payload: data,
+        });
       }
       console.log(
         conversationUnread.find((con) => con._id === data.conversationId)
@@ -558,9 +567,19 @@ function NavBar({ onScrollToTop }) {
         setTitlePost("");
         setCreatingPost(false);
         onScrollToTop();
+        setSnackBarNotif({
+          severity: "success",
+          message: "Create success",
+        });
+        setSnackBarOpen(true);
       }
     } catch (err) {
       setCreatingPost(false);
+      setSnackBarNotif({
+        severity: "error",
+        message: "Create fail with message: " + err,
+      });
+      setSnackBarOpen(true);
       console.log(err);
     } finally {
       socket.current.emit("sendNotification", {
@@ -1209,6 +1228,34 @@ function NavBar({ onScrollToTop }) {
           )}
         </div>
       )}
+      <Snackbar
+        open={snackBarOpen}
+        autoHideDuration={6000}
+        onClose={(event, reason) => {
+          setSnackBarOpen(false);
+        }}
+      >
+        <Alert
+          onClose={(event, reason) => {
+            setSnackBarOpen(false);
+          }}
+          severity={snackBarNotif.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackBarNotif.message}
+        </Alert>
+      </Snackbar>
+
+      {/* <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          background: rgbToHex("rgba(0, 0, 0, 0.1)"),
+        }}
+        open={reportLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop> */}
     </div>
   );
 }
