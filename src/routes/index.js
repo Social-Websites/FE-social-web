@@ -1,6 +1,7 @@
 import HomePage from "../pages/HomePage";
 import Profile from "../pages/Profile";
 import Chat from "../pages/ChatPage";
+import GroupDetail from "../pages/GroupDetail";
 import GroupPage from "../pages/GroupPage";
 import LoginPage from "../components/Auth/LoginPage";
 import SignUpPage from "../components/Auth/SignUpPage";
@@ -48,6 +49,7 @@ const privateRoutes = [
   { path: "/:username", component: Profile },
   { path: "/chat", component: Chat },
   { path: "/group", component: GroupPage },
+  { path: "/g/:id", component: GroupDetail },
   { path: "/user-info/edit", component: EditProfilePage },
   { path: "/accounts/changePass/", component: ChangePassPage },
   { path: "/p/:id", component: PostDetailPage },
