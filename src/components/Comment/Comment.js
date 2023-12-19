@@ -41,7 +41,10 @@ const renderMentionLink = (content) => {
 
       if (isValidUsername) {
         return (
-          <Link key={index} to={`/${username}`}>
+          <Link key={index} to={`/${username}`} style={{color: "#E0F1FF",
+            textDecoration: "none",
+            cursor: "pointer",
+            fontWeight: 500}}>
             @{username}
           </Link>
         );
