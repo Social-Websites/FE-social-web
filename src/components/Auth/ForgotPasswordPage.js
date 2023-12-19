@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./Auth.scss";
-import { Alert, Button, Paper, TextField } from "@mui/material";
+import { Alert, Button, LinearProgress, Paper, TextField } from "@mui/material";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
@@ -23,22 +23,21 @@ const ForgotPasswordPage = () => {
     usernameOrEmailErorr: false,
   });
 
-  const [isTouched, setIsTouched] = useState({
-    usernameOrEmail: false,
-  });
+  // const [isTouched, setIsTouched] = useState({
+  //   usernameOrEmail: false,
+  // });
 
-  useEffect(() => {
-    return validateInput();
-  }, [forgotPassForm.usernameOrEmail, isTouched]);
+  // useEffect(() => {
+  //   return validateInput();
+  // }, [forgotPassForm.usernameOrEmail, isTouched]);
 
   const [formValid, setFormValid] = useState();
   const [formSuccess, setFormSuccess] = useState();
 
-  const validateInput = () => {
+  const validateInput = (e) => {
     setInputError((prev) => ({
       ...prev,
-      usernameOrEmailError:
-        isTouched.usernameOrEmail && !forgotPassForm.usernameOrEmail,
+      usernameOrEmailError: !e.target.value,
     }));
   };
 
@@ -47,10 +46,11 @@ const ForgotPasswordPage = () => {
       ...prev,
       [e.target.id]: e.target.value,
     }));
-    setIsTouched((prev) => ({
-      ...prev,
-      [e.target.id]: true,
-    }));
+    // setIsTouched((prev) => ({
+    //   ...prev,
+    //   [e.target.id]: true,
+    // }));
+    validateInput(e);
   };
 
   const handleSubmit = async (e) => {
@@ -65,7 +65,7 @@ const ForgotPasswordPage = () => {
 
     try {
       const response = await forgotPassword(forgotPassForm, publicRequest);
-      console.log(response.message);
+
       if (response.message) {
         setFormSuccess(response.message);
       }
@@ -73,7 +73,11 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className={cx("main")}>
+    <div
+      className={cx("main")}
+      style={{ filter: isLoading ? "brightness(90%)" : "brightness(100%)" }}
+    >
+      {isLoading && <LinearProgress />}
       <Paper elevation={0} square className={cx("center-screen")}>
         <div className={cx("logo--container")}>
           <span className={cx("lock-icon")}></span>
@@ -98,6 +102,7 @@ const ForgotPasswordPage = () => {
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -109,6 +114,7 @@ const ForgotPasswordPage = () => {
                   size="small"
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
+                  disabled={isLoading}
                 >
                   <div className={cx("button--text")}>Get verification</div>
                 </Button>
@@ -137,6 +143,7 @@ const ForgotPasswordPage = () => {
               href="/accounts/signup/"
               role="link"
               tabIndex={0}
+              disabled={isLoading}
             >
               <span className={cx("forgot--text")} dir="auto">
                 Create new account!
@@ -152,6 +159,7 @@ const ForgotPasswordPage = () => {
             href="/accounts/login/"
             role="link"
             tabIndex={0}
+            disabled={isLoading}
           >
             <span className={cx("forgot--text")} dir="auto">
               Back to login

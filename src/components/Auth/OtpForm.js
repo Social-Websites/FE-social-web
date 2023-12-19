@@ -4,7 +4,7 @@ import styles from "./Auth.scss";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
-import { Alert, Button, Paper } from "@mui/material";
+import { Alert, Button, LinearProgress, Paper } from "@mui/material";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import { getOtpSignUp, signUp } from "../../services/userService";
 
@@ -122,7 +122,11 @@ const OtpForm = () => {
   };
 
   return (
-    <div className={cx("main")}>
+    <div
+      className={cx("main")}
+      style={{ filter: isLoading ? "brightness(90%)" : "brightness(100%)" }}
+    >
+      {isLoading && <LinearProgress />}
       <Paper elevation={0} square className={cx("center-screen")}>
         <div className={cx("logo--container")}>
           <span className={cx("lock-icon")}></span>
@@ -148,6 +152,7 @@ const OtpForm = () => {
                     renderSeparator={<span>&nbsp;</span>}
                     shouldAutoFocus={true}
                     renderInput={(props) => <input {...props} />}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -167,7 +172,7 @@ const OtpForm = () => {
                   className={cx("signup--link")}
                   role="link"
                   tabIndex={0}
-                  disabled={resendSeconds > 0}
+                  disabled={resendSeconds > 0 || isLoading}
                   onClick={resendOtp}
                 >
                   <span className={cx("signup--text")} dir="auto">
@@ -194,7 +199,7 @@ const OtpForm = () => {
                   size="small"
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
-                  disabled={!isComplete || seconds === 0}
+                  disabled={!isComplete || seconds === 0 || isLoading}
                 >
                   <div className={cx("button--text")}>
                     {seconds > 0 ? "Verify" : "Expired"}

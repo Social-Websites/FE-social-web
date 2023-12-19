@@ -16,6 +16,7 @@ import { getOtpSignUp } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LinearProgress } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
@@ -51,55 +52,58 @@ const SignUpPage = () => {
     passwordError: false,
   });
 
-  const [isTouched, setIsTouched] = useState({
-    email: false,
-    fullname: false,
-    username: false,
-    password: false,
-  });
+  // const [isTouched, setIsTouched] = useState({
+  //   email: false,
+  //   fullname: false,
+  //   username: false,
+  //   password: false,
+  // });
 
-  useEffect(() => {
-    return validateInput();
-  }, [
-    formData.email,
-    formData.fullname,
-    formData.username,
-    formData.password,
-    isTouched,
-  ]);
+  // useEffect(() => {
+  //   return validateInput();
+  // }, [
+  //   formData.email,
+  //   formData.fullname,
+  //   formData.username,
+  //   formData.password,
+  //   isTouched,
+  // ]);
 
   const [formValid, setFormValid] = useState();
 
-  const validateInput = () => {
-    setInputError((prev) => ({
-      ...prev,
-      emailError: isTouched.email && !EMAIL_REGEX.test(formData.email),
-    }));
-
-    setInputError((prev) => ({
-      ...prev,
-      fullnameError:
-        isTouched.fullname &&
-        (!formData.fullname || formData.fullname.length < 5),
-    }));
-
-    setInputError((prev) => ({
-      ...prev,
-      usernameError:
-        isTouched.username &&
-        (!formData.username ||
-          formData.username.length < 5 ||
-          formData.username.length > 15),
-    }));
-
-    setInputError((prev) => ({
-      ...prev,
-      passwordError:
-        isTouched.password &&
-        (!formData.password ||
-          formData.password.length < 5 ||
-          formData.password.length > 20),
-    }));
+  const validateInput = (e) => {
+    switch (e.target.id) {
+      case "email":
+        setInputError((prev) => ({
+          ...prev,
+          emailError: !EMAIL_REGEX.test(e.target.value),
+        }));
+        break;
+      case "fullname":
+        setInputError((prev) => ({
+          ...prev,
+          fullnameError: !e.target.value || e.target.value.length < 5,
+        }));
+        break;
+      case "username":
+        setInputError((prev) => ({
+          ...prev,
+          usernameError:
+            !e.target.value ||
+            e.target.value.length < 5 ||
+            e.target.value.length > 15,
+        }));
+        break;
+      case "password":
+        setInputError((prev) => ({
+          ...prev,
+          passwordError:
+            !e.target.value ||
+            e.target.value.length < 5 ||
+            e.target.value.length > 20,
+        }));
+        break;
+    }
   };
 
   const changeHandler = (e) => {
@@ -107,10 +111,11 @@ const SignUpPage = () => {
       ...prev,
       [e.target.id]: e.target.value,
     }));
-    setIsTouched((prev) => ({
-      ...prev,
-      [e.target.id]: true,
-    }));
+    // setIsTouched((prev) => ({
+    //   ...prev,
+    //   [e.target.id]: true,
+    // }));
+    validateInput(e);
   };
 
   const handleSubmit = async (e) => {
@@ -155,7 +160,11 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className={cx("main")}>
+    <div
+      className={cx("main")}
+      style={{ filter: isLoading ? "brightness(90%)" : "brightness(100%)" }}
+    >
+      {isLoading && <LinearProgress />}
       <Paper elevation={0} square className={cx("center-screen")}>
         <div className={cx("logo--container")}>
           <div
@@ -185,6 +194,7 @@ const SignUpPage = () => {
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -199,6 +209,7 @@ const SignUpPage = () => {
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -213,6 +224,7 @@ const SignUpPage = () => {
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -242,6 +254,7 @@ const SignUpPage = () => {
                         </InputAdornment>
                       }
                       onChange={changeHandler}
+                      disabled={isLoading}
                     />
                   </FormControl>
                 </div>
@@ -253,6 +266,7 @@ const SignUpPage = () => {
                   size="small"
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
+                  disabled={isLoading}
                 >
                   <div className={cx("button--text")}>Sign Up</div>
                 </Button>
@@ -277,6 +291,7 @@ const SignUpPage = () => {
               className={cx("signup--link")}
               role="link"
               tabIndex={0}
+              disabled={isLoading}
             >
               <span className={cx("signup--text")} dir="auto">
                 Login

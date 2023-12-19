@@ -16,6 +16,7 @@ import { login } from "../../services/userService";
 import useHttpClient from "../../shared/hook/http-hook/public-http-hook";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LinearProgress } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
@@ -46,32 +47,37 @@ const LoginPage = () => {
     passwordError: false,
   });
 
-  const [isTouched, setIsTouched] = useState({
-    username: false,
-    password: false,
-  });
+  // const [isTouched, setIsTouched] = useState({
+  //   username: false,
+  //   password: false,
+  // });
 
   useEffect(() => {
     const persisting = JSON.parse(localStorage.getItem("persist") || false);
     if (persisting) navigate(from, { replace: true });
   }, []);
 
-  useEffect(() => {
-    return validateInput();
-  }, [formData.username, formData.password, isTouched]);
+  // useEffect(() => {
+  //   return validateInput();
+  // }, [formData.username, formData.password, isTouched]);
 
   const [formValid, setFormValid] = useState();
 
-  const validateInput = () => {
-    setInputError((prev) => ({
-      ...prev,
-      usernameError: isTouched.username && !formData.username,
-    }));
-
-    setInputError((prev) => ({
-      ...prev,
-      passwordError: isTouched.password && !formData.password,
-    }));
+  const validateInput = (e) => {
+    switch (e.target.id) {
+      case "username":
+        setInputError((prev) => ({
+          ...prev,
+          usernameError: !e.target.value,
+        }));
+        break;
+      case "password":
+        setInputError((prev) => ({
+          ...prev,
+          passwordError: !e.target.value,
+        }));
+        break;
+    }
   };
 
   const changeHandler = (e) => {
@@ -79,10 +85,11 @@ const LoginPage = () => {
       ...prev,
       [e.target.id]: e.target.value,
     }));
-    setIsTouched((prev) => ({
-      ...prev,
-      [e.target.id]: true,
-    }));
+    // setIsTouched((prev) => ({
+    //   ...prev,
+    //   [e.target.id]: true,
+    // }));
+    validateInput(e);
   };
 
   const handleSubmit = async (e) => {
@@ -112,7 +119,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={cx("main")}>
+    <div
+      className={cx("main")}
+      style={{ filter: isLoading ? "brightness(90%)" : "brightness(100%)" }}
+    >
+      {isLoading && <LinearProgress />}
       <Paper elevation={0} square className={cx("center-screen")}>
         <div className={cx("logo--container")}>
           <div
@@ -142,6 +153,7 @@ const LoginPage = () => {
                     fullWidth={true}
                     size="small"
                     onChange={changeHandler}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -171,6 +183,7 @@ const LoginPage = () => {
                         </InputAdornment>
                       }
                       onChange={changeHandler}
+                      disabled={isLoading}
                     />
                   </FormControl>
                 </div>
@@ -182,6 +195,7 @@ const LoginPage = () => {
                   size="small"
                   variant="contained"
                   sx={{ bgcolor: "#03a9f4" }}
+                  disabled={isLoading}
                 >
                   <div className={cx("button--text")}>Login</div>
                 </Button>
@@ -199,6 +213,7 @@ const LoginPage = () => {
               href="/accounts/password/reset/"
               role="link"
               tabIndex={0}
+              disabled={isLoading}
             >
               <span className={cx("forgot--text")} dir="auto">
                 Forgot password?
@@ -216,6 +231,7 @@ const LoginPage = () => {
               className={cx("signup--link")}
               role="link"
               tabIndex={0}
+              disabled={isLoading}
             >
               <span className={cx("signup--text")} dir="auto">
                 Sign Up
