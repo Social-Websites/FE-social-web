@@ -23,6 +23,36 @@ import { StateContext } from "../../context/StateContext";
 
 //const cx = classNames.bind(styles);
 
+const renderMentionLink = (content) => {
+  const mentionRegex = /@([\w.]+)/g;
+  const mentions = content.match(mentionRegex);
+
+  if (!mentions) {
+    return <>{content}</>;
+  }
+
+  const renderedContent = content.split(mentionRegex).map((part, index) => {
+    if (index % 2 === 0) {
+      return <span key={index}>{part}</span>;
+    } else {
+      const username = part.slice(0, part.length);
+      const isValidUsername = /^[\w._]+$/.test(username);
+
+      if (isValidUsername) {
+        return (
+          <Link key={index} to={`/${username}`}>
+            @{username}
+          </Link>
+        );
+      } else {
+        return <span key={index}>{part}</span>;
+      }
+    }
+  });
+
+  return <>{renderedContent}</>;
+};
+
 const Comment = forwardRef((props, ref) => {
   const { dispatch } = useContext(StateContext);
   const { user } = useAuth();
@@ -109,7 +139,7 @@ const Comment = forwardRef((props, ref) => {
               </span>
             </Link>
             <span className={props.cx("post-comment-content")}>
-              {props.comment.comment}
+              {renderMentionLink(props.comment.comment)}
             </span>
           </div>
           {ref ? (
