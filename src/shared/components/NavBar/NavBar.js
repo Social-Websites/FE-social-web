@@ -6,7 +6,7 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-// import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
+import GroupsIcon from '@mui/icons-material/Groups';
 // import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -554,7 +554,6 @@ function NavBar({ onScrollToTop }) {
 
       if (response !== null) {
         createdPostId = response.post._id;
-
         dispatch(
           addCreatedPost({
             ...response.post,
@@ -563,6 +562,12 @@ function NavBar({ onScrollToTop }) {
             comments_count: 0,
           })
         );
+        socket.current.emit("sendNotification", {
+          sender_id: user?._id,
+          receiver_id: user?.friends,
+          content_id: createdPostId,
+          type: "post",
+        });
         toggleModal();
         setTitlePost("");
         setCreatingPost(false);
@@ -581,13 +586,8 @@ function NavBar({ onScrollToTop }) {
       });
       setSnackBarOpen(true);
       console.log(err);
-    } finally {
-      socket.current.emit("sendNotification", {
-        sender_id: user?._id,
-        receiver_id: user?.friends,
-        content_id: createdPostId,
-        type: "post",
-      });
+    } finally{
+      
     }
   };
 
@@ -697,20 +697,26 @@ function NavBar({ onScrollToTop }) {
             />
             {open ? null : <span className={cx("span")}>Search</span>}
           </button>
-          {/* <button
+          <button
             onClick={() => {
               navigate("/group", { replace: true });
             }}
             className={cx("sidenav__button")}
-            style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
+            style={
+              open
+                ? { width: "71%", margin: "5px 10px 5px 10px" }
+                : locate === "/group" || locate.startsWith("/g/")
+                ? { background: "#262626" }
+                : null
+            }
           >
-            <ExploreOutlinedIcon
+            <GroupsIcon
               className={cx("sidenav__icon")}
               style={{ width: "27px", height: "27px" }}
             />
-            {open ? null : <span>Explore</span>}
+            {open ? null : <span className={cx("span")}>Groups</span>}
           </button>
-          <button
+          {/* <button
             className={cx("sidenav__button")}
             style={open ? { width: "71%", margin: "5px 10px 5px 10px" } : null}
           >

@@ -1,0 +1,98 @@
+.group__items{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row; /* Chiều ngang */
+  // margin: 30px 0px 50px 0px;
+  .group__info {
+    // display: flex;
+    // justify-content: center;
+    // max-height: 260px;
+    // width: 32.75%;
+    // margin: 0.27%;
+    flex-basis: 30.75%; /* Chia 3 phần bằng nhau */
+    margin: 0.27%; /* Khoảng cách giữa các phần tử */
+    padding: 1%;
+    
+    background-color: #242526;
+    border-radius: 5px;
+  }
+  .group__inf{
+      display:flex;
+      align-items: center;
+      .group__avatar::before {
+          content: "";
+          display: block;
+          padding-top: 100%; /* Tạo hình vuông */
+      }
+      .group__avatar{
+        background: #222222;
+        border-radius: 10px;
+        background-image:			
+          linear-gradient(
+              90deg, 
+              rgba(#000, 0.5), 
+              rgba(#000, 0.5),
+              rgba(#000, 0.5)
+          );
+        background-repeat: no-repeat; 
+        background-position: left 0px top -40px; 
+        animation: shine 1s ease infinite; 
+        position: relative;
+        width: 30%;
+      }
+  }
+  .group__inf span {
+    background: #222222;
+    border-radius: 10px;
+    background-image:			
+      linear-gradient(
+          90deg, 
+          rgba(#000, 0.5), 
+          rgba(#000, 0.5),
+          rgba(#000, 0.5)
+      );
+    background-repeat: no-repeat; 
+    background-position: left 0px top -40px; 
+    animation: shine 1s ease infinite; 
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+  }
+  .group__btn{
+      margin-top: 10px;
+      .join__button {
+        background: #222222;
+        border-radius: 10px;
+        background-image:			
+          linear-gradient(
+              90deg, 
+              rgba(#000, 0.5), 
+              rgba(#000, 0.5),
+              rgba(#000, 0.5)
+          );
+        background-repeat: no-repeat; 
+        background-position: left 0px top -40px; 
+        animation: shine 1s ease infinite; 
+        width: 100%;
+        align-items: center;
+        color: white;
+        padding: 7px 15px 8px 15px;
+        border: 0;
+        font-size: 14px;
+        border-radius: 7px;
+        font-weight: 600;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+          "Helvetica Neue", sans-serif;
+      }
+  }
+}
+
+@keyframes shine {
+  to {
+      background-position: left 0 top 40px;
+  }
+}
