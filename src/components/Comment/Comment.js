@@ -204,6 +204,108 @@ const Comment = forwardRef((props, ref) => {
           )}
         </div>
       </div>
+
+      <div key={props.comment._id} className={props.cx("post-comment-user")} style={{
+              marginLeft: "20px",
+              width: "75%"
+            }}>
+        <div className={props.cx("post-comment-user-avatar")}>
+          <Link
+            to={`/${props.comment.user.username}`}
+            className={props.cx("post-comment-user-avatar")}
+            style={{
+              position: "inherit",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            <img
+              style={{ width: "30px", height: "30px" }}
+              src={getAvatarUrl(props.comment.user.profile_picture)}
+              alt=""
+            />
+          </Link>
+        </div>
+        <div>
+          <div className={props.cx("post-comment-user-info")}>
+            <Link
+              to={`/${props.comment.user.username}`}
+              style={{
+                position: "inherit",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <span className={props.cx("post-comment-username")}>
+                {props.comment.user.username}
+              </span>
+            </Link>
+            <span className={props.cx("post-comment-content")}>
+              {props.comment.comment}
+            </span>
+          </div>
+          {ref ? (
+            <div
+              ref={ref}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: "18px",
+              }}
+            >
+              <span
+                style={{
+                  color: "#A8A8A8",
+                  fontSize: "12px",
+                  marginRight: "12px",
+                }}
+              >
+                <TimeAgo
+                  type="admin-short"
+                  created_at={props.comment.created_at}
+                />
+              </span>
+              {(props.comment.user._id === user._id ||
+                props.post.creator._id === user._id) && (
+                <MoreHorizIcon
+                  className={props.cx("moreCmt")}
+                  style={{ color: "white" }}
+                  onClick={toggleDeleteCmt}
+                />
+              )}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: "18px",
+              }}
+            >
+              <span
+                style={{
+                  color: "#A8A8A8",
+                  fontSize: "12px",
+                  marginRight: "12px",
+                }}
+              >
+                <TimeAgo
+                  type="admin-short"
+                  created_at={props.comment.created_at}
+                />
+              </span>
+              {(props.comment.user._id === user._id ||
+                props.post.creator._id === user._id) && (
+                <MoreHorizIcon
+                  className={props.cx("moreCmt")}
+                  style={{ color: "white" }}
+                  onClick={toggleDeleteCmt}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
       {deleteCmt && (
         <div className={props.cx("post-modal active-post-modal")}>
           <div
