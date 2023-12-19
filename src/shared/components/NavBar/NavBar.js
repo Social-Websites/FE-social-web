@@ -705,7 +705,7 @@ function NavBar({ onScrollToTop }) {
             style={
               open
                 ? { width: "71%", margin: "5px 10px 5px 10px" }
-                : locate === "/group"
+                : locate === "/group" || locate.startsWith("/g/")
                 ? { background: "#262626" }
                 : null
             }

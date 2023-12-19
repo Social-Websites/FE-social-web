@@ -8,11 +8,6 @@ import Sidenav from "../../shared/components/NavBar";
 import GroupInvited from "../../components/GroupInvited";
 import CloseIcon from "@mui/icons-material/Close";
 
-
-import getAvatarUrl from "../../shared/util/getAvatarUrl";
-import { Link } from "react-router-dom";
-import CheckIcon from "@mui/icons-material/Check";
-import ClearIcon from "@mui/icons-material/Clear";
 const cx = classNames.bind(styles);
 
 function GroupPage() {
