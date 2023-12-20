@@ -20,7 +20,7 @@ import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { deletePostComment } from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
-import  Reply  from "./Reply";
+import Reply from "./Reply";
 
 //const cx = classNames.bind(styles);
 
@@ -41,10 +41,16 @@ const renderMentionLink = (content) => {
 
       if (isValidUsername) {
         return (
-          <Link key={index} to={`/${username}`} style={{color: "#E0F1FF",
-            textDecoration: "none",
-            cursor: "pointer",
-            fontWeight: 500}}>
+          <Link
+            key={index}
+            to={`/${username}`}
+            style={{
+              color: "#E0F1FF",
+              textDecoration: "none",
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
+          >
             @{username}
           </Link>
         );
@@ -61,6 +67,8 @@ const Comment = forwardRef((props, ref) => {
   const { dispatch } = useContext(StateContext);
   const { user } = useAuth();
   const privateHttpRequest = usePrivateHttpClient();
+
+  const [viewReplies, setViewReplies] = useState(true);
 
   const [deleteCmt, setDeleteCmt] = useState(false);
 
@@ -225,6 +233,11 @@ const Comment = forwardRef((props, ref) => {
                   Helvetica, Arial, sans-serif`,
                   fontWeight: 500,
                 }}
+                onClick={() => {
+                  props.setIsReply(true);
+                  props.setInitialText(`@${props.comment.user.username} `);
+                  props.inputRef.current.focus();
+                }}
               >
                 Reply
               </span>
@@ -240,34 +253,101 @@ const Comment = forwardRef((props, ref) => {
           )}
         </div>
       </div>
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        marginLeft: "55px",
-        width: "fit-content",
-        cursor: "pointer"
-      }}>
-        <div style={{border: "#A8A8A8 solid 1px", width: "20px", height: "0px", marginRight: "20px",}}></div>
-        <span style={{color: "#A8A8A8", fontWeight: 500,
-        fontSize: "12px",
-        fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif`}}>View replies</span>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginLeft: "55px",
+          width: "fit-content",
+          cursor: "pointer",
+        }}
+      >
+        <div
+          style={{
+            border: "#A8A8A8 solid 1px",
+            width: "20px",
+            height: "0px",
+            marginRight: "10px",
+          }}
+        ></div>
+        <span
+          style={{
+            color: "#A8A8A8",
+            fontWeight: 500,
+            fontSize: "12px",
+            fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif`,
+          }}
+          onClick={() => {
+            setViewReplies(!viewReplies);
+          }}
+        >
+          {!viewReplies ? "View " + `(${props.children_cmts_count})` : "Hide"}{" "}
+          replies
+        </span>
+        <div
+          style={{
+            border: "#A8A8A8 solid 1px",
+            width: "20px",
+            height: "0px",
+            marginLeft: "10px",
+          }}
+        ></div>
       </div>
-      <Reply
-        cx={props.cx}
-        key={props.comment._id}
-        ref={props.lastCommentRef}
-        comment={props.comment}
-        more={props.more}
-        toggleMore={props.toggleMore}
-        reportLoading={props.reportLoading}
-        setReportLoading={props.setReportLoading}
-        modal={props.modal}
-        post={props.post}
-        setSnackBarNotif={props.setSnackBarNotif}
-        setSnackBarOpen={props.setSnackBarOpen}
-        setComments={props.setComments}
-      />
+      {viewReplies && (
+        <Reply
+          cx={props.cx}
+          key={props.comment._id}
+          ref={props.lastCommentRef}
+          comment={props.comment}
+          more={props.more}
+          toggleMore={props.toggleMore}
+          reportLoading={props.reportLoading}
+          setReportLoading={props.setReportLoading}
+          modal={props.modal}
+          post={props.post}
+          setSnackBarNotif={props.setSnackBarNotif}
+          setSnackBarOpen={props.setSnackBarOpen}
+          setComments={props.setComments}
+        />
+      )}
+      {deleteCmt && (
+        <div className={props.cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleDeleteCmt}
+            className={props.cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={props.cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={props.cx("more-content")}>
+            <div
+              className={props.cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+              onClick={handleDeletePostComment}
+            >
+              Delete
+            </div>
+            <div
+              className={props.cx("more-content-element")}
+              onClick={toggleDeleteCmt}
+            >
+              Cancel
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 });

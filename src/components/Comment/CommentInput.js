@@ -1,16 +1,22 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+  forwardRef,
+} from "react";
 import classNames from "classnames/bind";
 import styles from "./CommentInput.scss";
 import EmojiPicker from "emoji-picker-react";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { comment } from "../../services/postServices";
+import { comment, replyComment } from "../../services/postServices";
 import { CircularProgress } from "@mui/material";
 import { StateContext } from "../../context/StateContext";
 
 const cx = classNames.bind(styles);
 
-const CommentInput = (props) => {
+const CommentInput = forwardRef((props, ref) => {
   const privateHttpRequest = usePrivateHttpClient();
   const { user, socket } = useContext(StateContext);
   const [emojiPicker, setEmojiPicker] = useState(false);
@@ -34,6 +40,12 @@ const CommentInput = (props) => {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    setText(props.initialText);
+    if (props.initialText === "") props.setIsReply(false);
+  }, [props.initialText]);
+
   const handleEmojiModal = () => {
     setEmojiPicker(!emojiPicker);
   };
@@ -43,28 +55,47 @@ const CommentInput = (props) => {
   };
 
   const handleSendComment = async () => {
-    try {
-      const response = await comment(
-        props.postId,
-        text,
-        privateHttpRequest.privateRequest
-      );
-      if (response) {
-        props.setComments((prevComments) => [
-          response.comment,
-          ...prevComments,
-        ]);
-        setText("");
+    if (!privateHttpRequest.isLoading) {
+      try {
+        if (!props.isReply) {
+          const response = await comment(
+            props.postId,
+            text,
+            privateHttpRequest.privateRequest
+          );
+          if (response) {
+            props.setComments((prevComments) => [
+              response.comment,
+              ...prevComments,
+            ]);
+            setText("");
+            props.setInitialText("");
+            if (!props.isReply) props.setIsReply(false);
+          }
+        } else {
+          const response = await replyComment(
+            props.postId,
+            props.parentCommentId,
+            text,
+            privateHttpRequest.privateRequest
+          );
+          if (response) {
+            props.addReplyComment(props.comment._id, response.comment);
+            setText("");
+            props.setInitialText("");
+            if (!props.isReply) props.setIsReply(false);
+          }
+        }
+      } catch (err) {
+        console.error("Error while post comment: ", err);
+      } finally {
+        socket.current.emit("sendNotification", {
+          sender_id: user?._id,
+          receiver_id: [props.userId],
+          content_id: props.postId,
+          type: "comment",
+        });
       }
-    } catch (err) {
-      console.error("Error while post comment: ", err);
-    } finally {
-      socket.current.emit("sendNotification", {
-        sender_id: user?._id,
-        receiver_id: [props.userId],
-        content_id: props.postId,
-        type: "comment",
-      });
     }
   };
 
@@ -100,7 +131,7 @@ const CommentInput = (props) => {
         id="emoji-open"
         ref={emojiPickerRef}
       >
-        {props.emojiPickerPos === "right" ? (
+        {props.emojiPickerPos === "left" ? (
           <>
             <SentimentSatisfiedAltIcon
               type="submit"
@@ -113,13 +144,30 @@ const CommentInput = (props) => {
               }}
               onClick={handleEmojiModal}
             />
-            <input
-              type="text"
-              placeholder="Add a comment..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyUp={handleEnter}
-            />
+            {ref ? (
+              <input
+                ref={ref}
+                type="text"
+                placeholder="Add a comment..."
+                value={text}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  props.setInitialText(e.target.value);
+                }}
+                onKeyUp={handleEnter}
+              />
+            ) : (
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                value={text}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  props.setInitialText(e.target.value);
+                }}
+                onKeyUp={handleEnter}
+              />
+            )}
             {privateHttpRequest.isLoading ? (
               <CircularProgress size={15} />
             ) : (
@@ -173,6 +221,6 @@ const CommentInput = (props) => {
       </div>
     </>
   );
-};
+});
 
 export default CommentInput;

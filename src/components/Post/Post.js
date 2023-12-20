@@ -85,6 +85,21 @@ const Post = forwardRef(({ post }, ref) => {
     message: "This is success message!",
   }); //severity: success, error, info, warning
 
+  const [initialText, setInitialText] = useState("");
+  const [isReply, setIsReply] = useState(false);
+  // Create a ref for the input element
+  const inputRef = useRef(null);
+  // State to store replyComments for each comment
+  const [replyComments, setReplyComments] = useState({});
+
+  // Function to add a replyComment to the state
+  const addReplyComment = (commentId, replyComment) => {
+    setReplyComments((prevComments) => ({
+      ...prevComments,
+      [commentId]: [...(prevComments[commentId] || []), replyComment],
+    }));
+  };
+
   const observer = useRef();
   const lastCommentRef = useCallback(
     (node) => {
@@ -128,6 +143,10 @@ const Post = forwardRef(({ post }, ref) => {
     if (hadMounted && !isFirstMount) loadComments();
   }, [post._id, page]);
 
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, [inputRef.current]);
+
   const toggleModal = () => {
     setModal(!modal);
     if (isFirstMount) {
@@ -135,6 +154,7 @@ const Post = forwardRef(({ post }, ref) => {
       setHadMounted(true);
       setIsFirstMount(false);
     }
+    //setHadMounted(!modal);
     if (document.body.style.overflow !== "hidden") {
       window.history.replaceState(null, null, `/p/${post._id}`);
       document.body.style.overflow = "hidden";
@@ -451,6 +471,7 @@ const Post = forwardRef(({ post }, ref) => {
         postId={post._id}
         userId={post.creator._id}
         setComments={setComments}
+        setInitialText={setInitialText}
         className={cx("input")}
       />
 
@@ -616,7 +637,10 @@ const Post = forwardRef(({ post }, ref) => {
                   </div>
                   <div className={cx("post-comment")}>
                     <div className={cx("post-comment-user")}>
-                      <div className={cx("post-comment-user-avatar")} style={{display: "flex",alignItems: "center"}}>
+                      <div
+                        className={cx("post-comment-user-avatar")}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
                         <img
                           style={{ width: "30px", height: "30px" }}
                           src={avatarUrl}
@@ -624,8 +648,14 @@ const Post = forwardRef(({ post }, ref) => {
                         />
                       </div>
 
-                      <div className={cx("post-comment-user-info")} style={{display: "flex",alignItems: "center"}}>
-                        <span className={cx("post-comment-username")} style={{marginBottom: 0}}>
+                      <div
+                        className={cx("post-comment-user-info")}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <span
+                          className={cx("post-comment-username")}
+                          style={{ marginBottom: 0 }}
+                        >
                           {post.creator.username}
                         </span>
                         <span className={cx("post-comment-content")}>
@@ -651,6 +681,11 @@ const Post = forwardRef(({ post }, ref) => {
                               setSnackBarNotif={setSnackBarNotif}
                               setSnackBarOpen={setSnackBarOpen}
                               setComments={setComments}
+                              setIsReply={setIsReply}
+                              inputRef={inputRef}
+                              setInitialText={setInitialText}
+                              replyComments={replyComments[comment._id] || []}
+                              children_cmts_count={comment.children_cmts_count}
                             />
                           );
                         return (
@@ -667,6 +702,11 @@ const Post = forwardRef(({ post }, ref) => {
                             setSnackBarNotif={setSnackBarNotif}
                             setSnackBarOpen={setSnackBarOpen}
                             setComments={setComments}
+                            setIsReply={setIsReply}
+                            inputRef={inputRef}
+                            setInitialText={setInitialText}
+                            replyComments={replyComments[comment._id] || []}
+                            children_cmts_count={comment.children_cmts_count}
                           />
                         );
                       })}
@@ -696,7 +736,11 @@ const Post = forwardRef(({ post }, ref) => {
                           className={cx("postIcon")}
                         />
                         <div className={cx("postIcon")}>
-                          <ChatBubbleOutlineIcon />
+                          <ChatBubbleOutlineIcon
+                            onClick={() => {
+                              inputRef.current.focus();
+                            }}
+                          />
                         </div>
                         <div className={cx("postIcon")}>
                           <TelegramIcon />
@@ -729,10 +773,16 @@ const Post = forwardRef(({ post }, ref) => {
                     </div>
 
                     <CommentInput
+                      ref={inputRef}
                       postId={post._id}
                       userId={post.creator._id}
+                      initialText={initialText}
+                      setInitialText={setInitialText}
                       setComments={setComments}
-                      emojiPickerPos="right"
+                      emojiPickerPos="left"
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      addReplyComment={addReplyComment}
                       style={{
                         padding: "0px 10px",
                         height: "31%",
