@@ -458,7 +458,7 @@ function GroupDetail() {
                     </div>
                 </div>
                 <div className={cx("group__info__2")}>
-                    <button className={cx("profile__button")} onClick={toggleModalInvite}>
+                    <button className={cx("profile__button")} onClick={toggleModal}>
                       <span>Create Post</span>
                     </button>
                     <button className={cx("profile__button")} onClick={toggleModalInvite}>
@@ -609,7 +609,7 @@ function GroupDetail() {
       )}
 
 
-{modal && (
+      {modal && (
         <div
           className={cx("modal active-modal")}
           onDragOver={isDropping ? null : onDragOver}
