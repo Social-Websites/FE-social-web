@@ -6,7 +6,7 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import GroupsIcon from '@mui/icons-material/Groups';
+import GroupsIcon from "@mui/icons-material/Groups";
 // import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -43,6 +43,7 @@ import * as notificationsService from "../../../services/notificationService";
 import { io } from "socket.io-client";
 import getAvatarUrl from "../../util/getAvatarUrl";
 import * as conversationService from "../../../services/conversationService";
+import NavBarLogo from "../../../asset/images/logo-white.png";
 
 const cx = classNames.bind(styles);
 
@@ -586,8 +587,7 @@ function NavBar({ onScrollToTop }) {
       });
       setSnackBarOpen(true);
       console.log(err);
-    } finally{
-      
+    } finally {
     }
   };
 
@@ -635,7 +635,7 @@ function NavBar({ onScrollToTop }) {
                 navigate("/", { replace: true });
               }}
               className={cx("sidenav__logo")}
-              src="https://www.pngkey.com/png/full/828-8286178_mackeys-work-needs-no-elaborate-presentation-or-distracting.png"
+              src={NavBarLogo}
               alt="Instagram Logo"
             />
             <button
