@@ -50,3 +50,41 @@ export const searchGroups = async (search, sendRequest) => {
       throw err;
     }
 };
+
+export const requestToGroup = async (groupId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/groups/request?groupId=${groupId}`, "post", {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const deleteToGroup = async (groupId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/groups/kick?groupId=${groupId}`, "put", {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+
+export const acceptToGroup = async (groupId, sendRequest) => {
+  try {
+    const response = await sendRequest(`/groups/accept?groupId=${groupId}`, "put", {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
