@@ -77,8 +77,81 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
     message: "This is success message!",
   }); //severity: success, error, info, warning
 
+  const [initialText, setInitialText] = useState("");
   const [isReply, setIsReply] = useState(false);
+  const [replyCommentId, setReplyCommentId] = useState("");
+  // Create a ref for the input element
+  const inputRef = useRef(null);
+  // State to store replyComments for each comment
+  const [replyComments, setReplyComments] = useState({});
+  // State to track viewReplies for each comment
+  const [commentViewReplies, setCommentViewReplies] = useState({});
 
+  const handleChangeViewReplies = (commentId, newValue) => {
+    setCommentViewReplies((prev) => ({
+      ...prev,
+      [commentId]: newValue,
+    }));
+  };
+
+  // Function to add a replyComment to the state
+  const addReplyComments = (commentId, replyComments) => {
+    setReplyComments((prevComments) => ({
+      ...prevComments,
+      [commentId]: [...replyComments],
+    }));
+  };
+
+  // Function to add a replyComment to the state
+  const addReplyComment = (commentId, replyComment) => {
+    setReplyComments((prevComments) => ({
+      ...prevComments,
+      [commentId]: [...(prevComments[commentId] || []), replyComment],
+    }));
+    setComments((prevComments) => {
+      const updatedComments = [...prevComments];
+      const commentIndex = updatedComments.findIndex(
+        (comment) => comment._id === commentId
+      );
+      if (commentIndex !== -1) {
+        const updatedComment = { ...updatedComments[commentIndex] };
+        updatedComment.children_cmts_count =
+          (updatedComment.children_cmts_count || 0) + 1;
+        updatedComments[commentIndex] = updatedComment;
+      }
+      return updatedComments;
+    });
+    setCommentViewReplies((prev) => ({
+      ...prev,
+      [commentId]: true,
+    }));
+  };
+
+  const deleteReplyComment = (commentId, replyCommentId) => {
+    setReplyComments((prevComments) => {
+      const updatedReplies = { ...prevComments };
+      if (updatedReplies[commentId]) {
+        updatedReplies[commentId] = updatedReplies[commentId].filter(
+          (reply) => reply._id !== replyCommentId
+        );
+      }
+      return updatedReplies;
+    });
+
+    setComments((prevComments) => {
+      const updatedComments = [...prevComments];
+      const commentIndex = updatedComments.findIndex(
+        (comment) => comment._id === commentId
+      );
+      if (commentIndex !== -1) {
+        const updatedComment = { ...updatedComments[commentIndex] };
+        updatedComment.children_cmts_count =
+          (updatedComment.children_cmts_count || 0) - 1;
+        updatedComments[commentIndex] = updatedComment;
+      }
+      return updatedComments;
+    });
+  };
   const observer = useRef();
   const lastCommentRef = useCallback(
     (node) => {
@@ -123,8 +196,16 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
     if (hadMounted && !isFirstMount) loadComments();
   }, [post._id, page]);
 
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, [inputRef.current]);
+
   const toggleModal = () => {
     setModal(!modal);
+    if (modal) {
+      setIsReply(false);
+      setInitialText("");
+    }
     if (isFirstMount) {
       loadComments();
       setHadMounted(true);
@@ -466,6 +547,18 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                               setSnackBarNotif={setSnackBarNotif}
                               setSnackBarOpen={setSnackBarOpen}
                               setComments={setComments}
+                              setReplyCommentId={setReplyCommentId}
+                              setIsReply={setIsReply}
+                              inputRef={inputRef}
+                              setInitialText={setInitialText}
+                              replyComments={replyComments[comment._id] || []}
+                              children_cmts_count={comment.children_cmts_count}
+                              addReplyComments={addReplyComments}
+                              deleteReplyComment={deleteReplyComment}
+                              viewReplies={commentViewReplies[comment._id]}
+                              setViewReplies={(value) =>
+                                handleChangeViewReplies(comment._id, value)
+                              }
                             />
                           );
                         return (
@@ -482,6 +575,18 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                             setSnackBarNotif={setSnackBarNotif}
                             setSnackBarOpen={setSnackBarOpen}
                             setComments={setComments}
+                            setReplyCommentId={setReplyCommentId}
+                            setIsReply={setIsReply}
+                            inputRef={inputRef}
+                            setInitialText={setInitialText}
+                            replyComments={replyComments[comment._id] || []}
+                            children_cmts_count={comment.children_cmts_count}
+                            addReplyComments={addReplyComments}
+                            deleteReplyComment={deleteReplyComment}
+                            viewReplies={commentViewReplies[comment._id]}
+                            setViewReplies={(value) =>
+                              handleChangeViewReplies(comment._id, value)
+                            }
                           />
                         );
                       })}
@@ -510,7 +615,11 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                           className={cx("postIcon")}
                         />
                         <div className={cx("postIcon")}>
-                          <ChatBubbleOutlineIcon />
+                          <ChatBubbleOutlineIcon
+                            onClick={() => {
+                              inputRef.current.focus();
+                            }}
+                          />
                         </div>
                         <div className={cx("postIcon")}>
                           <TelegramIcon />
@@ -545,8 +654,16 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                     <CommentInput
                       postId={post._id}
                       userId={creator._id}
+                      ref={inputRef}
+                      initialText={initialText}
+                      setInitialText={setInitialText}
                       setComments={setComments}
                       emojiPickerPos="left"
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      addReplyComment={addReplyComment}
+                      parentCommentId={replyCommentId}
+                      setReplyCommentId={setReplyCommentId}
                       style={{
                         padding: "0px 10px",
                         height: "31%",
