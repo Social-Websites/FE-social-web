@@ -115,6 +115,28 @@ export const comment = async (postId, commentText, sendRequest) => {
   }
 };
 
+export const replyComment = async (
+  postId,
+  commentId,
+  commentText,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/posts/comments`,
+      "post",
+      { postId: postId, comment: commentText, reply_to: commentId },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const reportPost = async (postId, reason, sendRequest) => {
   try {
     const response = await sendRequest(

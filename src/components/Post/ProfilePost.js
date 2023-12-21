@@ -77,6 +77,8 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
     message: "This is success message!",
   }); //severity: success, error, info, warning
 
+  const [isReply, setIsReply] = useState(false);
+
   const observer = useRef();
   const lastCommentRef = useCallback(
     (node) => {
@@ -420,7 +422,10 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                   </div>
                   <div className={cx("post-comment")}>
                     <div className={cx("post-comment-user")}>
-                      <div className={cx("post-comment-user-avatar")} style={{display: "flex",alignItems: "center"}}>
+                      <div
+                        className={cx("post-comment-user-avatar")}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
                         <img
                           style={{ width: "30px", height: "30px" }}
                           src={getAvatarUrl(creator.profile_picture)}
@@ -428,8 +433,14 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                         />
                       </div>
 
-                      <div className={cx("post-comment-user-info")} style={{display: "flex",alignItems: "center"}}>
-                        <span className={cx("post-comment-username")} style={{marginBottom: 0}}>
+                      <div
+                        className={cx("post-comment-user-info")}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <span
+                          className={cx("post-comment-username")}
+                          style={{ marginBottom: 0 }}
+                        >
                           {creator.username}
                         </span>
                         <span className={cx("post-comment-content")}>
@@ -535,7 +546,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                       postId={post._id}
                       userId={creator._id}
                       setComments={setComments}
-                      emojiPickerPos="right"
+                      emojiPickerPos="left"
                       style={{
                         padding: "0px 10px",
                         height: "31%",

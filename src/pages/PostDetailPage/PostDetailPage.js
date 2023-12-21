@@ -75,6 +75,8 @@ const PostDetailPage = () => {
     message: "This is success message!",
   }); //severity: success, error, info, warning
 
+  const [isReply, setIsReply] = useState(false);
+
   const observer = useRef();
   const lastCommentRef = useCallback(
     (node) => {
@@ -424,7 +426,10 @@ const PostDetailPage = () => {
               <div className={cx("post-comment")}>
                 {post && (
                   <div className={cx("post-comment-user")}>
-                    <div className={cx("post-comment-user-avatar")} style={{display: "flex",alignItems: "center"}}>
+                    <div
+                      className={cx("post-comment-user-avatar")}
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
                       <img
                         style={{ width: "30px", height: "30px" }}
                         src={getAvatarUrl(post?.creator.profile_picture)}
@@ -432,8 +437,14 @@ const PostDetailPage = () => {
                       />
                     </div>
 
-                    <div className={cx("post-comment-user-info")} style={{display: "flex",alignItems: "center"}}>
-                      <span className={cx("post-comment-username")} style={{marginBottom: 0}}>
+                    <div
+                      className={cx("post-comment-user-info")}
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
+                      <span
+                        className={cx("post-comment-username")}
+                        style={{ marginBottom: 0 }}
+                      >
                         {post?.creator.username}
                       </span>
                       <span className={cx("post-comment-content")}>
@@ -541,7 +552,7 @@ const PostDetailPage = () => {
                   postId={post?._id}
                   userId={post?.creator._id}
                   setComments={setComments}
-                  emojiPickerPos="right"
+                  emojiPickerPos="left"
                   style={{
                     padding: "0px 10px",
                     height: "31%",
