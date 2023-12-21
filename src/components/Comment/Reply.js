@@ -76,7 +76,11 @@ const Comment = forwardRef((props, ref) => {
 
   return (
     <>
-      <div key={props.comment._id} className={props.cx("post-comment-user")} style={{marginLeft: "30px", width:"77%"}}>
+      <div
+        key={props.comment._id}
+        className={props.cx("post-comment-user")}
+        style={{ marginLeft: "30px", width: "77%" }}
+      >
         <div className={props.cx("post-comment-user-avatar")}>
           <Link
             to={`/${props.comment.user.username}`}
@@ -206,6 +210,43 @@ const Comment = forwardRef((props, ref) => {
           )}
         </div>
       </div>
+      {deleteCmt && (
+        <div className={props.cx("post-modal active-post-modal")}>
+          <div
+            onClick={toggleDeleteCmt}
+            className={props.cx("post-overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={props.cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={props.cx("more-content")}>
+            <div
+              className={props.cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+              onClick={handleDeletePostComment}
+            >
+              Delete
+            </div>
+            <div
+              className={props.cx("more-content-element")}
+              onClick={toggleDeleteCmt}
+            >
+              Cancel
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 });

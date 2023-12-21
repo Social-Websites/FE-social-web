@@ -98,6 +98,24 @@ export const getPostComments = async (
   }
 };
 
+export const getReplyComments = async (
+  postId,
+  commentId,
+  page = 1,
+  limit = 300,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/posts/${postId}/comments/${commentId}/replies?page=${page}?limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const comment = async (postId, commentText, sendRequest) => {
   try {
     const response = await sendRequest(

@@ -87,16 +87,25 @@ const Post = forwardRef(({ post }, ref) => {
 
   const [initialText, setInitialText] = useState("");
   const [isReply, setIsReply] = useState(false);
+  const [replyCommentId, setReplyCommentId] = useState("");
   // Create a ref for the input element
   const inputRef = useRef(null);
   // State to store replyComments for each comment
   const [replyComments, setReplyComments] = useState({});
 
   // Function to add a replyComment to the state
+  const addReplyComments = (commentId, replyComments) => {
+    setReplyComments((prevComments) => ({
+      ...prevComments,
+      [commentId]: [...replyComments],
+    }));
+  };
+
+  // Function to add a replyComment to the state
   const addReplyComment = (commentId, replyComment) => {
     setReplyComments((prevComments) => ({
       ...prevComments,
-      [commentId]: [...(prevComments[commentId] || []), replyComment],
+      [commentId]: [replyComment, ...(prevComments[commentId] || [])],
     }));
   };
 
@@ -149,6 +158,7 @@ const Post = forwardRef(({ post }, ref) => {
 
   const toggleModal = () => {
     setModal(!modal);
+    if (modal) setIsReply(false);
     if (isFirstMount) {
       loadComments();
       setHadMounted(true);
@@ -681,11 +691,13 @@ const Post = forwardRef(({ post }, ref) => {
                               setSnackBarNotif={setSnackBarNotif}
                               setSnackBarOpen={setSnackBarOpen}
                               setComments={setComments}
+                              setReplyCommentId={setReplyCommentId}
                               setIsReply={setIsReply}
                               inputRef={inputRef}
                               setInitialText={setInitialText}
-                              replyComments={replyComments[comment._id] || []}
+                              replyComments={replyComments[comment._id]}
                               children_cmts_count={comment.children_cmts_count}
+                              addReplyComments={addReplyComments}
                             />
                           );
                         return (
@@ -702,11 +714,13 @@ const Post = forwardRef(({ post }, ref) => {
                             setSnackBarNotif={setSnackBarNotif}
                             setSnackBarOpen={setSnackBarOpen}
                             setComments={setComments}
+                            setReplyCommentId={setReplyCommentId}
                             setIsReply={setIsReply}
                             inputRef={inputRef}
                             setInitialText={setInitialText}
                             replyComments={replyComments[comment._id] || []}
                             children_cmts_count={comment.children_cmts_count}
+                            addReplyComments={addReplyComments}
                           />
                         );
                       })}
@@ -783,6 +797,8 @@ const Post = forwardRef(({ post }, ref) => {
                       isReply={isReply}
                       setIsReply={setIsReply}
                       addReplyComment={addReplyComment}
+                      parentCommentId={replyCommentId}
+                      setReplyCommentId={setReplyCommentId}
                       style={{
                         padding: "0px 10px",
                         height: "31%",

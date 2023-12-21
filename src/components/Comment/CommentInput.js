@@ -43,7 +43,6 @@ const CommentInput = forwardRef((props, ref) => {
 
   useEffect(() => {
     setText(props.initialText);
-    if (props.initialText === "") props.setIsReply(false);
   }, [props.initialText]);
 
   const handleEmojiModal = () => {
@@ -68,11 +67,12 @@ const CommentInput = forwardRef((props, ref) => {
               response.comment,
               ...prevComments,
             ]);
+            props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
             if (!props.isReply) props.setIsReply(false);
           }
-        } else {
+        } else if (props.parentCommentId.trim() !== "") {
           const response = await replyComment(
             props.postId,
             props.parentCommentId,
@@ -80,7 +80,8 @@ const CommentInput = forwardRef((props, ref) => {
             privateHttpRequest.privateRequest
           );
           if (response) {
-            props.addReplyComment(props.comment._id, response.comment);
+            props.addReplyComment(props.parentCommentId, response.comment);
+            props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
             if (!props.isReply) props.setIsReply(false);
