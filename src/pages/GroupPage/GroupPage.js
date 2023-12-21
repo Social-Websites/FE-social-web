@@ -1,20 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import GroupItem from "../../components/GroupItem";
 import Button from "@mui/material/Button";
+import {
+  CircularProgress
+} from "@mui/material";
 import SearchGroupLoading from "../../components/SearchGroupLoading";
 import classNames from 'classnames/bind';
 import styles from "./GroupPage.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import GroupInvited from "../../components/GroupInvited";
 import CloseIcon from "@mui/icons-material/Close";
+import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+import { getAdminGroups, getMemberGroups, getInvitedGroups, createGroup, searchGroups } from "../../services/groupService";
 
 const cx = classNames.bind(styles);
 
 function GroupPage() {
+  const privateHttpRequest = usePrivateHttpClient();
   const [createModal, setCreateModal] = useState(false);
   const [modal, setModal] = useState(false);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [creatingGroup, setCreatingGroup] = useState(false);
   const [searchedGroups, setSearchedGroups] = useState([]);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [adminGroups, setAdminGroups] = useState([])
+  const [memeberGroups, setMemberGroups] = useState([])
+  const [invitedGroups, setInvitedGroups] = useState([])
   const toggleCreate = () => {
     setCreateModal(!createModal);
     if (!createModal) {
@@ -33,77 +46,90 @@ function GroupPage() {
       document.body.style.overflow = "auto";
     }
   };
-  const [groups, setGroups] = useState([
-    {
-      name: "redian_ group ne ha ha ha ha ha ha h",
-      groupImage: 
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      likes: 54,
-      timestamp: "2d",
-    },
-    {
-      name: "redian_ group ne ha ha ha ha ha ha h",
-      groupImage: 
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      likes: 54,
-      timestamp: "2d",
-    },
-    {
-      name: "redian_ group ne ha ha ha ha ha ha h",
-      groupImage: 
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      likes: 54,
-      timestamp: "2d",
-    },
-    {
-      name: "johndoe",
-      groupImage:
-        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80",
-      likes: 432,
-      timestamp: "2d",
-    },
-    {
-      name: "mariussss",
-      groupImage:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
-      likes: 140,
-      timestamp: "2d",
-    },
-    {
-      name: "kobee_18",
-      groupImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU",
-      likes: 14,
-      timestamp: "2d",
-    },
-  ]);
 
-  // const searchGroups = async (e) => {
-  //   const data = e.target.value;
-  //   try {
-  //     const result = await usersService.searchUsers(data);
-  //     // console.log(result);
-  //     if (result !== null) {
-  //       setSearchedGroups(result);
-  //       setIsLoadingSearch(false);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-  // const debounce = (fn, delay) => {
-  //   let timerId = null;
+  const getAdminGroup = useCallback(async () => {
+    try {
+      const data = await getAdminGroups(privateHttpRequest.privateRequest);
+      setAdminGroups(data.groups);
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
-  //   return function (...args) {
-  //     setIsLoadingSearch(true);
-  //     clearTimeout(timerId);
+  const getMemberGroup = useCallback(async () => {
+    try {
+      const data = await getMemberGroups(privateHttpRequest.privateRequest);
+      setMemberGroups(data.groups);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
-  //     timerId = setTimeout(() => {
-  //       fn.apply(this, args);
-  //     }, delay);
-  //   };
-  // };
-  // const debouncedSearchGroups = debounce(searchGroups, 500);
+  const getInvitedGroup = useCallback(async () => {
+    try {
+      const data = await getInvitedGroups(privateHttpRequest.privateRequest);
+      setInvitedGroups(data.groups);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+  useEffect(() => {
+    getAdminGroup();
+    getMemberGroup();
+    getInvitedGroup();
+  }, []);
+
+  const handleCreateGroup = async () => {
+    setCreatingGroup(true);
+    try {
+      const respone = await createGroup(
+        { name: name, description: bio, cover: "/static-resources/default-cover.jpg" },
+        privateHttpRequest.privateRequest
+      );
+      if (respone !== null) {
+        setAdminGroups(prev  => [...prev, respone])
+        setCreatingGroup(false);
+        toggleCreate();
+      }
+    } catch (err) {
+      console.error(err);
+      setCreatingGroup(false);
+      toggleCreate();
+    }
+  };
+
+  const searchGroup = async (e) => {
+    const data = e.target.value;
+    if(data == ""){
+      setIsSearching(false);
+    } else{
+      setIsSearching(true);
+    }
+    try {
+      const result = await searchGroups(data,privateHttpRequest.privateRequest);
+      console.log(result);
+      if (result !== null) {
+        setSearchedGroups(result);
+        setIsLoadingSearch(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const debounce = (fn, delay) => {
+    let timerId = null;
+
+    return function (...args) {
+      setIsLoadingSearch(true);
+      clearTimeout(timerId);
+
+      timerId = setTimeout(() => {
+        fn.apply(this, args);
+      }, delay);
+    };
+  };
+  const debouncedSearchGroups = debounce(searchGroup, 500);
 
   return (
     <div className={cx("group")} style={{backgroundColor: "black", height: "100%"}}>
@@ -116,7 +142,7 @@ function GroupPage() {
             <div className={cx("group__input")}>
               <input
                 type="text"
-                // onChange={debouncedSearchGroups}
+                onChange={debouncedSearchGroups}
                 placeholder="Search groups...."
               />
             </div>
@@ -136,33 +162,67 @@ function GroupPage() {
               </button>
             </div>
           </div>
-          <div className={cx("groups")}>
+          {isSearching &&
+          (isLoadingSearch ? (<div className={cx("groups")}>
             <SearchGroupLoading />
-          </div>
-          <div className={cx("groups")}>
-            <div style={{width: "90%", paddingBottom: "20px", borderBottom: "#212121 solid 1px"}}>
-              <div className={cx("group__items_header")}>Your groups</div>
-              <div className={cx("group__items")} >
-                  {groups.map((group) => (
-                      <GroupItem
-                        group={group}
-                      />
-                  ))}
-              </div>
+          </div>) : (searchedGroups.length > 0 ? (
+                <div className={cx("groups")}>
+                  <div style={{width: "90%", paddingBottom: "20px"}}>
+                    <div className={cx("group__items_header")}>Results</div>
+                    <div className={cx("group__items")} >
+                        {searchedGroups?.map((group) => (
+                            <GroupItem
+                              key={group._id}
+                              group={group}
+                            />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (<div className={cx("groups")}>
+              <span style={{color: "#A8A8A8", padding: "20px", fontSize: "15px",
+              fontWeight: 500,
+              fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+              Helvetica, Arial, sans-serif`}}>No search results</span>
+            </div>)))}
+          
+          {!isSearching && (adminGroups?.length > 0 || memeberGroups?.length > 0 ? (
+            <div>
+              {adminGroups.length > 0 && (
+                <div className={cx("groups")}>
+                  <div style={memeberGroups?.length > 0 ? { width: "90%", paddingBottom: "20px", borderBottom: "#212121 solid 1px" } : {width: "90%", paddingBottom: "20px"}}>
+                    <div className={cx("group__items_header")}>Your groups</div>
+                    <div className={cx("group__items")} >
+                        {adminGroups?.map((group) => (
+                            <GroupItem
+                              key={group._id}
+                              group={group}
+                            />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {memeberGroups?.length > 0 &&(
+              <div className={cx("groups")}>
+                <div style={{width: "90%", paddingBottom: "20px"}}>
+                  <div className={cx("group__items_header")}>All groups you have joined</div>
+                  <div className={cx("group__items")} >
+                      {memeberGroups?.map((group) => (
+                          <GroupItem
+                            group={group}
+                          />
+                      ))}
+                  </div>
+                </div>
+              </div>)}
+            </div>) : ( <div className={cx("groups")}>
+              <span style={{color: "#A8A8A8", padding: "20px", fontSize: "15px",
+              fontWeight: 500,
+              fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+              Helvetica, Arial, sans-serif`}}>You haven't joined the groups yet.</span>
             </div>
-          </div>
-          <div className={cx("groups")}>
-            <div style={{width: "90%", paddingBottom: "20px"}}>
-              <div className={cx("group__items_header")}>All groups you have joined</div>
-              <div className={cx("group__items")} >
-                  {groups.map((group) => (
-                      <GroupItem
-                        group={group}
-                      />
-                  ))}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
       {createModal && (
@@ -199,11 +259,10 @@ function GroupPage() {
                 <div className={cx("group__content__info__textarea")}>
                   <input
                     style={{height: "20px", overflow: "none"}}
-                    // value={bio}
-                    // onChange={(e) => {
-                    //   setBio(e.target.value);
-                    //   setBioModified(true);
-                    // }}
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
                     placeholder="Name..."
                   ></input>
                 </div>
@@ -214,11 +273,10 @@ function GroupPage() {
                 </div>
                 <div className={cx("group__content__info__textarea")}>
                   <textarea
-                    // value={bio}
-                    // onChange={(e) => {
-                    //   setBio(e.target.value);
-                    //   setBioModified(true);
-                    // }}
+                    value={bio}
+                    onChange={(e) => {
+                      setBio(e.target.value);
+                    }}
                     placeholder="Bio..."
                   ></textarea>
                 </div>
@@ -233,23 +291,7 @@ function GroupPage() {
                     position: "relative",
                   }}
                 >
-                  <Button
-                    sx={{
-                      fontFamily: "inherit",
-                      textTransform: "none",
-                      ":hover": {
-                        opacity: 0.8,
-                      },
-                      opacity: 
-                      // !bioModified || updateProfileLoading ? 0.5 : 
-                      1,
-                    }}
-                    // onClick={updateBio}
-                    // disabled={!bioModified || updateProfileLoading}
-                  >
-                    Submit
-                  </Button>
-                  {/* {updateProfileLoading && (
+                  {creatingGroup ? (
                     <CircularProgress
                       size={24}
                       sx={{
@@ -261,7 +303,19 @@ function GroupPage() {
                         marginLeft: "-8px",
                       }}
                     />
-                  )} */}
+                  ) : (<Button
+                    sx={{
+                      fontFamily: "inherit",
+                      textTransform: "none",
+                      ":hover": {
+                        opacity: 0.8,
+                      },
+                    }}
+                    onClick={handleCreateGroup}
+                  >
+                    Submit
+                  </Button>)}
+                  
                 </div>
               </div>
             </div>
@@ -295,7 +349,7 @@ function GroupPage() {
               </div>
             </div>
             <div className={cx("group-modal-content")}>
-            {groups.map((group) => {
+            {invitedGroups.map((group) => {
               console.log(group);
               return (
                 <GroupInvited
