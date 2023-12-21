@@ -20,6 +20,7 @@ import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { deletePostComment } from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
+import renderMentionLink from "../../shared/util/renderMentionLink";
 
 //const cx = classNames.bind(styles);
 
@@ -50,11 +51,7 @@ const Comment = forwardRef((props, ref) => {
           privateHttpRequest.privateRequest
         );
         if (response.message) {
-          props.setComments((prevComments) =>
-            prevComments.filter(
-              (prevComment) => prevComment._id !== props.comment._id
-            )
-          );
+          props.deleteReplyComment(props.parent._id, props.comment._id);
           if (deleteCmt) toggleDeleteCmt();
           props.setReportLoading(false);
           props.setSnackBarNotif({
@@ -113,7 +110,7 @@ const Comment = forwardRef((props, ref) => {
               </span>
             </Link>
             <span className={props.cx("post-comment-content")}>
-              {props.comment.comment}
+              {renderMentionLink(props.comment.comment)}
             </span>
           </div>
           {ref ? (
@@ -149,6 +146,12 @@ const Comment = forwardRef((props, ref) => {
                   fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                   Helvetica, Arial, sans-serif`,
                   fontWeight: 500,
+                }}
+                onClick={() => {
+                  props.setReplyCommentId(props.comment._id);
+                  props.setIsReply(true);
+                  props.setInitialText(`@${props.comment.user.username} `);
+                  props.inputRef.current.focus();
                 }}
               >
                 Reply
@@ -194,6 +197,12 @@ const Comment = forwardRef((props, ref) => {
                   fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                   Helvetica, Arial, sans-serif`,
                   fontWeight: 500,
+                }}
+                onClick={() => {
+                  props.setReplyCommentId(props.comment._id);
+                  props.setIsReply(true);
+                  props.setInitialText(`@${props.comment.user.username} `);
+                  props.inputRef.current.focus();
                 }}
               >
                 Reply

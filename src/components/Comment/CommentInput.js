@@ -43,7 +43,7 @@ const CommentInput = forwardRef((props, ref) => {
 
   useEffect(() => {
     setText(props.initialText);
-  }, [props.initialText]);
+  }, [props.initialText, props.parentCommentId]);
 
   const handleEmojiModal = () => {
     setEmojiPicker(!emojiPicker);
@@ -80,7 +80,7 @@ const CommentInput = forwardRef((props, ref) => {
             privateHttpRequest.privateRequest
           );
           if (response) {
-            props.addReplyComment(props.parentCommentId, response.comment);
+            props.addReplyComment(response.comment.parent, response.comment);
             props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
@@ -153,7 +153,6 @@ const CommentInput = forwardRef((props, ref) => {
                 value={text}
                 onChange={(e) => {
                   setText(e.target.value);
-                  props.setInitialText(e.target.value);
                 }}
                 onKeyUp={handleEnter}
               />
@@ -164,7 +163,6 @@ const CommentInput = forwardRef((props, ref) => {
                 value={text}
                 onChange={(e) => {
                   setText(e.target.value);
-                  props.setInitialText(e.target.value);
                 }}
                 onKeyUp={handleEnter}
               />

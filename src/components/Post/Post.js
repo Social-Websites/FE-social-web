@@ -92,6 +92,15 @@ const Post = forwardRef(({ post }, ref) => {
   const inputRef = useRef(null);
   // State to store replyComments for each comment
   const [replyComments, setReplyComments] = useState({});
+  // State to track viewReplies for each comment
+  const [commentViewReplies, setCommentViewReplies] = useState({});
+
+  const handleChangeViewReplies = (commentId, newValue) => {
+    setCommentViewReplies((prev) => ({
+      ...prev,
+      [commentId]: newValue,
+    }));
+  };
 
   // Function to add a replyComment to the state
   const addReplyComments = (commentId, replyComments) => {
@@ -105,8 +114,51 @@ const Post = forwardRef(({ post }, ref) => {
   const addReplyComment = (commentId, replyComment) => {
     setReplyComments((prevComments) => ({
       ...prevComments,
-      [commentId]: [replyComment, ...(prevComments[commentId] || [])],
+      [commentId]: [...(prevComments[commentId] || []), replyComment],
     }));
+    setComments((prevComments) => {
+      const updatedComments = [...prevComments];
+      const commentIndex = updatedComments.findIndex(
+        (comment) => comment._id === commentId
+      );
+      if (commentIndex !== -1) {
+        const updatedComment = { ...updatedComments[commentIndex] };
+        updatedComment.children_cmts_count =
+          (updatedComment.children_cmts_count || 0) + 1;
+        updatedComments[commentIndex] = updatedComment;
+      }
+      return updatedComments;
+    });
+    setCommentViewReplies((prev) => ({
+      ...prev,
+      [commentId]: true,
+    }));
+  };
+
+  const deleteReplyComment = (commentId, replyCommentId) => {
+    setReplyComments((prevComments) => {
+      const updatedReplies = { ...prevComments };
+      if (updatedReplies[commentId]) {
+        updatedReplies[commentId] = updatedReplies[commentId].filter(
+          (reply) => reply._id !== replyCommentId
+        );
+      }
+      return updatedReplies;
+    });
+
+    setComments((prevComments) => {
+      const updatedComments = [...prevComments];
+      const commentIndex = updatedComments.findIndex(
+        (comment) => comment._id === commentId
+      );
+      if (commentIndex !== -1) {
+        const updatedComment = { ...updatedComments[commentIndex] };
+        updatedComment.children_cmts_count =
+          (updatedComment.children_cmts_count || 0) - 1;
+        updatedComments[commentIndex] = updatedComment;
+      }
+      return updatedComments;
+    });
   };
 
   const observer = useRef();
@@ -158,7 +210,10 @@ const Post = forwardRef(({ post }, ref) => {
 
   const toggleModal = () => {
     setModal(!modal);
-    if (modal) setIsReply(false);
+    if (modal) {
+      setIsReply(false);
+      setInitialText("");
+    }
     if (isFirstMount) {
       loadComments();
       setHadMounted(true);
@@ -482,6 +537,7 @@ const Post = forwardRef(({ post }, ref) => {
         userId={post.creator._id}
         setComments={setComments}
         setInitialText={setInitialText}
+        initialText={initialText}
         className={cx("input")}
       />
 
@@ -698,6 +754,11 @@ const Post = forwardRef(({ post }, ref) => {
                               replyComments={replyComments[comment._id]}
                               children_cmts_count={comment.children_cmts_count}
                               addReplyComments={addReplyComments}
+                              deleteReplyComment={deleteReplyComment}
+                              viewReplies={commentViewReplies[comment._id]}
+                              setViewReplies={(value) =>
+                                handleChangeViewReplies(comment._id, value)
+                              }
                             />
                           );
                         return (
@@ -721,6 +782,11 @@ const Post = forwardRef(({ post }, ref) => {
                             replyComments={replyComments[comment._id] || []}
                             children_cmts_count={comment.children_cmts_count}
                             addReplyComments={addReplyComments}
+                            deleteReplyComment={deleteReplyComment}
+                            viewReplies={commentViewReplies[comment._id]}
+                            setViewReplies={(value) =>
+                              handleChangeViewReplies(comment._id, value)
+                            }
                           />
                         );
                       })}

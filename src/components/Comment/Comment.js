@@ -25,54 +25,15 @@ import {
 import { StateContext } from "../../context/StateContext";
 import Reply from "./Reply";
 import { CircularProgress } from "@mui/material";
+import renderMentionLink from "../../shared/util/renderMentionLink";
 
 //const cx = classNames.bind(styles);
-
-const renderMentionLink = (content) => {
-  const mentionRegex = /@([\w.]+)/g;
-  const mentions = content.match(mentionRegex);
-
-  if (!mentions) {
-    return <>{content}</>;
-  }
-
-  const renderedContent = content.split(mentionRegex).map((part, index) => {
-    if (index % 2 === 0) {
-      return <span key={index}>{part}</span>;
-    } else {
-      const username = part.slice(0, part.length);
-      const isValidUsername = /^[\w._]+$/.test(username);
-
-      if (isValidUsername) {
-        return (
-          <Link
-            key={index}
-            to={`/${username}`}
-            style={{
-              color: "#E0F1FF",
-              textDecoration: "none",
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
-          >
-            @{username}
-          </Link>
-        );
-      } else {
-        return <span key={index}>{part}</span>;
-      }
-    }
-  });
-
-  return <>{renderedContent}</>;
-};
 
 const Comment = forwardRef((props, ref) => {
   const { dispatch } = useContext(StateContext);
   const { user } = useAuth();
   const privateHttpRequest = usePrivateHttpClient();
 
-  const [viewReplies, setViewReplies] = useState(false);
   const [viewRepliesLoading, setViewRepliesLoading] = useState(false);
 
   const [deleteCmt, setDeleteCmt] = useState(false);
@@ -122,7 +83,7 @@ const Comment = forwardRef((props, ref) => {
   };
 
   const handleViewReplies = async () => {
-    setViewReplies(!viewReplies);
+    props.setViewReplies(!props.viewReplies);
     if (!viewRepliesLoading) {
       try {
         setViewRepliesLoading(true);
@@ -215,6 +176,12 @@ const Comment = forwardRef((props, ref) => {
                   fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                   Helvetica, Arial, sans-serif`,
                   fontWeight: 500,
+                }}
+                onClick={() => {
+                  props.setReplyCommentId(props.comment._id);
+                  props.setIsReply(true);
+                  props.setInitialText(`@${props.comment.user.username} `);
+                  props.inputRef.current.focus();
                 }}
               >
                 Reply
@@ -310,15 +277,15 @@ const Comment = forwardRef((props, ref) => {
             }}
             onClick={handleViewReplies}
           >
-            {!viewReplies ? "View" : "Hide"} replies{" "}
-            {!viewReplies && `(${props.children_cmts_count})`}
+            {!props.viewReplies ? "View" : "Hide"} replies{" "}
+            {!props.viewReplies && `(${props.children_cmts_count})`}
           </span>
         </div>
       )}
-      {viewRepliesLoading ? (
+      {props.viewReplies && viewRepliesLoading ? (
         <CircularProgress />
       ) : (
-        viewReplies &&
+        props.viewReplies &&
         props.children_cmts_count > 0 &&
         props.replyComments.map((replyComment, i) => {
           return (
@@ -326,6 +293,7 @@ const Comment = forwardRef((props, ref) => {
               cx={props.cx}
               key={replyComment._id}
               comment={replyComment}
+              parent={props.comment}
               more={props.more}
               toggleMore={props.toggleMore}
               reportLoading={props.reportLoading}
@@ -339,7 +307,7 @@ const Comment = forwardRef((props, ref) => {
               setIsReply={props.setIsReply}
               inputRef={props.inputRef}
               setInitialText={props.setInitialText}
-              addReplyComments={props.addReplyComments}
+              deleteReplyComment={props.deleteReplyComment}
             />
           );
         })
