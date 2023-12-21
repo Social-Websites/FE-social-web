@@ -7,14 +7,14 @@ import React, {
   
   const cx = classNames.bind(styles);
   
-  const GroupItem = forwardRef(({ group }) => {
+  const GroupItem = (({ group }) => {
   
     return (
       <>
         <div className={cx("group__info")}>
             <div className={cx("group__inf")}>
                 <div className={cx("group__avatar")}>
-                    <img src={group.groupImage} />
+                    <img src={group.cover} />
                 </div>
                 
                 <span>{group.name}</span>

@@ -6,6 +6,8 @@ import Sidenav from "../../shared/components/NavBar";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CloseIcon from "@mui/icons-material/Close";
 import WestIcon from "@mui/icons-material/West";
+import GridOnIcon from "@mui/icons-material/GridOn";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
@@ -471,6 +473,46 @@ function GroupDetail() {
               <span>hihihihihihi</span>
             </div>
         </div>
+        <div className={cx("group__tag")}>
+              <a>
+                <div
+                  className={cx("choose")}
+                  // onClick={() => {
+                  //   setUserPosts([]);
+                  //   setPostPage(1);
+                  //   setPostType(1);
+                  // }}
+                >
+                  <GridOnIcon className={cx("icon")} />
+                  <span
+                    className={cx("span")}
+                    style={{ textTransform: "uppercase" }}
+                  >
+                    Posts
+                  </span>
+                </div>
+              </a>
+              
+            <a>
+              <div
+                className={cx("choose")}
+                // onClick={() => {
+                //   setUserPosts([]);
+                //   setPostPage(1);
+                //   setPostType(2);
+                // }}
+              >
+                <BookmarkBorderIcon className={cx("icon")} />
+                <span
+                  className={cx("span")}
+                  style={{ textTransform: "uppercase" }}
+                >
+                  Saved
+                </span>
+              </div>
+            </a>
+              
+          </div>
 
         <div className={cx("group__posts")}>
           <div className={cx("group__post")}>
@@ -607,8 +649,6 @@ function GroupDetail() {
           </div>
         </div>
       )}
-
-
       {modal && (
         <div
           className={cx("modal active-modal")}
