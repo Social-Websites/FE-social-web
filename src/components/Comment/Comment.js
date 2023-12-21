@@ -18,9 +18,13 @@ import TimeAgo from "../../shared/components/TimeAgo";
 import { grey } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { deletePostComment } from "../../services/postServices";
+import {
+  deletePostComment,
+  getReplyComments,
+} from "../../services/postServices";
 import { StateContext } from "../../context/StateContext";
 import Reply from "./Reply";
+import { CircularProgress } from "@mui/material";
 
 //const cx = classNames.bind(styles);
 
@@ -68,7 +72,8 @@ const Comment = forwardRef((props, ref) => {
   const { user } = useAuth();
   const privateHttpRequest = usePrivateHttpClient();
 
-  const [viewReplies, setViewReplies] = useState(true);
+  const [viewReplies, setViewReplies] = useState(false);
+  const [viewRepliesLoading, setViewRepliesLoading] = useState(false);
 
   const [deleteCmt, setDeleteCmt] = useState(false);
 
@@ -112,6 +117,29 @@ const Comment = forwardRef((props, ref) => {
           message: "Delete comment fail: " + err,
         });
         props.setSnackBarOpen(true);
+      }
+    }
+  };
+
+  const handleViewReplies = async () => {
+    setViewReplies(!viewReplies);
+    if (!viewRepliesLoading) {
+      try {
+        setViewRepliesLoading(true);
+        const response = await getReplyComments(
+          props.post._id,
+          props.comment._id,
+          1,
+          300,
+          privateHttpRequest.privateRequest
+        );
+        if (response) {
+          props.addReplyComments(props.comment._id, response.replies);
+          setViewRepliesLoading(false);
+        }
+      } catch (err) {
+        console.log(err);
+        setViewRepliesLoading(false);
       }
     }
   };
@@ -234,6 +262,7 @@ const Comment = forwardRef((props, ref) => {
                   fontWeight: 500,
                 }}
                 onClick={() => {
+                  props.setReplyCommentId(props.comment._id);
                   props.setIsReply(true);
                   props.setInitialText(`@${props.comment.user.username} `);
                   props.inputRef.current.focus();
@@ -253,63 +282,67 @@ const Comment = forwardRef((props, ref) => {
           )}
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginLeft: "55px",
-          width: "fit-content",
-          cursor: "pointer",
-        }}
-      >
+      {props.children_cmts_count > 0 && (
         <div
           style={{
-            border: "#A8A8A8 solid 1px",
-            width: "20px",
-            height: "0px",
-            marginRight: "10px",
-          }}
-        ></div>
-        <span
-          style={{
-            color: "#A8A8A8",
-            fontWeight: 500,
-            fontSize: "12px",
-            fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif`,
-          }}
-          onClick={() => {
-            setViewReplies(!viewReplies);
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "55px",
+            width: "fit-content",
+            cursor: "pointer",
           }}
         >
-          {!viewReplies ? "View " + `(${props.children_cmts_count})` : "Hide"}{" "}
-          replies
-        </span>
-        <div
-          style={{
-            border: "#A8A8A8 solid 1px",
-            width: "20px",
-            height: "0px",
-            marginLeft: "10px",
-          }}
-        ></div>
-      </div>
-      {viewReplies && (
-        <Reply
-          cx={props.cx}
-          key={props.comment._id}
-          ref={props.lastCommentRef}
-          comment={props.comment}
-          more={props.more}
-          toggleMore={props.toggleMore}
-          reportLoading={props.reportLoading}
-          setReportLoading={props.setReportLoading}
-          modal={props.modal}
-          post={props.post}
-          setSnackBarNotif={props.setSnackBarNotif}
-          setSnackBarOpen={props.setSnackBarOpen}
-          setComments={props.setComments}
-        />
+          <div
+            style={{
+              border: "#A8A8A8 solid 1px",
+              width: "20px",
+              height: "0px",
+              marginRight: "15px",
+            }}
+          ></div>
+          <span
+            style={{
+              color: "#A8A8A8",
+              fontWeight: 500,
+              fontSize: "12px",
+              fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif`,
+            }}
+            onClick={handleViewReplies}
+          >
+            {!viewReplies ? "View" : "Hide"} replies{" "}
+            {!viewReplies && `(${props.children_cmts_count})`}
+          </span>
+        </div>
+      )}
+      {viewRepliesLoading ? (
+        <CircularProgress />
+      ) : (
+        viewReplies &&
+        props.children_cmts_count > 0 &&
+        props.replyComments.map((replyComment, i) => {
+          return (
+            <Reply
+              cx={props.cx}
+              key={replyComment._id}
+              comment={replyComment}
+              more={props.more}
+              toggleMore={props.toggleMore}
+              reportLoading={props.reportLoading}
+              setReportLoading={props.setReportLoading}
+              modal={props.modal}
+              post={props.post}
+              setSnackBarNotif={props.setSnackBarNotif}
+              setSnackBarOpen={props.setSnackBarOpen}
+              setComments={props.setComments}
+              setReplyCommentId={props.setReplyCommentId}
+              setIsReply={props.setIsReply}
+              inputRef={props.inputRef}
+              setInitialText={props.setInitialText}
+              addReplyComments={props.addReplyComments}
+            />
+          );
+        })
       )}
       {deleteCmt && (
         <div className={props.cx("post-modal active-post-modal")}>
