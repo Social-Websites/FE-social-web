@@ -454,7 +454,7 @@ const PostDetailPage = () => {
                     }}
                   >
                     <Link
-                      to={`/${post?.creator.username}`}
+                      to={`/${post?.creator.username}/`}
                       className={cx("postInfo-user-avatar")}
                       style={{
                         position: "inherit",
@@ -471,7 +471,7 @@ const PostDetailPage = () => {
                   </div>
                   <div className={cx("postInfo-user-info")}>
                     <Link
-                      to={`/${post?.creator.username}`}
+                      to={`/${post?.creator.username}/`}
                       style={{
                         position: "inherit",
                         textDecoration: "none",

@@ -1,6 +1,12 @@
-import React, { useState, useCallback, useEffect, useRef, useContext } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useContext,
+} from "react";
 import PostRequest from "../../components/PostRequest";
-import classNames from 'classnames/bind';
+import classNames from "classnames/bind";
 import styles from "./GroupDetail.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -36,6 +42,9 @@ import {
   storage,
   uploadBytesResumable,
 } from "../../config/firebase";
+import { useParams } from "react-router-dom";
+import { getGroupDetail } from "../../services/groupService";
+import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
 
 const cx = classNames.bind(styles);
 
@@ -49,6 +58,10 @@ function GroupDetail() {
   const privateHttpClient = usePrivateHttpClient();
 
   const { user, dispatch } = useContext(StateContext);
+  const { id } = useParams();
+
+  const [groupDetail, setGroupDetail] = useState(null);
+  const [groupDetailLoading, setGroupDetailLoading] = useState(false);
 
   const [creatingPost, setCreatingPost] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(document.title);
@@ -86,6 +99,26 @@ function GroupDetail() {
   const [isLastImage, setIsLastImage] = useState(false);
   const checkCurrentChatIdRef = useRef(null);
 
+  const getGroupDetailData = useCallback(async () => {
+    if (!groupDetailLoading) {
+      try {
+        setGroupDetailLoading(true);
+        const data = await getGroupDetail(id, privateHttpClient.privateRequest);
+
+        if (data) {
+          setGroupDetail(data.group_detail);
+          setGroupDetailLoading(false);
+        }
+      } catch (err) {
+        console.error("list ", err);
+        setGroupDetailLoading(false);
+      }
+    }
+  }, [id]);
+
+  useEffect(() => {
+    getGroupDetailData();
+  }, [id]);
 
   const toggleMore = () => {
     setMore(!more);
@@ -114,81 +147,94 @@ function GroupDetail() {
     }
   };
 
-  const getFriendRequests = useCallback(async () => {
-    console.log("friends request load");
-    try {
-      // setModalLoading(true);
-      const data = await getFriendRequestsList(
-        // friendRequestsPage
-        1,
-        20,
-        privateHttpRequest.privateRequest
-      );
-      setUserRequests(data.friend_requests);
-      // if (data) {
-      //   const recordsCount = data.friend_requests.length;
+  const getFriendRequests = useCallback(
+    async () => {
+      console.log("friends request load");
+      try {
+        // setModalLoading(true);
+        const data = await getFriendRequestsList(
+          // friendRequestsPage
+          1,
+          20,
+          privateHttpRequest.privateRequest
+        );
+        setUserRequests(data.friend_requests);
+        // if (data) {
+        //   const recordsCount = data.friend_requests.length;
 
-      //   setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
-      //   if (recordsCount > 0 && friends.length === 0)
-      //     setFriendRequests(data.friend_requests);
-      //   if (recordsCount > 0 && friends.length > 0)
-      //     setFriendRequests((prev) => [...prev, ...data.friend_requests]);
-      // }
-      // setModalLoading(false);
-    } catch (err) {
-      // setModalLoading(false);
-      console.error("list ", err);
-    }
-  }, [
-    // friendRequestsPage
-  ]);
-  useEffect(() => {
-    // if (listType === 2 && modal) 
-    getFriendRequests();
-  }, [
-    // listType, friendRequestsPage, modal
-  ]);
+        //   setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+        //   if (recordsCount > 0 && friends.length === 0)
+        //     setFriendRequests(data.friend_requests);
+        //   if (recordsCount > 0 && friends.length > 0)
+        //     setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+        // }
+        // setModalLoading(false);
+      } catch (err) {
+        // setModalLoading(false);
+        console.error("list ", err);
+      }
+    },
+    [
+      // friendRequestsPage
+    ]
+  );
+  useEffect(
+    () => {
+      // if (listType === 2 && modal)
+      getFriendRequests();
+    },
+    [
+      // listType, friendRequestsPage, modal
+    ]
+  );
 
   const [posts, setPosts] = useState([
     {
       creator: {
         username: "redian_",
-        profile_picture: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
       },
-      media:[
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"],
+      media: [
+        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      ],
       likes: 54,
       timestamp: "2d",
     },
     {
       creator: {
         username: "johndoe",
-        profile_picture: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
       },
-      media:[
+      media: [
         "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80"],
+        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80",
+      ],
       likes: 432,
       timestamp: "2d",
     },
     {
       creator: {
         username: "mariussss",
-        profile_picture: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
       },
-      media:[
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"],
+      media: [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+      ],
       likes: 140,
       timestamp: "2d",
     },
     {
-      
       creator: {
         username: "kobee_18",
-        profile_picture: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
       },
-      media:[
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU"],
+      media: [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU",
+      ],
       likes: 14,
       timestamp: "2d",
     },
@@ -220,7 +266,6 @@ function GroupDetail() {
     setTitlePost((prevText) => (prevText += emoji.emoji));
   };
 
-  
   function showNextImage() {
     setImageIndex((index) => {
       if (index === images.length - 2) {
@@ -356,7 +401,6 @@ function GroupDetail() {
     setImages([]);
   };
 
-
   const handleCreatePost = async () => {
     setCreatingPost(true);
     const promises = images.map((image) => {
@@ -436,9 +480,11 @@ function GroupDetail() {
     }
   };
 
-
   return (
-    <div className={cx("group")} style={{backgroundColor: "black", height: "100%"}}>
+    <div
+      className={cx("group")}
+      style={{ backgroundColor: "black", height: "100%" }}
+    >
       <div className={cx("group__navWraper")}>
         <Sidenav />
       </div>
@@ -446,53 +492,67 @@ function GroupDetail() {
         <div className={cx("group__content")}>
           <div className={cx("group__header")}>
             <div className={cx("group_avatar")}>
-                <img src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80"/>
+              <img src={getGroupCoverUrl(groupDetail?.cover)} />
             </div>
             <div className={cx("group__info")}>
-                <div className={cx("group__info__1")}>
-                    <div className={cx("group__name")}> 
-                        <span>Group lololo</span>
-                    </div>
-                    <div className={cx("group__follow")}>  
-                        <span>0 posts</span>
-                        <a className={cx("follow")}>38 members</a>
-                        <a className={cx("follow")} onClick={toggleModalRequest} style={{cursor: "pointer"}}>30 requests</a>
-                    </div>
+              <div className={cx("group__info__1")}>
+                <div className={cx("group__name")}>
+                  <span>{groupDetail?.name}</span>
                 </div>
-                <div className={cx("group__info__2")}>
-                    <button className={cx("profile__button")} onClick={toggleModal}>
-                      <span>Create Post</span>
-                    </button>
-                    <button className={cx("profile__button")} onClick={toggleModalInvite}>
-                        <span>+ Invite</span>
-                    </button>
-                    <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
+                <div className={cx("group__follow")}>
+                  <span>{groupDetail?.group_posts_count} posts</span>
+                  <a className={cx("follow")}>
+                    {groupDetail?.members_count} members
+                  </a>
+                  <a
+                    className={cx("follow")}
+                    onClick={toggleModalRequest}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {groupDetail?.requests_count} requests
+                  </a>
                 </div>
+              </div>
+              <div className={cx("group__info__2")}>
+                <button className={cx("profile__button")} onClick={toggleModal}>
+                  <span>Create Post</span>
+                </button>
+                <button
+                  className={cx("profile__button")}
+                  onClick={toggleModalInvite}
+                >
+                  <span>+ Invite</span>
+                </button>
+                <MoreHorizIcon
+                  onClick={toggleMore}
+                  className={cx("post__more")}
+                />
+              </div>
             </div>
             <div className={cx("group__bio")}>
-              <span>hihihihihihi</span>
+              <span>{groupDetail?.description}</span>
             </div>
-        </div>
-        <div className={cx("group__tag")}>
-              <a>
-                <div
-                  className={cx("choose")}
-                  // onClick={() => {
-                  //   setUserPosts([]);
-                  //   setPostPage(1);
-                  //   setPostType(1);
-                  // }}
+          </div>
+          <div className={cx("group__tag")}>
+            <a>
+              <div
+                className={cx("choose")}
+                // onClick={() => {
+                //   setUserPosts([]);
+                //   setPostPage(1);
+                //   setPostType(1);
+                // }}
+              >
+                <GridOnIcon className={cx("icon")} />
+                <span
+                  className={cx("span")}
+                  style={{ textTransform: "uppercase" }}
                 >
-                  <GridOnIcon className={cx("icon")} />
-                  <span
-                    className={cx("span")}
-                    style={{ textTransform: "uppercase" }}
-                  >
-                    Posts
-                  </span>
-                </div>
-              </a>
-              
+                  Posts
+                </span>
+              </div>
+            </a>
+
             <a>
               <div
                 className={cx("choose")}
@@ -511,19 +571,18 @@ function GroupDetail() {
                 </span>
               </div>
             </a>
-              
           </div>
 
-        <div className={cx("group__posts")}>
-          <div className={cx("group__post")}>
-            {posts.map((post) => (
-              <PostRequest
-                post={post}
-                key={post.id} // Add a unique key prop when rendering a list of components
-              />
-            ))}
+          <div className={cx("group__posts")}>
+            <div className={cx("group__post")}>
+              {posts.map((post) => (
+                <PostRequest
+                  post={post}
+                  key={post.id} // Add a unique key prop when rendering a list of components
+                />
+              ))}
+            </div>
           </div>
-        </div>
         </div>
       </div>
       {more && (
@@ -556,12 +615,12 @@ function GroupDetail() {
                 Report
               </div>
             ) : ( */}
-              <div
-                className={cx("more-content-element")}
-                style={{ color: "#ed4956" }}
-              >
-                Leave
-              </div>
+            <div
+              className={cx("more-content-element")}
+              style={{ color: "#ed4956" }}
+            >
+              Leave
+            </div>
             {/* )} */}
             <div className={cx("more-content-element")} onClick={toggleMore}>
               Cancel
@@ -591,20 +650,13 @@ function GroupDetail() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>
-                Groups Invited
-              </div>
+              <div className={cx("more-content-title")}>Groups Invited</div>
             </div>
             <div className={cx("group-modal-content")}>
-            {userRequests.map((user) => {
-              console.log(user);
-              return (
-                <UserRequestGroup
-                  user={user}
-                  type={1}
-                />
-              );
-            })}
+              {userRequests.map((user) => {
+                console.log(user);
+                return <UserRequestGroup user={user} type={1} />;
+              })}
             </div>
           </div>
         </div>
@@ -631,20 +683,13 @@ function GroupDetail() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>
-                Groups Invited
-              </div>
+              <div className={cx("more-content-title")}>Groups Invited</div>
             </div>
             <div className={cx("group-modal-content")}>
-            {userRequests.map((user) => {
-              console.log(user);
-              return (
-                <UserRequestGroup
-                  user={user}
-                  type={2}
-                />
-              );
-            })}
+              {userRequests.map((user) => {
+                console.log(user);
+                return <UserRequestGroup user={user} type={2} />;
+              })}
             </div>
           </div>
         </div>

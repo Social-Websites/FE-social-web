@@ -349,7 +349,7 @@ const Post = forwardRef(({ post }, ref) => {
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
           <Link
-            to={`/${post.creator?.username}`}
+            to={`/${post.creator?.username}/`}
             style={{
               marginRight: 10,
               position: "inherit",
@@ -365,7 +365,7 @@ const Post = forwardRef(({ post }, ref) => {
           </Link>
           &nbsp;
           <Link
-            to={`/${post.creator?.username}`}
+            to={`/${post.creator?.username}/`}
             style={{
               marginRight: 5,
               position: "inherit",
@@ -501,7 +501,7 @@ const Post = forwardRef(({ post }, ref) => {
         {ref ? (
           <div ref={ref} style={{ marginTop: 5, fontWeight: 400 }}>
             <Link
-              to={`/${post.creator?.username}`}
+              to={`/${post.creator?.username}/`}
               style={{
                 marginRight: 5,
                 position: "inherit",
@@ -517,7 +517,7 @@ const Post = forwardRef(({ post }, ref) => {
         ) : (
           <div style={{ marginTop: 5, fontWeight: 400 }}>
             <Link
-              to={`/${post.creator?.username}`}
+              to={`/${post.creator?.username}/`}
               style={{
                 marginRight: 5,
                 position: "inherit",
@@ -655,7 +655,7 @@ const Post = forwardRef(({ post }, ref) => {
                   <div className={cx("postInfo-user")}>
                     <div style={{ padding: 6 }}>
                       <Link
-                        to={`/${post.creator?.username}`}
+                        to={`/${post.creator?.username}/`}
                         className={cx("postInfo-user-avatar")}
                         style={{
                           position: "inherit",
@@ -672,7 +672,7 @@ const Post = forwardRef(({ post }, ref) => {
                     </div>
                     <div className={cx("postInfo-user-info")}>
                       <Link
-                        to={`/${post.creator?.username}`}
+                        to={`/${post.creator?.username}/`}
                         style={{
                           position: "inherit",
                           textDecoration: "none",

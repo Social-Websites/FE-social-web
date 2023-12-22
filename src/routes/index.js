@@ -46,7 +46,7 @@ const publicRoutes = [
 // Private Routes
 const privateRoutes = [
   { path: "/", component: HomePage },
-  { path: "/:username", component: Profile },
+  { path: "/:username/*", component: Profile },
   { path: "/chat", component: Chat },
   { path: "/group", component: GroupPage },
   { path: "/g/:id", component: GroupDetail },

@@ -143,13 +143,13 @@ body {
       justify-content: center;
       align-items: center;
       .choose {
-        color: white;
+        color: #a8a8a8;
         display: flex;
         justify-content: center;
         align-items: center;
         margin-right: 50px;
         height: 52px;
-        border-top: white solid 1px;
+
         cursor: pointer;
         .icon {
           width: 12px;
@@ -296,14 +296,14 @@ profile-modal .btn-profile-modal {
   .more-content-element:last-child {
     border-bottom: none;
   }
-  
+
   .more-content-header {
-    display:flex;
+    display: flex;
     text-align: center;
     padding: 14px 10px;
     border-bottom: #4e4d4d solid 1px;
     color: white;
-    .more-content-title{
+    .more-content-title {
       width: 100%;
       display: flex;
       align-items: center;
@@ -311,7 +311,8 @@ profile-modal .btn-profile-modal {
       font-weight: 600;
       font-size: 15px;
       margin-right: 27px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
     }
   }
   .more-content-report {
@@ -321,13 +322,14 @@ profile-modal .btn-profile-modal {
     color: white;
     font-weight: 400;
     font-size: 14px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
     cursor: pointer;
   }
-  .more-content-report:hover{
+  .more-content-report:hover {
     background: #434343;
   }
-  .more-content-element:hover{
+  .more-content-element:hover {
     background: #434343;
   }
   .more-content-element:last-child {

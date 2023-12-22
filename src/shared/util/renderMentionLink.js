@@ -19,7 +19,7 @@ const renderMentionLink = (content) => {
         return (
           <Link
             key={index}
-            to={`/${username}`}
+            to={`/${username}/`}
             style={{
               color: "#E0F1FF",
               textDecoration: "none",
