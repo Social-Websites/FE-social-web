@@ -19,7 +19,8 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
-
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import TimeAgo from "../../shared/components/TimeAgo";
 import { grey, pink } from "@mui/material/colors";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
@@ -215,7 +216,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
       window.history.replaceState(null, null, `/p/${post._id}`);
       document.body.style.overflow = "hidden";
     } else {
-      window.history.replaceState(null, null, `/${creator.username}`);
+      window.history.replaceState(null, null, `/${creator.username}/`);
       document.body.style.overflow = "auto";
     }
   };
@@ -323,7 +324,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
           setSnackBarOpen(true);
         }
         // Reload the page
-        navigate(`/${creator.username}`);
+        navigate(`/${creator.username}/`);
       } catch (err) {
         setReportLoading(false);
         setSnackBarNotif({
@@ -337,8 +338,15 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
 
   return (
     <>
-      <div onClick={toggleModal} className={cx("profile__post")}>
+      <div
+        onClick={toggleModal}
+        className={cx("profile__post")}
+        // style={{ position: "relative" }}
+      >
         <img src={post.media[0]} />
+
+        {/* <FavoriteIcon sx={{ color: "white" }} />
+        <ChatBubbleIcon /> */}
       </div>
       {ref ? <div ref={ref}></div> : null}
       {modal && (
@@ -455,7 +463,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                   <div className={cx("postInfo-user")}>
                     <div style={{ padding: 6 }}>
                       <Link
-                        to={`/${creator.username}`}
+                        to={`/${creator.username}/`}
                         className={cx("postInfo-user-avatar")}
                         style={{
                           position: "inherit",
@@ -472,7 +480,7 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                     </div>
                     <div className={cx("postInfo-user-info")}>
                       <Link
-                        to={`/${creator.username}`}
+                        to={`/${creator.username}/`}
                         style={{
                           position: "inherit",
                           textDecoration: "none",

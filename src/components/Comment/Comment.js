@@ -110,7 +110,7 @@ const Comment = forwardRef((props, ref) => {
       <div key={props.comment._id} className={props.cx("post-comment-user")}>
         <div className={props.cx("post-comment-user-avatar")}>
           <Link
-            to={`/${props.comment.user.username}`}
+            to={`/${props.comment.user.username}/`}
             className={props.cx("post-comment-user-avatar")}
             style={{
               position: "inherit",
@@ -128,7 +128,7 @@ const Comment = forwardRef((props, ref) => {
         <div>
           <div className={props.cx("post-comment-user-info")}>
             <Link
-              to={`/${props.comment.user.username}`}
+              to={`/${props.comment.user.username}/`}
               style={{
                 position: "inherit",
                 textDecoration: "none",

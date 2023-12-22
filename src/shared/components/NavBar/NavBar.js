@@ -7,6 +7,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
+import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 // import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -710,10 +711,18 @@ function NavBar({ onScrollToTop }) {
                 : null
             }
           >
-            <GroupsIcon
-              className={cx("sidenav__icon")}
-              style={{ width: "27px", height: "27px" }}
-            />
+            {locate === "/group" ? (
+              <GroupsIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            ) : (
+              <GroupsOutlinedIcon
+                className={cx("sidenav__icon")}
+                style={{ width: "27px", height: "27px" }}
+              />
+            )}
+
             {open ? null : <span className={cx("span")}>Groups</span>}
           </button>
           {/* <button
@@ -801,13 +810,13 @@ function NavBar({ onScrollToTop }) {
           </button>
           <button
             onClick={() => {
-              navigate(`/${user?.username}`, { replace: true });
+              navigate(`/${user?.username}/`, { replace: true });
             }}
             className={cx("sidenav__button")}
             style={
               open
                 ? { width: "75%", margin: "5px 10px 5px 10px" }
-                : locate === `/${user?.username}`
+                : locate === `/${user?.username}/`
                 ? { background: "#262626" }
                 : null
             }
@@ -842,7 +851,7 @@ function NavBar({ onScrollToTop }) {
                   <div
                     className={cx("sidenav__more-element")}
                     onClick={() => {
-                      navigate(`/${user.username}`);
+                      navigate(`/${user.username}/`);
                     }}
                   >
                     Your Profile

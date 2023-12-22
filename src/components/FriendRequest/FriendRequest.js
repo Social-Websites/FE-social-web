@@ -106,7 +106,7 @@ const FriendRequest = forwardRef((props, ref) => {
     <div ref={ref} className={cx("profile-modal__user")}>
       <div className={cx("profile-modal__user_avatar")}>
         <Link
-          to={`/${props.item.username}`}
+          to={`/${props.item.username}/`}
           className={cx("profile-modal__user_avatar")}
           style={{
             position: "inherit",
@@ -123,7 +123,7 @@ const FriendRequest = forwardRef((props, ref) => {
       </div>
       <div className={cx("profile-modal__user__info")}>
         <Link
-          to={`/${props.item.username}`}
+          to={`/${props.item.username}/`}
           style={{
             position: "inherit",
             textDecoration: "none",
@@ -188,7 +188,7 @@ const FriendRequest = forwardRef((props, ref) => {
     <div className={cx("profile-modal__user")}>
       <div className={cx("profile-modal__user_avatar")}>
         <Link
-          to={`/${props.item.username}`}
+          to={`/${props.item.username}/`}
           className={cx("profile-modal__user_avatar")}
           style={{
             position: "inherit",
@@ -205,7 +205,7 @@ const FriendRequest = forwardRef((props, ref) => {
       </div>
       <div className={cx("profile-modal__user__info")}>
         <Link
-          to={`/${props.item.username}`}
+          to={`/${props.item.username}/`}
           style={{
             position: "inherit",
             textDecoration: "none",

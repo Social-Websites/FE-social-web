@@ -18,7 +18,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, userou } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import {
   getFriendRequestsList,
@@ -42,6 +42,10 @@ const cx = classNames.bind(styles);
 function Profile() {
   const { user } = useAuth();
   const { username } = useParams();
+  const location = useLocation();
+  const path = location.pathname;
+  const subPath = path.substring(path.indexOf("/", 1) + 1);
+
   const [notFound, setNotFound] = useState(false);
   const [more, setMore] = useState(false);
 
@@ -60,7 +64,7 @@ function Profile() {
   const [friendRequestsPage, setFriendRequestsPage] = useState(1);
   const [friendsPage, setFriendsPage] = useState(1);
 
-  const [postType, setPostType] = useState(1);
+  //const [postType, setPostType] = useState(1);
   const [userPosts, setUserPosts] = useState([]);
   const [postPage, setPostPage] = useState(1);
   const [hasMorePost, setHasMorePost] = useState(true);
@@ -305,9 +309,9 @@ function Profile() {
   }, [username]);
 
   useEffect(() => {
-    if (postType === 1) getProfilePosts();
-    else getProfileSavedPosts();
-  }, [username, postPage, postType]);
+    if (subPath === "") getProfilePosts();
+    else if (subPath === "saved") getProfileSavedPosts();
+  }, [username, postPage, subPath]);
 
   useEffect(() => {
     if (listType === 1 && modal) getFriends();
@@ -583,10 +587,15 @@ function Profile() {
               <a>
                 <div
                   className={cx("choose")}
+                  style={
+                    subPath === ""
+                      ? { color: "white", borderTop: "white solid 1px" }
+                      : null
+                  }
                   onClick={() => {
                     setUserPosts([]);
                     setPostPage(1);
-                    setPostType(1);
+                    navigate(`/${username}/`);
                   }}
                 >
                   <GridOnIcon className={cx("icon")} />
@@ -602,10 +611,15 @@ function Profile() {
                 <a>
                   <div
                     className={cx("choose")}
+                    style={
+                      subPath === "saved"
+                        ? { color: "white", borderTop: "white solid 1px" }
+                        : null
+                    }
                     onClick={() => {
                       setUserPosts([]);
                       setPostPage(1);
-                      setPostType(2);
+                      navigate(`saved`);
                     }}
                   >
                     <BookmarkBorderIcon className={cx("icon")} />
