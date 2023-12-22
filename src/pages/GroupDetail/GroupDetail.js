@@ -527,10 +527,10 @@ function GroupDetail() {
         </div>
       </div>
       {more && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleMore}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
@@ -570,10 +570,10 @@ function GroupDetail() {
         </div>
       )}
       {modalRequest && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleModalRequest}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
@@ -610,10 +610,10 @@ function GroupDetail() {
         </div>
       )}
       {modalInvite && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleModalInvite}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
