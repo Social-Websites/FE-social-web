@@ -1,16 +1,56 @@
 import classNames from "classnames/bind";
-import { React, useState, useEffect, useContext, forwardRef } from "react";
+import { React, useState } from "react";
 import styles from "./GroupInvited.module.scss";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { CircularProgress } from "@mui/material";
-import { StateContext } from "../../context/StateContext";
+import { deleteToGroup, acceptToGroup } from "../../services/groupService";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 function GroupInvited({ group }) {
+
+    const privateHttpRequest = usePrivateHttpClient();
+    const [loading, setLoading] = useState(false)
+    const [status, setStatus] = useState("")
+    const handleDeleteToGroup = async () => {
+        if(!loading){
+            setLoading(true);
+            try {
+                const respone = await deleteToGroup(
+                group._id,
+                privateHttpRequest.privateRequest
+                );
+                if (respone !== null) {
+                setStatus("Rejected");
+                setLoading(false);
+                }
+            } catch (err) {
+                console.error(err);
+                setLoading(false);
+            }
+        }
+    };
+
+    const handleAcceptToGroup = async () => {
+        if(!loading){
+            setLoading(true);
+            try {
+                const respone = await acceptToGroup(
+                group._id,
+                privateHttpRequest.privateRequest
+                );
+                if (respone !== null) {
+                setStatus("Accepted");
+                setLoading(false);
+                }
+            } catch (err) {
+                console.error(err);
+                setLoading(false);
+            }
+        }
+    };
     return (
         <div className={cx("modal__group")}>
             <div style={{
@@ -46,33 +86,27 @@ function GroupInvited({ group }) {
                         {group.name}
                     </span>
                 </Link>
-                {/* <span className={cx("modal__group__relation")}>
-                    {props.item.full_name}
-                </span> */}
             </div>
             <div>
-                {/* {props.decision === "ACCEPT" ? (
-                <span style={{ color: "white" }}>Accepted</span>
-                ) : props.decision === "REJECT" ? (
-                <span style={{ color: "white" }}>Rejected</span>
-                ) : ( */}
-                <>
+                {status !== "" ? (<span>{status}</span>) : (
+                    <>
                     <button
-                    // onClick={handleAccept}
+                    onClick={handleAcceptToGroup}
                     className={cx("modal__group__button__accept")}
-                    // disabled={decisionLoading}
+                    
                     >
                     <CheckIcon />
                     </button>
                     <button
-                    // onClick={handleReject}
+                    onClick={handleDeleteToGroup}
                     className={cx("modal__group__button")}
-                    // disabled={decisionLoading}
+                    
                     >
                     <ClearIcon />
                     </button>
                 </>
-                {/* )} */}
+                )}
+                
             </div>
         </div>
     );
