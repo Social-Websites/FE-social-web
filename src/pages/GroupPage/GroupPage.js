@@ -1,17 +1,21 @@
 import React, { useState, useCallback, useEffect } from "react";
 import GroupItem from "../../components/GroupItem";
 import Button from "@mui/material/Button";
-import {
-  CircularProgress
-} from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import SearchGroupLoading from "../../components/SearchGroupLoading";
-import classNames from 'classnames/bind';
+import classNames from "classnames/bind";
 import styles from "./GroupPage.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import GroupInvited from "../../components/GroupInvited";
 import CloseIcon from "@mui/icons-material/Close";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
-import { getAdminGroups, getMemberGroups, getInvitedGroups, createGroup, searchGroups } from "../../services/groupService";
+import {
+  getAdminGroups,
+  getMemberGroups,
+  getInvitedGroups,
+  createGroup,
+  searchGroups,
+} from "../../services/groupService";
 
 const cx = classNames.bind(styles);
 
@@ -25,9 +29,9 @@ function GroupPage() {
   const [searchedGroups, setSearchedGroups] = useState([]);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [adminGroups, setAdminGroups] = useState([])
-  const [memeberGroups, setMemberGroups] = useState([])
-  const [invitedGroups, setInvitedGroups] = useState([])
+  const [adminGroups, setAdminGroups] = useState([]);
+  const [memberGroups, setMemberGroups] = useState([]);
+  const [invitedGroups, setInvitedGroups] = useState([]);
   const toggleCreate = () => {
     setCreateModal(!createModal);
     if (!createModal) {
@@ -84,11 +88,15 @@ function GroupPage() {
     setCreatingGroup(true);
     try {
       const respone = await createGroup(
-        { name: name, description: bio, cover: "/static-resources/default-cover.jpg" },
+        {
+          name: name,
+          description: bio,
+          cover: "/static-resources/default-cover.jpg",
+        },
         privateHttpRequest.privateRequest
       );
       if (respone !== null) {
-        setAdminGroups(prev  => [...prev, respone])
+        setAdminGroups((prev) => [...prev, respone]);
         setCreatingGroup(false);
         toggleCreate();
       }
@@ -101,19 +109,23 @@ function GroupPage() {
 
   const searchGroup = async (e) => {
     const data = e.target.value;
-    if(data == ""){
+    if (data == "") {
       setIsSearching(false);
-    } else{
+    } else {
       setIsSearching(true);
     }
     try {
-      const result = await searchGroups(data,privateHttpRequest.privateRequest);
+      const result = await searchGroups(
+        data,
+        privateHttpRequest.privateRequest
+      );
       console.log(result);
       if (result !== null) {
         setSearchedGroups(result);
-        setIsLoadingSearch(false);
       }
+      setIsLoadingSearch(false);
     } catch (err) {
+      setIsLoadingSearch(false);
       console.log(err);
     }
   };
@@ -132,7 +144,10 @@ function GroupPage() {
   const debouncedSearchGroups = debounce(searchGroup, 500);
 
   return (
-    <div className={cx("group")} style={{backgroundColor: "black", height: "100%"}}>
+    <div
+      className={cx("group")}
+      style={{ backgroundColor: "black", height: "100%" }}
+    >
       <div className={cx("group__navWraper")}>
         <Sidenav />
       </div>
@@ -149,80 +164,107 @@ function GroupPage() {
             <div className={cx("group__button")}>
               <button
                 onClick={toggleModal}
-                style={{marginRight: "10px"}}
+                style={{ marginRight: "10px" }}
                 className={cx("create__button")}
               >
-                <span>Invited</span>
+                <span>Invitation</span>
               </button>
-              <button
-                onClick={toggleCreate}
-                className={cx("create__button")}
-              >
+              <button onClick={toggleCreate} className={cx("create__button")}>
                 <span>+ Create</span>
               </button>
             </div>
           </div>
           {isSearching &&
-          (isLoadingSearch ? (<div className={cx("groups")}>
-            <SearchGroupLoading />
-          </div>) : (searchedGroups.length > 0 ? (
-                <div className={cx("groups")}>
-                  <div style={{width: "90%", paddingBottom: "20px"}}>
-                    <div className={cx("group__items_header")}>Results</div>
-                    <div className={cx("group__items")} >
-                        {searchedGroups?.map((group) => (
-                            <GroupItem
-                              key={group._id}
-                              group={group}
-                            />
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (<div className={cx("groups")}>
-              <span style={{color: "#A8A8A8", padding: "20px", fontSize: "15px",
-              fontWeight: 500,
-              fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-              Helvetica, Arial, sans-serif`}}>No search results</span>
-            </div>)))}
-          
-          {!isSearching && (adminGroups?.length > 0 || memeberGroups?.length > 0 ? (
-            <div>
-              {adminGroups.length > 0 && (
-                <div className={cx("groups")}>
-                  <div style={memeberGroups?.length > 0 ? { width: "90%", paddingBottom: "20px", borderBottom: "#212121 solid 1px" } : {width: "90%", paddingBottom: "20px"}}>
-                    <div className={cx("group__items_header")}>Your groups</div>
-                    <div className={cx("group__items")} >
-                        {adminGroups?.map((group) => (
-                            <GroupItem
-                              key={group._id}
-                              group={group}
-                            />
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-              {memeberGroups?.length > 0 &&(
+            (isLoadingSearch ? (
               <div className={cx("groups")}>
-                <div style={{width: "90%", paddingBottom: "20px"}}>
-                  <div className={cx("group__items_header")}>All groups you have joined</div>
-                  <div className={cx("group__items")} >
-                      {memeberGroups?.map((group) => (
-                          <GroupItem
-                            group={group}
-                          />
-                      ))}
+                <SearchGroupLoading />
+              </div>
+            ) : searchedGroups.length > 0 ? (
+              <div className={cx("groups")}>
+                <div style={{ width: "90%", paddingBottom: "20px" }}>
+                  <div className={cx("group__items_header")}>Results</div>
+                  <div className={cx("group__items")}>
+                    {searchedGroups?.map((group) => (
+                      <GroupItem key={group._id} group={group} />
+                    ))}
                   </div>
                 </div>
-              </div>)}
-            </div>) : ( <div className={cx("groups")}>
-              <span style={{color: "#A8A8A8", padding: "20px", fontSize: "15px",
-              fontWeight: 500,
-              fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-              Helvetica, Arial, sans-serif`}}>You haven't joined the groups yet.</span>
-            </div>
-          ))}
+              </div>
+            ) : (
+              <div className={cx("groups")}>
+                <span
+                  style={{
+                    color: "#A8A8A8",
+                    padding: "20px",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+              Helvetica, Arial, sans-serif`,
+                  }}
+                >
+                  No search results
+                </span>
+              </div>
+            ))}
+
+          {!isSearching &&
+            (adminGroups?.length > 0 || memberGroups?.length > 0 ? (
+              <div>
+                {adminGroups.length > 0 && (
+                  <div className={cx("groups")}>
+                    <div
+                      style={
+                        memberGroups?.length > 0
+                          ? {
+                              width: "90%",
+                              paddingBottom: "20px",
+                              borderBottom: "#212121 solid 1px",
+                            }
+                          : { width: "90%", paddingBottom: "20px" }
+                      }
+                    >
+                      <div className={cx("group__items_header")}>
+                        Your groups
+                      </div>
+                      <div className={cx("group__items")}>
+                        {adminGroups?.map((group) => (
+                          <GroupItem key={group._id} group={group} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {memberGroups?.length > 0 && (
+                  <div className={cx("groups")}>
+                    <div style={{ width: "90%", paddingBottom: "20px" }}>
+                      <div className={cx("group__items_header")}>
+                        All groups you have joined
+                      </div>
+                      <div className={cx("group__items")}>
+                        {memberGroups?.map((group) => (
+                          <GroupItem group={group} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={cx("groups")}>
+                <span
+                  style={{
+                    color: "#A8A8A8",
+                    padding: "20px",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+              Helvetica, Arial, sans-serif`,
+                  }}
+                >
+                  You haven't joined the groups yet.
+                </span>
+              </div>
+            ))}
         </div>
       </div>
       {createModal && (
@@ -247,18 +289,16 @@ function GroupPage() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>
-                Create Group
-              </div>
+              <div className={cx("more-content-title")}>Create Group</div>
             </div>
             <div className={cx("more-content-info")}>
               <div className={cx("group__content__info")}>
                 <div className={cx("group__content__info__subject")}>
-                  <span >Name</span>
+                  <span>Name</span>
                 </div>
                 <div className={cx("group__content__info__textarea")}>
                   <input
-                    style={{height: "20px", overflow: "none"}}
+                    style={{ height: "20px", overflow: "none" }}
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -303,19 +343,20 @@ function GroupPage() {
                         marginLeft: "-8px",
                       }}
                     />
-                  ) : (<Button
-                    sx={{
-                      fontFamily: "inherit",
-                      textTransform: "none",
-                      ":hover": {
-                        opacity: 0.8,
-                      },
-                    }}
-                    onClick={handleCreateGroup}
-                  >
-                    Submit
-                  </Button>)}
-                  
+                  ) : (
+                    <Button
+                      sx={{
+                        fontFamily: "inherit",
+                        textTransform: "none",
+                        ":hover": {
+                          opacity: 0.8,
+                        },
+                      }}
+                      onClick={handleCreateGroup}
+                    >
+                      Submit
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -344,19 +385,13 @@ function GroupPage() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>
-                Groups Invited
-              </div>
+              <div className={cx("more-content-title")}>Groups Invited</div>
             </div>
             <div className={cx("group-modal-content")}>
-            {invitedGroups.map((group) => {
-              console.log(group);
-              return (
-                <GroupInvited
-                  group={group}
-                />
-              );
-            })}
+              {invitedGroups.map((group) => {
+                console.log(group);
+                return <GroupInvited group={group} />;
+              })}
             </div>
           </div>
         </div>
