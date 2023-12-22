@@ -19,6 +19,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
 import { Alert, Backdrop, CircularProgress, Snackbar } from "@mui/material";
+import Button from "@mui/material/Button";
 import EmojiPicker from "emoji-picker-react";
 import UserRequestGroup from "../../components/UserRequestGroup";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
@@ -51,6 +52,7 @@ const cx = classNames.bind(styles);
 function GroupDetail() {
   const [more, setMore] = useState(false);
   const [modal, setModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [modalRequest, setModalRequest] = useState(false);
   const [modalInvite, setModalInvite] = useState(false);
   const [userRequests, setUserRequests] = useState([]);
@@ -62,6 +64,10 @@ function GroupDetail() {
 
   const [groupDetail, setGroupDetail] = useState(null);
   const [groupDetailLoading, setGroupDetailLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [editingGroup, setEditingGroup] = useState(false);
+  const [uploadProfileImgLoading, setUploadProfileImgLoading] = useState(false);
 
   const [creatingPost, setCreatingPost] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(document.title);
@@ -72,6 +78,16 @@ function GroupDetail() {
     severity: "success",
     message: "This is success message!",
   }); //severity: success, error, info, warning
+
+  const toggleEdit = () => {
+    setEditModal(!editModal);
+    if (!editModal) {
+      if (document.body.style.overflow !== "hidden")
+        document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
 
   const toggleModal = () => {
     if (document.body.style.overflow !== "hidden") {
@@ -146,6 +162,8 @@ function GroupDetail() {
       document.body.style.overflow = "auto";
     }
   };
+
+  const handleCreateGroup = () => {};
 
   const getFriendRequests = useCallback(
     async () => {
@@ -586,10 +604,10 @@ function GroupDetail() {
         </div>
       </div>
       {more && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleMore}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
@@ -621,6 +639,9 @@ function GroupDetail() {
             >
               Leave
             </div>
+            <div className={cx("more-content-element")} onClick={toggleEdit}>
+              Edit
+            </div>
             {/* )} */}
             <div className={cx("more-content-element")} onClick={toggleMore}>
               Cancel
@@ -629,10 +650,10 @@ function GroupDetail() {
         </div>
       )}
       {modalRequest && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleModalRequest}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
@@ -662,10 +683,10 @@ function GroupDetail() {
         </div>
       )}
       {modalInvite && (
-        <div className={cx("group-modal active-group-modal")}>
+        <div className={cx("modal active-modal")}>
           <div
             onClick={toggleModalInvite}
-            className={cx("group-overlay")}
+            className={cx("overlay")}
             style={{ alignSelf: "flex-end" }}
           >
             <CloseIcon
@@ -690,6 +711,154 @@ function GroupDetail() {
                 console.log(user);
                 return <UserRequestGroup user={user} type={2} />;
               })}
+            </div>
+          </div>
+        </div>
+      )}
+      {editModal && (
+        <div className={cx("modal active-modal")}>
+          <div
+            onClick={toggleEdit}
+            className={cx("overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div className={cx("more-content-header")}>
+              <div className={cx("more-content-title")}>Edit Group</div>
+            </div>
+            <div className={cx("more-content-info")}>
+              <div className={cx("group__content__info")}>
+                <div
+                  className={cx("group__content__info__subject")}
+                  style={{ position: "relative" }}
+                >
+                  <img
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      filter: uploadProfileImgLoading
+                        ? "brightness(70%)"
+                        : "brightness(100%)",
+                    }}
+                    src={getAvatarUrl(
+                      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+                    )}
+                    alt=""
+                  />
+                  {uploadProfileImgLoading && (
+                    <CircularProgress
+                      size={30}
+                      sx={{
+                        color: "blueviolet",
+                        position: "absolute",
+                        marginTop: "6.6px",
+                        marginRight: "6.7px",
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div className={cx("group__content__info__user")}>
+                  <span className={cx("group__username")}>
+                    {user?.username}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpg,image/jpeg,image/png,image/webp"
+                    multiple
+                    ref={fileInputRef}
+                    onChange={onFileSelect}
+                    id="myFileInput"
+                    style={{ display: "none" }}
+                  />
+                  <span
+                    // onClick={handleUploadProfileImg}
+                    className={cx("group__changeAvatar")}
+                  >
+                    Change profile photo
+                  </span>
+                </div>
+              </div>
+              <div className={cx("group__content__info")}>
+                <div className={cx("group__content__info__subject")}>
+                  <span>Name</span>
+                </div>
+                <div className={cx("group__content__info__textarea")}>
+                  <input
+                    style={{ height: "20px", overflow: "none" }}
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                    placeholder="Name..."
+                  ></input>
+                </div>
+              </div>
+              <div className={cx("group__content__info")}>
+                <div className={cx("group__content__info__subject")}>
+                  <span>Bio</span>
+                </div>
+                <div className={cx("group__content__info__textarea")}>
+                  <textarea
+                    value={bio}
+                    onChange={(e) => {
+                      setBio(e.target.value);
+                    }}
+                    placeholder="Bio..."
+                  ></textarea>
+                </div>
+              </div>
+              <div className={cx("group__content__info")}>
+                <div className={cx("group__content__info__subject")}>
+                  <span></span>
+                </div>
+                <div
+                  className={cx("group__content__info__button")}
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  {editingGroup ? (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: "white",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        marginTop: "-12px",
+                        marginLeft: "-8px",
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      sx={{
+                        fontFamily: "inherit",
+                        textTransform: "none",
+                        ":hover": {
+                          opacity: 0.8,
+                        },
+                      }}
+                      onClick={handleCreateGroup}
+                    >
+                      Submit
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
