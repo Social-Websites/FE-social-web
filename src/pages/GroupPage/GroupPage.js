@@ -388,10 +388,27 @@ function GroupPage() {
               <div className={cx("more-content-title")}>Groups Invited</div>
             </div>
             <div className={cx("group-modal-content")}>
-              {invitedGroups.map((group) => {
-                console.log(group);
-                return <GroupInvited group={group} />;
-              })}
+              {invitedGroups.length > 0 ? (
+                invitedGroups.map((group) => {
+                  console.log(group);
+                  return <GroupInvited group={group} />;
+                })
+              ) : (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <span
+                    style={{
+                      color: "#A8A8A8",
+                      padding: "20px",
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Helvetica, Arial, sans-serif`,
+                    }}
+                  >
+                    No invitations
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
