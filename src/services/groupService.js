@@ -77,6 +77,18 @@ export const getMembers = async (groupId, page, limit, sendRequest) => {
   }
 };
 
+export const getUserFriendsList = async (groupId, page, limit, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/friends-to-invite?page=${page}&limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const getGroupDetail = async (groupId, sendRequest) => {
   try {
     const response = await sendRequest(`/groups/${groupId}`);
@@ -177,6 +189,56 @@ export const acceptRequestToGroup = async (
       {
         headers: { "Content-Type": "application/json" },
       }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const inviteUserToGroup = async (
+  groupId,
+  userToInviteId,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/${userToInviteId}/invite`,
+      "post",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const createGroupPost = async (formData, sendRequest) => {
+  try {
+    const response = await sendRequest("/groups/post", "post", formData, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getGroupPosts = async (
+  groupId,
+  status,
+  page,
+  limit,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/posts?status=${status}&page=${page}&limit=${limit}`
     );
 
     return response?.data;
