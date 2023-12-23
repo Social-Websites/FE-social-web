@@ -158,40 +158,37 @@ function GroupDetail() {
   const submitEditHandler = async () => {
     setEditingGroup(true);
     let promise = null;
-    if(coverChange)(
-      promise = () => {
+    if(coverChange){
+      promise = new Promise((resolve, reject) => {
         const name = Date.now();
         const storageRef = ref(storage, `images/${name}`);
         const uploadTask = uploadBytesResumable(storageRef, coverChange.file);
-
-        return new Promise((resolve, reject) => {
-          uploadTask.on(
-            "state_changed",
-            null,
-            (error) => {
-              console.log(error);
-              reject(error);
-              setCreatingPost(false);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref)
-                .then((url) => {
-                  console.log(url);
-                  resolve(url);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  reject(error);
-                });
-            }
-          );
-        });
-      }
-    )
+        uploadTask.on(
+          "state_changed",
+          null,
+          (error) => {
+            console.log(error);
+            reject(error);
+            setCreatingPost(false);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref)
+              .then((url) => {
+                console.log(url);
+                resolve(url);
+              })
+              .catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+          }
+        );
+      });
+    }
     try {
       let editData = null;
       if(promise !== null){
-        const url = await Promise.allSettled(promise);
+        const url = await Promise.allSettled([promise]);
         const urlString = url[0].value.toString();
         editData = {
           name: name,
