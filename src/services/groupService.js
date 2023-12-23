@@ -41,6 +41,30 @@ export const getInvitedGroups = async (sendRequest) => {
   }
 };
 
+export const getJoinRequests = async (groupId, page, limit, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/join-requests?page=${page}&limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getMembers = async (groupId, page, limit, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/members?page=${page}&limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const getGroupDetail = async (groupId, sendRequest) => {
   try {
     const response = await sendRequest(`/groups/${groupId}`);
@@ -97,6 +121,46 @@ export const acceptToGroup = async (groupId, sendRequest) => {
   try {
     const response = await sendRequest(
       `/groups/accept?groupId=${groupId}`,
+      "put",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const rejectRequestToGroup = async (
+  groupId,
+  requesterId,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/${requesterId}/reject`,
+      "put",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const acceptRequestToGroup = async (
+  groupId,
+  requesterId,
+  sendRequest
+) => {
+  try {
+    const response = await sendRequest(
+      `/groups/${groupId}/${requesterId}/accept`,
       "put",
       {
         headers: { "Content-Type": "application/json" },

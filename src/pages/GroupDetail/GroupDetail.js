@@ -10,6 +10,7 @@ import classNames from "classnames/bind";
 import styles from "./GroupDetail.module.scss";
 import Sidenav from "../../shared/components/NavBar";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import WestIcon from "@mui/icons-material/West";
 import GridOnIcon from "@mui/icons-material/GridOn";
@@ -43,8 +44,12 @@ import {
   storage,
   uploadBytesResumable,
 } from "../../config/firebase";
-import { useParams } from "react-router-dom";
-import { getGroupDetail } from "../../services/groupService";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  getGroupDetail,
+  getJoinRequests,
+  getMembers,
+} from "../../services/groupService";
 import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
 
 const cx = classNames.bind(styles);
@@ -52,15 +57,21 @@ const cx = classNames.bind(styles);
 function GroupDetail() {
   const [more, setMore] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modalRequestsLoading, setModalRequestsLoading] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [modalRequest, setModalRequest] = useState(false);
   const [modalInvite, setModalInvite] = useState(false);
+  const [modalMembers, setModalMembers] = useState(false);
   const [userRequests, setUserRequests] = useState([]);
   const privateHttpRequest = usePrivateHttpClient();
   const privateHttpClient = usePrivateHttpClient();
 
   const { user, dispatch } = useContext(StateContext);
+  const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const path = location.pathname;
+  const subPath = path.substring(path.indexOf("/", 3) + 1);
 
   const [groupDetail, setGroupDetail] = useState(null);
   const [groupDetailLoading, setGroupDetailLoading] = useState(false);
@@ -115,6 +126,64 @@ function GroupDetail() {
   const [isLastImage, setIsLastImage] = useState(false);
   const checkCurrentChatIdRef = useRef(null);
 
+  const [pendingPostsPage, setPendingPostsPage] = useState(1);
+  const [pendingPosts, setPendingPosts] = useState([
+    {
+      creator: {
+        username: "redian_",
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      },
+      media: [
+        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      ],
+      content: "sample lsfjlskfls",
+      likes: 54,
+      timestamp: "2d",
+    },
+    {
+      creator: {
+        username: "johndoe",
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      },
+      media: [
+        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80",
+      ],
+      content: "sample lsfjádgsdgsdgsdgsdgdsgglskfls",
+      likes: 432,
+      timestamp: "2d",
+    },
+    {
+      creator: {
+        username: "mariussss",
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      },
+      media: [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+      ],
+      content:
+        "sample lsfjádgsdgsdgsdgsdgdsggls51fsd6glksdjgsg2sd4gs4gsdkfls dsfkl slpa klsllllllllllllllllllllllllllllllll",
+      likes: 140,
+      timestamp: "2d",
+    },
+    {
+      creator: {
+        username: "kobee_18",
+        profile_picture:
+          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      },
+      media: [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU",
+      ],
+      content: "sample lsfjádgsdgsdgsdgsdgdsgglskfls",
+      likes: 14,
+      timestamp: "2d",
+    },
+  ]);
+
   const getGroupDetailData = useCallback(async () => {
     if (!groupDetailLoading) {
       try {
@@ -136,6 +205,11 @@ function GroupDetail() {
     getGroupDetailData();
   }, [id]);
 
+  // useEffect(() => {
+  //   if (subPath === "") getProfilePosts();
+  //   else if (subPath === "saved") getProfileSavedPosts();
+  // }, [id, pendingPostsPage, subPath]);
+
   const toggleMore = () => {
     setMore(!more);
     if (!more) {
@@ -148,6 +222,9 @@ function GroupDetail() {
 
   const toggleModalRequest = () => {
     setModalRequest(!modalRequest);
+    if (!modalRequest) getJoinRequetsList();
+    else setUserRequests([]);
+
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
@@ -156,6 +233,20 @@ function GroupDetail() {
   };
   const toggleModalInvite = () => {
     setModalInvite(!modalInvite);
+    if (!modalInvite) getFriendsList();
+    else setUserRequests([]);
+
+    if (document.body.style.overflow !== "hidden") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  };
+  const toggleModalMembers = () => {
+    setModalMembers(!modalMembers);
+    if (!modalMembers) getMembersList();
+    else setUserRequests([]);
+
     if (document.body.style.overflow !== "hidden") {
       document.body.style.overflow = "hidden";
     } else {
@@ -165,30 +256,29 @@ function GroupDetail() {
 
   const handleCreateGroup = () => {};
 
-  const getFriendRequests = useCallback(
+  const getFriendsList = useCallback(
     async () => {
-      console.log("friends request load");
       try {
-        // setModalLoading(true);
-        const data = await getFriendRequestsList(
-          // friendRequestsPage
+        setModalRequestsLoading(true);
+        const data = await getUserFriendsListByUsername(
+          user.username,
           1,
           20,
           privateHttpRequest.privateRequest
         );
-        setUserRequests(data.friend_requests);
-        // if (data) {
-        //   const recordsCount = data.friend_requests.length;
+        if (data) {
+          setUserRequests(data.friends);
+          // const recordsCount = data.friend_requests.length;
 
-        //   setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
-        //   if (recordsCount > 0 && friends.length === 0)
-        //     setFriendRequests(data.friend_requests);
-        //   if (recordsCount > 0 && friends.length > 0)
-        //     setFriendRequests((prev) => [...prev, ...data.friend_requests]);
-        // }
-        // setModalLoading(false);
+          // setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+          // if (recordsCount > 0 && friends.length === 0)
+          //   setFriendRequests(data.friend_requests);
+          // if (recordsCount > 0 && friends.length > 0)
+          //   setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+          setModalRequestsLoading(false);
+        }
       } catch (err) {
-        // setModalLoading(false);
+        setModalRequestsLoading(false);
         console.error("list ", err);
       }
     },
@@ -196,67 +286,62 @@ function GroupDetail() {
       // friendRequestsPage
     ]
   );
-  useEffect(
-    () => {
-      // if (listType === 2 && modal)
-      getFriendRequests();
-    },
-    [
-      // listType, friendRequestsPage, modal
-    ]
-  );
 
-  const [posts, setPosts] = useState([
-    {
-      creator: {
-        username: "redian_",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      ],
-      likes: 54,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "johndoe",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80",
-      ],
-      likes: 432,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "mariussss",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
-      ],
-      likes: 140,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "kobee_18",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU",
-      ],
-      likes: 14,
-      timestamp: "2d",
-    },
-  ]);
+  const getJoinRequetsList = useCallback(async () => {
+    if (!modalRequestsLoading) {
+      try {
+        setModalRequestsLoading(true);
+        const data = await getJoinRequests(
+          id,
+          1,
+          200,
+          privateHttpClient.privateRequest
+        );
+        if (data) {
+          setUserRequests(data.users);
+          // const recordsCount = data.friend_requests.length;
+
+          // setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+          // if (recordsCount > 0 && friends.length === 0)
+          //   setFriendRequests(data.friend_requests);
+          // if (recordsCount > 0 && friends.length > 0)
+          //   setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+          setModalRequestsLoading(false);
+        }
+      } catch (err) {
+        setModalRequestsLoading(false);
+        console.error("list ", err);
+      }
+    }
+  }, [id]);
+
+  const getMembersList = useCallback(async () => {
+    if (!modalRequestsLoading) {
+      try {
+        setModalRequestsLoading(true);
+        const data = await getMembers(
+          id,
+          1,
+          200,
+          privateHttpClient.privateRequest
+        );
+        if (data) {
+          setUserRequests(data.members);
+          // const recordsCount = data.friend_requests.length;
+
+          // setHasMoreFriendRequests(recordsCount > 0 && recordsCount === 20);
+          // if (recordsCount > 0 && friends.length === 0)
+          //   setFriendRequests(data.friend_requests);
+          // if (recordsCount > 0 && friends.length > 0)
+          //   setFriendRequests((prev) => [...prev, ...data.friend_requests]);
+          setModalRequestsLoading(false);
+        }
+      } catch (err) {
+        setModalRequestsLoading(false);
+        console.error("list ", err);
+      }
+    }
+  }, [id]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -519,7 +604,11 @@ function GroupDetail() {
                 </div>
                 <div className={cx("group__follow")}>
                   <span>{groupDetail?.group_posts_count} posts</span>
-                  <a className={cx("follow")}>
+                  <a
+                    className={cx("follow")}
+                    onClick={toggleModalMembers}
+                    style={{ cursor: "pointer" }}
+                  >
                     {groupDetail?.members_count} members
                   </a>
                   <a
@@ -555,11 +644,16 @@ function GroupDetail() {
             <a>
               <div
                 className={cx("choose")}
-                // onClick={() => {
-                //   setUserPosts([]);
-                //   setPostPage(1);
-                //   setPostType(1);
-                // }}
+                style={
+                  subPath === ""
+                    ? { color: "white", borderTop: "white solid 1px" }
+                    : null
+                }
+                onClick={() => {
+                  //setPendingPosts([]);
+                  setPendingPostsPage(1);
+                  navigate(`/g/${id}/`);
+                }}
               >
                 <GridOnIcon className={cx("icon")} />
                 <span
@@ -571,29 +665,36 @@ function GroupDetail() {
               </div>
             </a>
 
-            <a>
-              <div
-                className={cx("choose")}
-                // onClick={() => {
-                //   setUserPosts([]);
-                //   setPostPage(1);
-                //   setPostType(2);
-                // }}
-              >
-                <BookmarkBorderIcon className={cx("icon")} />
-                <span
-                  className={cx("span")}
-                  style={{ textTransform: "uppercase" }}
+            {groupDetail?.is_group_admin && (
+              <a>
+                <div
+                  className={cx("choose")}
+                  style={
+                    subPath === "pending-posts"
+                      ? { color: "white", borderTop: "white solid 1px" }
+                      : null
+                  }
+                  onClick={() => {
+                    //setPendingPosts([]);
+                    setPendingPostsPage(1);
+                    navigate(`pending-posts`);
+                  }}
                 >
-                  Saved
-                </span>
-              </div>
-            </a>
+                  <PendingOutlinedIcon className={cx("icon")} />
+                  <span
+                    className={cx("span")}
+                    style={{ textTransform: "uppercase" }}
+                  >
+                    Pending
+                  </span>
+                </div>
+              </a>
+            )}
           </div>
 
           <div className={cx("group__posts")}>
             <div className={cx("group__post")}>
-              {posts.map((post) => (
+              {pendingPosts.map((post) => (
                 <PostRequest
                   post={post}
                   key={post.id} // Add a unique key prop when rendering a list of components
@@ -633,12 +734,14 @@ function GroupDetail() {
                 Report
               </div>
             ) : ( */}
-            <div
-              className={cx("more-content-element")}
-              style={{ color: "#ed4956" }}
-            >
-              Leave
-            </div>
+            {user._id !== groupDetail?.created_by._id ? (
+              <div
+                className={cx("more-content-element")}
+                style={{ color: "#ed4956" }}
+              >
+                Leave
+              </div>
+            ) : null}
             <div className={cx("more-content-element")} onClick={toggleEdit}>
               Edit
             </div>
@@ -671,13 +774,20 @@ function GroupDetail() {
           </div>
           <div className={cx("more-content")}>
             <div className={cx("more-content-header")}>
-              <div className={cx("more-content-title")}>Groups Invited</div>
+              <div className={cx("more-content-title")}>Join requests</div>
             </div>
             <div className={cx("group-modal-content")}>
               {userRequests.map((user) => {
-                console.log(user);
-                return <UserRequestGroup user={user} type={1} />;
+                return (
+                  <UserRequestGroup
+                    user={user}
+                    setUser={setUserRequests}
+                    setGroupDetail={setGroupDetail}
+                    type={1}
+                  />
+                );
               })}
+              {modalRequestsLoading && <CircularProgress />}
             </div>
           </div>
         </div>
@@ -708,9 +818,48 @@ function GroupDetail() {
             </div>
             <div className={cx("group-modal-content")}>
               {userRequests.map((user) => {
-                console.log(user);
                 return <UserRequestGroup user={user} type={2} />;
               })}
+              {modalRequestsLoading && <CircularProgress />}
+            </div>
+          </div>
+        </div>
+      )}
+      {modalMembers && (
+        <div className={cx("modal active-modal")}>
+          <div
+            onClick={toggleModalMembers}
+            className={cx("overlay")}
+            style={{ alignSelf: "flex-end" }}
+          >
+            <CloseIcon
+              className={cx("sidenav__icon")}
+              style={{
+                width: "27px",
+                height: "27px",
+                color: "white",
+                margin: "12px 30px",
+                position: "absolute",
+                right: "0",
+                cursor: "pointer",
+              }}
+            />
+          </div>
+          <div className={cx("more-content")}>
+            <div className={cx("more-content-header")}>
+              <div className={cx("more-content-title")}>Members</div>
+            </div>
+            <div className={cx("group-modal-content")}>
+              {userRequests.map((user) => {
+                return (
+                  <UserRequestGroup
+                    user={user}
+                    groupOwner={groupDetail?.created_by}
+                    type={3}
+                  />
+                );
+              })}
+              {modalRequestsLoading && <CircularProgress />}
             </div>
           </div>
         </div>

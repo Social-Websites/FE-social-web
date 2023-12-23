@@ -49,7 +49,7 @@ const privateRoutes = [
   { path: "/:username/*", component: Profile },
   { path: "/chat", component: Chat },
   { path: "/group", component: GroupPage },
-  { path: "/g/:id", component: GroupDetail },
+  { path: "/g/:id/*", component: GroupDetail },
   { path: "/user-info/edit", component: EditProfilePage },
   { path: "/accounts/changePass/", component: ChangePassPage },
   { path: "/p/:id", component: PostDetailPage },
