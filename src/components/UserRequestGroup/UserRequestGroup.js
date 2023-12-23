@@ -7,17 +7,26 @@ import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { CircularProgress } from "@mui/material";
 import { StateContext } from "../../context/StateContext";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAuth from "../../shared/hook/auth-hook/auth-hook";
 import {
   acceptRequestToGroup,
   acceptToGroup,
+  inviteUserToGroup,
   rejectRequestToGroup,
 } from "../../services/groupService";
 
 const cx = classNames.bind(styles);
-function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
+function GroupInvited({
+  user,
+  setUser,
+  setGroupDetail,
+  isGroupAdmin,
+  groupOwner,
+  type,
+}) {
   const authObj = useAuth();
+  const { id } = useParams();
   const privateHttpClient = usePrivateHttpClient();
 
   const [decisionLoading, setDecisionLoading] = useState(false);
@@ -26,6 +35,7 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
     try {
       setDecisionLoading(true);
       const response = await acceptRequestToGroup(
+        id,
         user._id,
         privateHttpClient.privateRequest
       );
@@ -57,6 +67,32 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
     try {
       setDecisionLoading(true);
       const response = await rejectRequestToGroup(
+        id,
+        user._id,
+        privateHttpClient.privateRequest
+      );
+
+      if (response.message) {
+        setUser((prev) => prev.filter((item) => item._id !== user._id));
+
+        setGroupDetail((prev) => ({
+          ...prev,
+          members_count: prev.members_count - 1,
+        }));
+
+        setDecisionLoading(false);
+      }
+    } catch (err) {
+      console.error("reject ", err);
+      setDecisionLoading(false);
+    }
+  };
+
+  const handleKick = async () => {
+    try {
+      setDecisionLoading(true);
+      const response = await rejectRequestToGroup(
+        id,
         user._id,
         privateHttpClient.privateRequest
       );
@@ -72,7 +108,31 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
         setDecisionLoading(false);
       }
     } catch (err) {
-      console.error("reject ", err);
+      console.error("kick ", err);
+      setDecisionLoading(false);
+    }
+  };
+
+  const handleInvite = async () => {
+    try {
+      setDecisionLoading(true);
+      const response = await inviteUserToGroup(
+        id,
+        user._id,
+        privateHttpClient.privateRequest
+      );
+
+      if (response.message) {
+        setUser((prev) =>
+          prev.map((item) =>
+            item._id === user._id ? { ...item, status: "INVITED" } : item
+          )
+        );
+
+        setDecisionLoading(false);
+      }
+    } catch (err) {
+      console.error("invite ", err);
       setDecisionLoading(false);
     }
   };
@@ -114,7 +174,7 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
         </Link>
         {type === 3 && (
           <span className={cx("modal__group__relation")}>
-            {authObj.user._id === groupOwner._id ? "GROUP OWNER" : user.status}
+            {user._id === groupOwner._id ? "GROUP OWNER" : user.status}
           </span>
         )}
       </div>
@@ -146,22 +206,23 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
         </div>
       ) : type === 2 ? (
         <div>
-          {/* {props.decision === "ACCEPT" ? (
-                <span style={{ color: "white" }}>Accepted</span>
-                ) : props.decision === "REJECT" ? (
-                <span style={{ color: "white" }}>Rejected</span>
-                ) : ( */}
-
-          <>
+          {user.status === "NONE" ? (
             <button
-              // onClick={handleAccept}
+              onClick={handleInvite}
               className={cx("modal__group__button__accept")}
-              // disabled={decisionLoading}
+              disabled={decisionLoading}
             >
               Invite
             </button>
-          </>
-          {/* )} */}
+          ) : user.status === "MEMBER" || user.status === "ADMIN" ? (
+            <span style={{ color: "white" }}>Has joined</span>
+          ) : user.status === "INVITED" ? (
+            <span style={{ color: "white" }}>Has invited</span>
+          ) : (
+            user.status === "REQUESTED" && (
+              <span style={{ color: "white" }}>Has requested to join</span>
+            )
+          )}
         </div>
       ) : (
         <div>
@@ -171,13 +232,13 @@ function GroupInvited({ user, setUser, setGroupDetail, groupOwner, type }) {
                 <span style={{ color: "white" }}>Rejected</span>
                 ) : ( */}
 
-          {authObj.user._id !== groupOwner._id &&
-            user.status === "ADMIN" &&
+          {user._id !== groupOwner._id &&
+            isGroupAdmin &&
             authObj.user._id !== user._id && (
               <button
-                // onClick={handleAccept}
+                onClick={handleKick}
                 className={cx("modal__group__button__kick")}
-                // disabled={decisionLoading}
+                disabled={decisionLoading}
               >
                 Kick
               </button>

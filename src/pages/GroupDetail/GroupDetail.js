@@ -46,9 +46,12 @@ import {
 } from "../../config/firebase";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  createGroupPost,
   getGroupDetail,
+  getGroupPosts,
   getJoinRequests,
   getMembers,
+  getUserFriendsList,
 } from "../../services/groupService";
 import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
 
@@ -126,63 +129,9 @@ function GroupDetail() {
   const [isLastImage, setIsLastImage] = useState(false);
   const checkCurrentChatIdRef = useRef(null);
 
-  const [pendingPostsPage, setPendingPostsPage] = useState(1);
-  const [pendingPosts, setPendingPosts] = useState([
-    {
-      creator: {
-        username: "redian_",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      ],
-      content: "sample lsfjlskfls",
-      likes: 54,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "johndoe",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-        "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80",
-      ],
-      content: "sample lsfjádgsdgsdgsdgsdgdsgglskfls",
-      likes: 432,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "mariussss",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
-      ],
-      content:
-        "sample lsfjádgsdgsdgsdgsdgdsggls51fsd6glksdjgsg2sd4gs4gsdkfls dsfkl slpa klsllllllllllllllllllllllllllllllll",
-      likes: 140,
-      timestamp: "2d",
-    },
-    {
-      creator: {
-        username: "kobee_18",
-        profile_picture:
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      },
-      media: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGCAaQ5u1TMTij5ELPWi5-VPtlSqELw-R6lj0EpYmNcGt56kOQaCokzS0IK81MOSphlkw&usqp=CAU",
-      ],
-      content: "sample lsfjádgsdgsdgsdgsdgdsgglskfls",
-      likes: 14,
-      timestamp: "2d",
-    },
-  ]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postsPage, setPostsPage] = useState(1);
+  const [posts, setPosts] = useState([]);
 
   const getGroupDetailData = useCallback(async () => {
     if (!groupDetailLoading) {
@@ -201,14 +150,39 @@ function GroupDetail() {
     }
   }, [id]);
 
+  const getPosts = useCallback(async () => {
+    if (!postsLoading) {
+      let status;
+      if (subPath === "pending-posts") status = "PENDING";
+      else if (subPath === "") status = "APPROVED";
+      try {
+        setPostsLoading(true);
+        const data = await getGroupPosts(
+          id,
+          status,
+          postsPage,
+          100,
+          privateHttpClient.privateRequest
+        );
+
+        if (data) {
+          setPosts(data.posts);
+          setPostsLoading(false);
+        }
+      } catch (err) {
+        console.error("list ", err);
+        setPostsLoading(false);
+      }
+    }
+  }, [id, subPath]);
+
   useEffect(() => {
     getGroupDetailData();
   }, [id]);
 
-  // useEffect(() => {
-  //   if (subPath === "") getProfilePosts();
-  //   else if (subPath === "saved") getProfileSavedPosts();
-  // }, [id, pendingPostsPage, subPath]);
+  useEffect(() => {
+    getPosts();
+  }, [id, postsPage, subPath]);
 
   const toggleMore = () => {
     setMore(!more);
@@ -260,11 +234,11 @@ function GroupDetail() {
     async () => {
       try {
         setModalRequestsLoading(true);
-        const data = await getUserFriendsListByUsername(
-          user.username,
+        const data = await getUserFriendsList(
+          id,
           1,
           20,
-          privateHttpRequest.privateRequest
+          privateHttpClient.privateRequest
         );
         if (data) {
           setUserRequests(data.friends);
@@ -539,22 +513,22 @@ function GroupDetail() {
       const urls = await Promise.allSettled(promises);
       const urlStrings = urls.map((url) => url.value.toString());
 
-      const postData = { title: titlePost, urlStrings };
-      const response = await createPost(
+      const postData = { groupId: id, title: titlePost, urlStrings };
+      const response = await createGroupPost(
         postData,
         privateHttpClient.privateRequest
       );
 
       if (response !== null) {
-        createdPostId = response.post._id;
-        dispatch(
-          addCreatedPost({
-            ...response.post,
-            is_user_liked: false,
-            reacts_count: 0,
-            comments_count: 0,
-          })
-        );
+        // createdPostId = response.post._id;
+        // dispatch(
+        //   addCreatedPost({
+        //     ...response.post,
+        //     is_user_liked: false,
+        //     reacts_count: 0,
+        //     comments_count: 0,
+        //   })
+        // );
         // socket.current.emit("sendNotification", {
         //   sender_id: user?._id,
         //   receiver_id: user?.friends,
@@ -567,7 +541,7 @@ function GroupDetail() {
         // onScrollToTop();
         setSnackBarNotif({
           severity: "success",
-          message: "Create success",
+          message: "Post has waiting for admin approve!",
         });
         setSnackBarOpen(true);
       }
@@ -651,7 +625,7 @@ function GroupDetail() {
                 }
                 onClick={() => {
                   //setPendingPosts([]);
-                  setPendingPostsPage(1);
+                  setPostsPage(1);
                   navigate(`/g/${id}/`);
                 }}
               >
@@ -676,7 +650,7 @@ function GroupDetail() {
                   }
                   onClick={() => {
                     //setPendingPosts([]);
-                    setPendingPostsPage(1);
+                    setPostsPage(1);
                     navigate(`pending-posts`);
                   }}
                 >
@@ -694,10 +668,10 @@ function GroupDetail() {
 
           <div className={cx("group__posts")}>
             <div className={cx("group__post")}>
-              {pendingPosts.map((post) => (
+              {posts.map((post) => (
                 <PostRequest
                   post={post}
-                  key={post.id} // Add a unique key prop when rendering a list of components
+                  key={post._id} // Add a unique key prop when rendering a list of components
                 />
               ))}
             </div>
@@ -818,7 +792,15 @@ function GroupDetail() {
             </div>
             <div className={cx("group-modal-content")}>
               {userRequests.map((user) => {
-                return <UserRequestGroup user={user} type={2} />;
+                return (
+                  <UserRequestGroup
+                    user={user}
+                    setUser={setUserRequests}
+                    setGroupDetail={setGroupDetail}
+                    isGroupAdmin={groupDetail?.is_group_admin}
+                    type={2}
+                  />
+                );
               })}
               {modalRequestsLoading && <CircularProgress />}
             </div>
@@ -854,6 +836,9 @@ function GroupDetail() {
                 return (
                   <UserRequestGroup
                     user={user}
+                    setUser={setUserRequests}
+                    setGroupDetail={setGroupDetail}
+                    isGroupAdmin={groupDetail?.is_group_admin}
                     groupOwner={groupDetail?.created_by}
                     type={3}
                   />
@@ -1289,6 +1274,23 @@ function GroupDetail() {
           )}
         </div>
       )}
+      <Snackbar
+        open={snackBarOpen}
+        autoHideDuration={6000}
+        onClose={(event, reason) => {
+          setSnackBarOpen(false);
+        }}
+      >
+        <Alert
+          onClose={(event, reason) => {
+            setSnackBarOpen(false);
+          }}
+          severity={snackBarNotif.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackBarNotif.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
