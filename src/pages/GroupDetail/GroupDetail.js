@@ -162,7 +162,7 @@ function GroupDetail() {
       promise = () => {
         const name = Date.now();
         const storageRef = ref(storage, `images/${name}`);
-        const uploadTask = uploadBytesResumable(storageRef, cover.file);
+        const uploadTask = uploadBytesResumable(storageRef, coverChange.file);
 
         return new Promise((resolve, reject) => {
           uploadTask.on(
