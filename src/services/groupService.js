@@ -41,6 +41,13 @@ export const getInvitedGroups = async (sendRequest) => {
   }
 };
 
+
+export const editGroup = async (formData, sendRequest) => {
+  try {
+    const response = await sendRequest(`/groups/edit`, "put", formData, {
+      headers: { "Content-Type": "application/json" },
+    });
+
 export const getJoinRequests = async (groupId, page, limit, sendRequest) => {
   try {
     const response = await sendRequest(
