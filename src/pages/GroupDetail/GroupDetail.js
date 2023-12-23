@@ -192,7 +192,7 @@ function GroupDetail() {
       let editData = null;
       if(promise !== null){
         const url = await Promise.allSettled(promise);
-        const urlString = url.value.toString();
+        const urlString = url[0].value.toString();
         editData = {
           name: name,
           description: bio,
