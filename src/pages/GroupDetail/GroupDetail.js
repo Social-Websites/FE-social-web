@@ -44,7 +44,7 @@ import {
   uploadBytesResumable,
 } from "../../config/firebase";
 import { useParams } from "react-router-dom";
-import { getGroupDetail } from "../../services/groupService";
+import { getGroupDetail, editGroup } from "../../services/groupService";
 import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
 
 const cx = classNames.bind(styles);
@@ -64,8 +64,10 @@ function GroupDetail() {
 
   const [groupDetail, setGroupDetail] = useState(null);
   const [groupDetailLoading, setGroupDetailLoading] = useState(false);
+  const [cover, setCover] = useState("")
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const [coverChange, setCoverChange] = useState(null);
   const [editingGroup, setEditingGroup] = useState(false);
   const [uploadProfileImgLoading, setUploadProfileImgLoading] = useState(false);
 
@@ -110,6 +112,7 @@ function GroupDetail() {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const fileEditRef = useRef(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
@@ -123,6 +126,9 @@ function GroupDetail() {
 
         if (data) {
           setGroupDetail(data.group_detail);
+          setName(data.group_detail.name)
+          setBio(data.group_detail.description)
+          setCover(data.group_detail.cover)
           setGroupDetailLoading(false);
         }
       } catch (err) {
@@ -131,6 +137,87 @@ function GroupDetail() {
       }
     }
   }, [id]);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0]; // Lấy tệp đã chọn
+    if (selectedFile) {
+      setCoverChange({
+        name: selectedFile.name,
+        url: URL.createObjectURL(selectedFile),
+        file: selectedFile
+      })
+      // Đọc tệp và cập nhật state avatar với URL hình ảnh mới
+      const reader = new FileReader();
+      reader.onload = (event) => {
+          setCover(event.target.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const submitEditHandler = async () => {
+    setEditingGroup(true);
+    let promise = null;
+    if(coverChange)(
+      promise = () => {
+        const name = Date.now();
+        const storageRef = ref(storage, `images/${name}`);
+        const uploadTask = uploadBytesResumable(storageRef, cover.file);
+
+        return new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            null,
+            (error) => {
+              console.log(error);
+              reject(error);
+              setCreatingPost(false);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref)
+                .then((url) => {
+                  console.log(url);
+                  resolve(url);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  reject(error);
+                });
+            }
+          );
+        });
+      }
+    )
+    try {
+      let editData = null;
+      if(promise !== null){
+        const url = await Promise.allSettled(promise);
+        const urlString = url.value.toString();
+        editData = {
+          name: name,
+          description: bio,
+          cover: urlString, 
+          groupId: groupDetail._id,
+        };
+      } else{
+        editData = {
+          name: name,
+          description: bio,
+          cover: cover
+        };
+      }
+      const result = await editGroup(editData, privateHttpClient.privateRequest);
+      if (result) {
+        setEditingGroup(false);
+        toggleEdit();
+        setCoverChange(null);
+      }
+    } catch(err){
+      toggleEdit();
+      setCoverChange(null);
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     getGroupDetailData();
@@ -163,7 +250,6 @@ function GroupDetail() {
     }
   };
 
-  const handleCreateGroup = () => {};
 
   const getFriendRequests = useCallback(
     async () => {
@@ -330,6 +416,9 @@ function GroupDetail() {
 
   function selectFiles() {
     fileInputRef.current.click();
+  }
+  function selectEditFiles() {
+    fileEditRef.current.click();
   }
   function onFileSelect(event) {
     const files = event.target.files;
@@ -771,27 +860,26 @@ function GroupDetail() {
                   )}
                 </div>
 
-                <div className={cx("group__content__info__user")}>
-                  <span className={cx("group__username")}>
-                    {user?.username}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/jpg,image/jpeg,image/png,image/webp"
-                    multiple
-                    ref={fileInputRef}
-                    onChange={onFileSelect}
-                    id="myFileInput"
-                    style={{ display: "none" }}
-                  />
-                  <span
-                    // onClick={handleUploadProfileImg}
-                    className={cx("group__changeAvatar")}
-                  >
-                    Change profile photo
-                  </span>
-                </div>
+              <div className={cx("group__content__info__user")}>
+                <span className={cx("group__username")}>
+                  {user?.username}
+                </span>
+                <input
+                  type="file"
+                  accept="image/jpg,image/jpeg,image/png,image/webp"
+                  multiple
+                  ref={fileEditRef}
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+                <span
+                  onClick={selectEditFiles}
+                  className={cx("group__changeAvatar")}
+                >
+                  Change profile photo
+                </span>
               </div>
+            </div>
               <div className={cx("group__content__info")}>
                 <div className={cx("group__content__info__subject")}>
                   <span>Name</span>
@@ -852,7 +940,7 @@ function GroupDetail() {
                           opacity: 0.8,
                         },
                       }}
-                      onClick={handleCreateGroup}
+                      onClick={submitEditHandler}
                     >
                       Submit
                     </Button>
