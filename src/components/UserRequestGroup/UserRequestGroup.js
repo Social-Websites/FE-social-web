@@ -217,7 +217,7 @@ function GroupInvited({
           ) : user.status === "MEMBER" || user.status === "ADMIN" ? (
             <div
               style={
-                user.status !== "" && { display: "flex", alignItems: "center" }
+               { display: "flex", alignItems: "center" }
               }
             >
               <span
@@ -234,7 +234,7 @@ function GroupInvited({
           ) : user.status === "INVITED" ? (
             <div
               style={
-                user.status !== "" && { display: "flex", alignItems: "center" }
+                { display: "flex", alignItems: "center" }
               }
             >
               <span
@@ -252,7 +252,7 @@ function GroupInvited({
             user.status === "REQUESTED" && (
               <div
                 style={
-                  user.status !== "" && {
+                  {
                     display: "flex",
                     alignItems: "center",
                   }

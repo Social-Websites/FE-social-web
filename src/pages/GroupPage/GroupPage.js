@@ -391,7 +391,7 @@ function GroupPage() {
               {invitedGroups.length > 0 ? (
                 invitedGroups.map((group) => {
                   console.log(group);
-                  return <GroupInvited group={group} />;
+                  return <GroupInvited group={group} setMemberGroups={setInvitedGroups} memberGroups={memberGroups} />;
                 })
               ) : (
                 <div style={{ display: "flex", justifyContent: "center" }}>

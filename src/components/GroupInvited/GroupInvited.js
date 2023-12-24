@@ -9,7 +9,7 @@ import { deleteToGroup, acceptToGroup } from "../../services/groupService";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
-function GroupInvited({ group }) {
+function GroupInvited({ group, setMemberGroups, memberGroups }) {
 
     const privateHttpRequest = usePrivateHttpClient();
     const [loading, setLoading] = useState(false)
@@ -42,8 +42,10 @@ function GroupInvited({ group }) {
                 privateHttpRequest.privateRequest
                 );
                 if (respone !== null) {
-                setStatus("Accepted");
-                setLoading(false);
+                    setStatus("Accepted");
+                    const newgroup = {_id: group._id, name: group.name, cover: group.cover, status: "MEMBER"}
+                    setMemberGroups(prev => [...prev, newgroup])
+                    setLoading(false);
                 }
             } catch (err) {
                 console.error(err);
@@ -68,7 +70,7 @@ function GroupInvited({ group }) {
                 >
                 <img
                     style={{ width: "44px", height: "44px" }}
-                    src={getAvatarUrl(group.groupImage)}
+                    src={getAvatarUrl(group.cover)}
                     alt=""
                 />
                 </Link>
@@ -87,8 +89,9 @@ function GroupInvited({ group }) {
                     </span>
                 </Link>
             </div>
-            <div>
-                {status !== "" ? (<span>{status}</span>) : (
+            <div style={status!== "" && {display: "flex", alignItems: "center"}}>
+                {status !== "" ? (<span style={{fontWeight: "600", fontSize: "14px", color: "white",
+      fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`}}>{status}</span>) : (
                     <>
                     <button
                     onClick={handleAcceptToGroup}
