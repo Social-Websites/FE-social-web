@@ -215,12 +215,60 @@ function GroupInvited({
               Invite
             </button>
           ) : user.status === "MEMBER" || user.status === "ADMIN" ? (
-            <span style={{ color: "white" }}>Has joined</span>
+            <div
+              style={
+                user.status !== "" && { display: "flex", alignItems: "center" }
+              }
+            >
+              <span
+                style={{
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  color: "white",
+                  fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+                }}
+              >
+                Has joined
+              </span>
+            </div>
           ) : user.status === "INVITED" ? (
-            <span style={{ color: "white" }}>Has invited</span>
+            <div
+              style={
+                user.status !== "" && { display: "flex", alignItems: "center" }
+              }
+            >
+              <span
+                style={{
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  color: "white",
+                  fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+                }}
+              >
+                Has invited
+              </span>
+            </div>
           ) : (
             user.status === "REQUESTED" && (
-              <span style={{ color: "white" }}>Has requested to join</span>
+              <div
+                style={
+                  user.status !== "" && {
+                    display: "flex",
+                    alignItems: "center",
+                  }
+                }
+              >
+                <span
+                  style={{
+                    fontWeight: "600",
+                    fontSize: "14px",
+                    color: "white",
+                    fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+                  }}
+                >
+                  Has requested to join
+                </span>
+              </div>
             )
           )}
         </div>

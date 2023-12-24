@@ -56,6 +56,7 @@ import {
   editGroup,
 } from "../../services/groupService";
 import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
+import Post from "../../components/Post/Post";
 
 const cx = classNames.bind(styles);
 
@@ -68,7 +69,7 @@ function GroupDetail() {
   const [modalInvite, setModalInvite] = useState(false);
   const [modalMembers, setModalMembers] = useState(false);
   const [userRequests, setUserRequests] = useState([]);
-  const privateHttpRequest = usePrivateHttpClient();
+
   const privateHttpClient = usePrivateHttpClient();
 
   const { user, dispatch } = useContext(StateContext);
@@ -674,25 +675,29 @@ function GroupDetail() {
                   >
                     {groupDetail?.members_count} members
                   </a>
-                  <a
-                    className={cx("follow")}
-                    onClick={toggleModalRequest}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {groupDetail?.requests_count} requests
-                  </a>
+                  {groupDetail?.is_group_admin && (
+                    <a
+                      className={cx("follow")}
+                      onClick={toggleModalRequest}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {groupDetail?.requests_count} requests
+                    </a>
+                  )}
                 </div>
               </div>
               <div className={cx("group__info__2")}>
                 <button className={cx("profile__button")} onClick={toggleModal}>
                   <span>Create Post</span>
                 </button>
-                <button
-                  className={cx("profile__button")}
-                  onClick={toggleModalInvite}
-                >
-                  <span>+ Invite</span>
-                </button>
+                {groupDetail?.is_group_admin && (
+                  <button
+                    className={cx("profile__button")}
+                    onClick={toggleModalInvite}
+                  >
+                    <span>+ Invite</span>
+                  </button>
+                )}
                 <MoreHorizIcon
                   onClick={toggleMore}
                   className={cx("post__more")}
@@ -713,7 +718,7 @@ function GroupDetail() {
                     : null
                 }
                 onClick={() => {
-                  //setPendingPosts([]);
+                  setPosts([]);
                   setPostsPage(1);
                   navigate(`/g/${id}/`);
                 }}
@@ -738,7 +743,7 @@ function GroupDetail() {
                       : null
                   }
                   onClick={() => {
-                    //setPendingPosts([]);
+                    setPosts([]);
                     setPostsPage(1);
                     navigate(`pending-posts`);
                   }}
@@ -757,12 +762,24 @@ function GroupDetail() {
 
           <div className={cx("group__posts")}>
             <div className={cx("group__post")}>
-              {posts.map((post) => (
-                <PostRequest
-                  post={post}
-                  key={post._id} // Add a unique key prop when rendering a list of components
-                />
-              ))}
+              {subPath === "pending-posts"
+                ? posts.map((post) => (
+                    <PostRequest
+                      post={post}
+                      setPosts={setPosts}
+                      key={post._id} // Add a unique key prop when rendering a list of components
+                    />
+                  ))
+                : subPath === ""
+                ? posts.map((post) => (
+                    <Post
+                      post={post}
+                      // setPosts={setPosts}
+                      key={post._id} // Add a unique key prop when rendering a list of components
+                    />
+                  ))
+                : null}
+              {postsLoading && <CircularProgress size={50} />}
             </div>
           </div>
         </div>
@@ -805,9 +822,11 @@ function GroupDetail() {
                 Leave
               </div>
             ) : null}
-            <div className={cx("more-content-element")} onClick={toggleEdit}>
-              Edit
-            </div>
+            {groupDetail?.is_group_admin && (
+              <div className={cx("more-content-element")} onClick={toggleEdit}>
+                Edit
+              </div>
+            )}
             {/* )} */}
             <div className={cx("more-content-element")} onClick={toggleMore}>
               Cancel

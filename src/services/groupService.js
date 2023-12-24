@@ -41,17 +41,16 @@ export const getInvitedGroups = async (sendRequest) => {
   }
 };
 
-
 export const editGroup = async (formData, sendRequest) => {
   try {
     const response = await sendRequest(`/groups/edit`, "put", formData, {
       headers: { "Content-Type": "application/json" },
     });
     return response?.data;
-    } catch (err) {
+  } catch (err) {
     throw err;
   }
-}
+};
 
 export const getJoinRequests = async (groupId, page, limit, sendRequest) => {
   try {
@@ -239,6 +238,38 @@ export const getGroupPosts = async (
   try {
     const response = await sendRequest(
       `/groups/${groupId}/posts?status=${status}&page=${page}&limit=${limit}`
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const rejectGroupPost = async (postId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/groups/posts/${postId}/reject`,
+      "put",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const approveGroupPost = async (postId, sendRequest) => {
+  try {
+    const response = await sendRequest(
+      `/groups/posts/${postId}/approve`,
+      "put",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
 
     return response?.data;
