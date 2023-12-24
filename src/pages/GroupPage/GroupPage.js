@@ -164,7 +164,7 @@ function GroupPage() {
             <div className={cx("group__button")}>
               <button
                 onClick={toggleModal}
-                style={{ marginRight: "10px" }}
+                style={{ marginRight: 10 }}
                 className={cx("create__button")}
               >
                 <span>Invitation</span>
@@ -181,7 +181,7 @@ function GroupPage() {
               </div>
             ) : searchedGroups.length > 0 ? (
               <div className={cx("groups")}>
-                <div style={{ width: "90%", paddingBottom: "20px" }}>
+                <div style={{ width: "90%", paddingBottom: 20 }}>
                   <div className={cx("group__items_header")}>Results</div>
                   <div className={cx("group__items")}>
                     {searchedGroups?.map((group) => (
@@ -195,8 +195,8 @@ function GroupPage() {
                 <span
                   style={{
                     color: "#A8A8A8",
-                    padding: "20px",
-                    fontSize: "15px",
+                    padding: 20,
+                    fontSize: 15,
                     fontWeight: 500,
                     fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Helvetica, Arial, sans-serif`,
@@ -217,10 +217,10 @@ function GroupPage() {
                         memberGroups?.length > 0
                           ? {
                               width: "90%",
-                              paddingBottom: "20px",
+                              paddingBottom: 20,
                               borderBottom: "#212121 solid 1px",
                             }
-                          : { width: "90%", paddingBottom: "20px" }
+                          : { width: "90%", paddingBottom: 20 }
                       }
                     >
                       <div className={cx("group__items_header")}>
@@ -236,7 +236,7 @@ function GroupPage() {
                 )}
                 {memberGroups?.length > 0 && (
                   <div className={cx("groups")}>
-                    <div style={{ width: "90%", paddingBottom: "20px" }}>
+                    <div style={{ width: "90%", paddingBottom: 20 }}>
                       <div className={cx("group__items_header")}>
                         All groups you have joined
                       </div>
@@ -254,8 +254,8 @@ function GroupPage() {
                 <span
                   style={{
                     color: "#A8A8A8",
-                    padding: "20px",
-                    fontSize: "15px",
+                    padding: 20,
+                    fontSize: 15,
                     fontWeight: 500,
                     fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Helvetica, Arial, sans-serif`,
@@ -277,8 +277,8 @@ function GroupPage() {
             <CloseIcon
               className={cx("sidenav__icon")}
               style={{
-                width: "27px",
-                height: "27px",
+                width: 27,
+                height: 27,
                 color: "white",
                 margin: "12px 30px",
                 position: "absolute",
@@ -373,12 +373,12 @@ function GroupPage() {
             <CloseIcon
               className={cx("sidenav__icon")}
               style={{
-                width: "27px",
-                height: "27px",
+                width: 27,
+                height: 27,
                 color: "white",
                 margin: "12px 30px",
                 position: "absolute",
-                right: "0",
+                right: 0,
                 cursor: "pointer",
               }}
             />
@@ -390,16 +390,16 @@ function GroupPage() {
             <div className={cx("group-modal-content")}>
               {invitedGroups.length > 0 ? (
                 invitedGroups.map((group) => {
-                  console.log(group);
-                  return <GroupInvited group={group} setMemberGroups={setInvitedGroups} memberGroups={memberGroups} />;
+                  console.log(memberGroups);
+                  return <GroupInvited group={group} setMemberGroups={setMemberGroups} />;
                 })
               ) : (
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <span
                     style={{
                       color: "#A8A8A8",
-                      padding: "20px",
-                      fontSize: "15px",
+                      padding: 20,
+                      fontSize: 15,
                       fontWeight: 500,
                       fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                 Helvetica, Arial, sans-serif`,

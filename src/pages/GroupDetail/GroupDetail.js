@@ -233,28 +233,37 @@ function GroupDetail() {
     }
     try {
       let editData = null;
+      let urlString = cover;
       if (promise !== null) {
         const url = await Promise.allSettled([promise]);
-        const urlString = url[0].value.toString();
+        urlString = url[0].value.toString();
         editData = {
           name: name,
           description: bio,
           cover: urlString,
-          groupId: groupDetail._id,
+          groupId: id,
         };
       } else {
         editData = {
           name: name,
           description: bio,
           cover: cover,
+          groupId: id,
         };
       }
+      console.log(editData);
       const result = await editGroup(
         editData,
         privateHttpClient.privateRequest
       );
       if (result) {
         setEditingGroup(false);
+        setGroupDetail((prev) => ({
+          ...prev,
+          name: name,
+          description: bio,
+          cover: urlString,
+        }));
         toggleEdit();
         setCoverChange(null);
       }
@@ -995,9 +1004,7 @@ function GroupDetail() {
                         ? "brightness(70%)"
                         : "brightness(100%)",
                     }}
-                    src={getAvatarUrl(
-                      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
-                    )}
+                    src={getAvatarUrl(cover)}
                     alt=""
                   />
                   {uploadProfileImgLoading && (

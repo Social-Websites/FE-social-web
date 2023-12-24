@@ -81,6 +81,7 @@ function GroupInvited({
         }));
 
         setDecisionLoading(false);
+        
       }
     } catch (err) {
       console.error("reject ", err);

@@ -25,15 +25,16 @@ const SuggestedUser = ({ user }) => {
           user._id,
           privateHttpRequest.privateRequest
         );
-        if (response.message) setIsSentFriendRequest(true);
+        if (response.message){
+          setIsSentFriendRequest(true);
+          socket.current.emit("sendNotification", {
+            sender_id: authLogin.user?._id,
+            receiver_id: [user._id],
+            type: "request",
+          });
+        } 
       } catch (err) {
         console.error(privateHttpRequest.error);
-      } finally {
-        socket.current.emit("sendNotification", {
-          sender_id: authLogin.user?._id,
-          receiver_id: [user._id],
-          type: "request",
-        });
       }
     }
   };

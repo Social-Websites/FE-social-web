@@ -22,17 +22,16 @@ function NotificationItem({ n }) {
       );
       if (response.message) {
         setDecisionLoading("accept");
+        socket.current.emit("sendNotification", {
+          sender_id: user?._id,
+          receiver_id: [n.sender_id],
+          reponse: true,
+          type: "accept",
+        });
       }
     } catch (err) {
       console.error("accept", err);
       setDecisionLoading(false);
-    } finally {
-      socket.current.emit("sendNotification", {
-        sender_id: user?._id,
-        receiver_id: [n.sender_id],
-        reponse: true,
-        type: "accept",
-      });
     }
   };
   const handleReject = async () => {
@@ -44,17 +43,16 @@ function NotificationItem({ n }) {
       );
       if (response.message) {
         setDecisionLoading("reject");
+        socket.current.emit("sendNotification", {
+          sender_id: user?._id,
+          receiver_id: [n.sender_id],
+          reponse: false,
+          type: "reject",
+        });
       }
     } catch (err) {
       console.error("reject ", err);
       setDecisionLoading(false);
-    } finally {
-      socket.current.emit("sendNotification", {
-        sender_id: user?._id,
-        receiver_id: [n.sender_id],
-        reponse: false,
-        type: "reject",
-      });
     }
   };
   return (

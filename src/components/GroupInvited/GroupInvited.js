@@ -9,7 +9,7 @@ import { deleteToGroup, acceptToGroup } from "../../services/groupService";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
-function GroupInvited({ group, setMemberGroups, memberGroups }) {
+function GroupInvited({ group, setMemberGroups }) {
 
     const privateHttpRequest = usePrivateHttpClient();
     const [loading, setLoading] = useState(false)
@@ -36,6 +36,7 @@ function GroupInvited({ group, setMemberGroups, memberGroups }) {
     const handleAcceptToGroup = async () => {
         if(!loading){
             setLoading(true);
+            console.log(group._id);
             try {
                 const respone = await acceptToGroup(
                 group._id,
@@ -47,6 +48,7 @@ function GroupInvited({ group, setMemberGroups, memberGroups }) {
                     setMemberGroups(prev => [...prev, newgroup])
                     setLoading(false);
                 }
+                console.log(respone);
             } catch (err) {
                 console.error(err);
                 setLoading(false);
@@ -57,7 +59,7 @@ function GroupInvited({ group, setMemberGroups, memberGroups }) {
         <div className={cx("modal__group")}>
             <div style={{
                 display: "flex",
-                alignItems: "center"
+                alignItems: "center",
             }}>
                 <Link
                     // to={`/${props.groupId}`}
@@ -69,29 +71,21 @@ function GroupInvited({ group, setMemberGroups, memberGroups }) {
                 }}
                 >
                 <img
-                    style={{ width: "44px", height: "44px" }}
+                    style={{ width: 44, height: 44 }}
                     src={getAvatarUrl(group.cover)}
                     alt=""
                 />
                 </Link>
             </div>
             <div className={cx("modal__group__info")}>
-                <Link
-                    // to={`/${props.groupId}`}
-                    style={{
-                        position: "inherit",
-                        textDecoration: "none",
-                        color: "inherit",
-                    }}
-                >
                     <span className={cx("modal__group__username")}>
                         {group.name}
                     </span>
-                </Link>
             </div>
-            <div style={status!== "" && {display: "flex", alignItems: "center"}}>
-                {status !== "" ? (<span style={{fontWeight: "600", fontSize: "14px", color: "white",
-      fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`}}>{status}</span>) : (
+            <div style={status !== "" ? {display: "flex", alignItems: "center"} : null}>
+                {status !== "" ? (<span style={{fontWeight: 600, fontSize: 14, color: "white",
+                    fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
+                }}>{status}</span>) : (
                     <>
                     <button
                     onClick={handleAcceptToGroup}

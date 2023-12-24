@@ -30,14 +30,15 @@ const ReactIcon = (props) => {
         { postId: props.postId, emoji: "LOVE" },
         privateHttpRequest.privateRequest
       );
+      if(response){
+        socket.current.emit("sendNotification", {
+          sender_id: user?._id,
+          receiver_id: props.userId,
+          content_id: props.postId,
+          type: "like",
+        });
+      }
     } catch (err) {
-    } finally {
-      socket.current.emit("sendNotification", {
-        sender_id: user?._id,
-        receiver_id: props.userId,
-        content_id: props.postId,
-        type: "like",
-      });
     }
   };
   return (

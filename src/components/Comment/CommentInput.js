@@ -70,6 +70,12 @@ const CommentInput = forwardRef((props, ref) => {
             props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
+            socket.current.emit("sendNotification", {
+              sender_id: user?._id,
+              receiver_id: [props.userId],
+              content_id: props.postId,
+              type: "comment",
+            });
             if (!props.isReply) props.setIsReply(false);
           }
         } else if (props.parentCommentId.trim() !== "") {
@@ -84,19 +90,18 @@ const CommentInput = forwardRef((props, ref) => {
             props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
+            socket.current.emit("sendNotification", {
+              sender_id: user?._id,
+              receiver_id: [props.userId],
+              content_id: props.postId,
+              type: "reply",
+            });
             if (!props.isReply) props.setIsReply(false);
           }
         }
       } catch (err) {
         console.error("Error while post comment: ", err);
-      } finally {
-        socket.current.emit("sendNotification", {
-          sender_id: user?._id,
-          receiver_id: [props.userId],
-          content_id: props.postId,
-          type: "comment",
-        });
-      }
+      } 
     }
   };
 
