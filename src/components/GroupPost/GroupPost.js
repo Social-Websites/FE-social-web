@@ -384,17 +384,22 @@ const GroupPost = forwardRef(({ post }, ref) => {
             >
               {post.creator?.username}
             </Link>
-            <Link
-              to={`/${post.creator?.username}/`}
-              className={cx("chatInfo__user")}
-            >
-              {post.creator?.username}
-            </Link>
+            <div style={{display: "flex"}}>
+              <Link
+                to={`/${post.creator?.username}/`}
+                className={cx("chatInfo__user")}
+              >
+                {post.creator?.username}
+              </Link>
+              
+              <span style={{color: "#A8A8A8", fontSize: "12px",fontWeight: 400,
+                fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
+              }}>
+                • <TimeAgo type="short" created_at={post.created_at} />
+              </span>
+            </div>
           </div>
-          •
-          <span>
-            <TimeAgo type="short" created_at={post.created_at} />
-          </span>
+          
         </div>
         <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
       </div>
