@@ -275,6 +275,7 @@
             align-items: flex-start;
             justify-content: center;
             margin-left: 7px;
+            width: 100%;
 
             .postInfo-username {
               left: 0;
@@ -369,10 +370,11 @@
 
     .post-comment-user-info {
       width: 100%;
+      margin-bottom: 7px;
       display: inline-block;
       word-wrap: break-word;
       .post-comment-content {
-        width: 100px;
+        width: 100%;
         max-width: max-content;
         white-space: pre-line;
         word-wrap: break-word;

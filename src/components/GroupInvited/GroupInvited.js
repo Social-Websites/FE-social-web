@@ -1,11 +1,12 @@
 import classNames from "classnames/bind";
-import { React, useState } from "react";
+import { React, useState, useContext } from "react";
 import styles from "./GroupInvited.module.scss";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import { deleteToGroup, acceptToGroup } from "../../services/groupService";
+import { StateContext } from "../../context/StateContext";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
@@ -13,6 +14,7 @@ function GroupInvited({ group, setMemberGroups }) {
 
     const privateHttpRequest = usePrivateHttpClient();
     const [loading, setLoading] = useState(false)
+    const {user, socket} = useContext(StateContext);
     const [status, setStatus] = useState("")
     const handleDeleteToGroup = async () => {
         if(!loading){
@@ -23,8 +25,15 @@ function GroupInvited({ group, setMemberGroups }) {
                 privateHttpRequest.privateRequest
                 );
                 if (respone !== null) {
-                setStatus("Rejected");
-                setLoading(false);
+                    setStatus("Rejected");
+                    setLoading(false);
+                    socket.current.emit("sendNotification", {
+                        sender_id: user._id,
+                        receiver_id: [group.owner],
+                        group_id: group._id,
+                        reponse: false,
+                        type: "rejectGroup",
+                    });
                 }
             } catch (err) {
                 console.error(err);
@@ -47,6 +56,13 @@ function GroupInvited({ group, setMemberGroups }) {
                     const newgroup = {_id: group._id, name: group.name, cover: group.cover, status: "MEMBER"}
                     setMemberGroups(prev => [...prev, newgroup])
                     setLoading(false);
+                    socket.current.emit("sendNotification", {
+                        sender_id: user._id,
+                        receiver_id: [group.owner],
+                        group_id: group._id,
+                        reponse: true,
+                        type: "acceptGroup",
+                      });
                 }
                 console.log(respone);
             } catch (err) {
