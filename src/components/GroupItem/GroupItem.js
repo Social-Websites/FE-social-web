@@ -1,8 +1,9 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./GroupItem.module.scss";
 import { useNavigate } from "react-router-dom";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
+import { StateContext } from "../../context/StateContext";
 import {
   requestToGroup,
   deleteToGroup,
@@ -13,6 +14,7 @@ const cx = classNames.bind(styles);
 
 const GroupItem = ({ group }) => {
   const privateHttpRequest = usePrivateHttpClient();
+  const {user, socket} = useContext(StateContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(group.status);
@@ -24,8 +26,15 @@ const GroupItem = ({ group }) => {
         privateHttpRequest.privateRequest
       );
       if (respone !== null) {
+        console.log(user._id + group.owner)
         setLoading(false);
         setStatus("REQUESTED");
+        socket.current.emit("sendNotification", {
+          sender_id: user._id,
+          receiver_id: [group.owner],
+          group_id: group._id,
+          type: "requestGroup",
+        });
       }
     } catch (err) {
       console.error(err);
@@ -42,6 +51,13 @@ const GroupItem = ({ group }) => {
       );
       if (respone !== null) {
         setStatus(null);
+        socket.current.emit("sendNotification", {
+          sender_id: user._id,
+          receiver_id: [group.owner],
+          group_id: group._id,
+          reponse: false,
+          type: "rejectGroup",
+        });
         setLoading(false);
       }
     } catch (err) {
@@ -58,6 +74,13 @@ const GroupItem = ({ group }) => {
         privateHttpRequest.privateRequest
       );
       if (respone !== null) {
+        socket.current.emit("sendNotification", {
+          sender_id: user._id,
+          receiver_id: [group.owner],
+          group_id: group._id,
+          reponse: true,
+          type: "acceptGroup",
+        });
         setStatus("MEMBER");
         setLoading(false);
       }

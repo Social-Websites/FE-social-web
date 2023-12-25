@@ -132,6 +132,7 @@ function GroupDetail() {
       try {
         setGroupDetailLoading(true);
         const data = await getGroupDetail(id, privateHttpClient.privateRequest);
+        console.log(data);
 
         if (data) {
           setGroupDetail(data.group_detail);
@@ -736,8 +737,8 @@ function GroupDetail() {
                   className={cx("choose")}
                   style={
                     subPath === "pending-posts"
-                      ? { color: "white", borderTop: "white solid 1px" }
-                      : null
+                      ? { color: "white", borderTop: "white solid 1px", marginLeft: "50px" }
+                      : { marginLeft: "50px" }
                   }
                   onClick={() => {
                     setPosts([]);
@@ -862,6 +863,7 @@ function GroupDetail() {
                     user={user}
                     setUser={setUserRequests}
                     setGroupDetail={setGroupDetail}
+                    groupOwner={groupDetail?.created_by}
                     type={1}
                   />
                 );
@@ -903,6 +905,7 @@ function GroupDetail() {
                     setUser={setUserRequests}
                     setGroupDetail={setGroupDetail}
                     isGroupAdmin={groupDetail?.is_group_admin}
+                    groupOwner={groupDetail?.created_by}
                     type={2}
                   />
                 );
@@ -938,6 +941,7 @@ function GroupDetail() {
             </div>
             <div className={cx("group-modal-content")}>
               {userRequests.map((user) => {
+                console.log(user);
                 return (
                   <UserRequestGroup
                     user={user}

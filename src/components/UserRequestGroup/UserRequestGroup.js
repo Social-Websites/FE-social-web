@@ -30,7 +30,7 @@ function GroupInvited({
   const privateHttpClient = usePrivateHttpClient();
 
   const [decisionLoading, setDecisionLoading] = useState(false);
-
+  const {socket} = useContext(StateContext);
   const handleAccept = async () => {
     try {
       setDecisionLoading(true);
@@ -49,6 +49,14 @@ function GroupInvited({
         }));
 
         setDecisionLoading(false);
+
+        socket.current.emit("sendNotification", {
+          sender_id: groupOwner._id,
+          receiver_id: [user._id],
+          group_id: id,
+          reponse: true,
+          type: "acceptMember",
+        });
       }
     } catch (err) {
       console.error("accept ", err);
@@ -81,7 +89,13 @@ function GroupInvited({
         }));
 
         setDecisionLoading(false);
-        
+        socket.current.emit("sendNotification", {
+          sender_id: groupOwner._id,
+          receiver_id: [user._id],
+          group_id: id,
+          reponse: true,
+          type: "rejectMember",
+        });
       }
     } catch (err) {
       console.error("reject ", err);
@@ -122,15 +136,20 @@ function GroupInvited({
         user._id,
         privateHttpClient.privateRequest
       );
-
+      console.log(response);
       if (response.message) {
         setUser((prev) =>
           prev.map((item) =>
             item._id === user._id ? { ...item, status: "INVITED" } : item
           )
         );
-
         setDecisionLoading(false);
+        socket.current.emit("sendNotification", {
+          sender_id: groupOwner._id,
+          receiver_id: [user._id],
+          group_id: id,
+          type: "inviteGroup",
+        });
       }
     } catch (err) {
       console.error("invite ", err);
@@ -206,7 +225,9 @@ function GroupInvited({
           {/* )} */}
         </div>
       ) : type === 2 ? (
-        <div>
+        <div style={
+          { display: "flex", alignItems: "center" }
+         }>
           {user.status === "NONE" ? (
             <button
               onClick={handleInvite}
@@ -217,9 +238,6 @@ function GroupInvited({
             </button>
           ) : user.status === "MEMBER" || user.status === "ADMIN" ? (
             <div
-              style={
-               { display: "flex", alignItems: "center" }
-              }
             >
               <span
                 style={{
