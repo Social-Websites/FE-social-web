@@ -14,29 +14,17 @@ import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import WestIcon from "@mui/icons-material/West";
 import GridOnIcon from "@mui/icons-material/GridOn";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
-import { Alert, Backdrop, CircularProgress, Snackbar } from "@mui/material";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import Button from "@mui/material/Button";
 import EmojiPicker from "emoji-picker-react";
 import UserRequestGroup from "../../components/UserRequestGroup";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { StateContext } from "../../context/StateContext";
-import { createPost } from "../../services/postServices";
-import { addCreatedPost } from "../../context/StateAction";
-import {
-  getFriendRequestsList,
-  getUserByUsername,
-  getUserFriendsListByUsername,
-  removeAddFriend,
-  reportUser,
-  sendAddFriend,
-  unFriend,
-} from "../../services/userService";
 
 import {
   getDownloadURL,
