@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import Post from "../Post/Post";
+import GroupPost from "../GroupPost";
 import Suggestions from "../Suggestions/Suggestions";
 import classNames from "classnames/bind";
 import styles from "./TimeLine.scss";
@@ -72,8 +73,8 @@ const TimeLine = () => {
           ) : postsArray.length > 0 ? (
             postsArray.map(([postId, post], i) => {
               if (postsArray.length === i + 1)
-                return <Post ref={lastPostRef} key={postId} post={post} />;
-              return <Post key={postId} post={post} />;
+                return <GroupPost ref={lastPostRef} key={postId} post={post} />;
+              return <GroupPost key={postId} post={post} />;
             })
           ) : (
             <div className={cx("no__post")}>

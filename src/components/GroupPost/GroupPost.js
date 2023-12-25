@@ -680,7 +680,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
                         }}
                       >
                         <img
-                          style={{ width: "30px", height: "30px" }}
+                          style={{ width: "30px", height: "30px", borderRadius: "10px" }}
                           src={avatarUrl}
                           alt={post.creator.username + " avatar"}
                         />
