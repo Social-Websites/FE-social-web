@@ -45,6 +45,7 @@ import SavePostIcon from "../SavePostIcon/SavePostIcon";
 import { StateContext } from "../../context/StateContext";
 import { deleteContextPost } from "../../context/StateAction";
 import Comment from "../Comment/Comment";
+import getGroupCoverUrl from "../../shared/util/getGroupCoverUrl";
 
 const cx = classNames.bind(styles);
 
@@ -282,7 +283,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
 
   const goToPost = () => {
     if (more) toggleMore();
-    navigate(`/p/${post._id}`, { replace: true });
+    navigate(`/g/${post?.group._id}/p/${post._id}`, { replace: true });
   };
 
   const handleReportPost = async (reportReason) => {
@@ -348,9 +349,9 @@ const GroupPost = forwardRef(({ post }, ref) => {
     <div className={cx("post")}>
       <div className={cx("post__header")}>
         <div className={cx("post__headerAuthor")}>
-        <div className={cx("postInfo__avatar")}>
+          <div className={cx("postInfo__avatar")}>
             <Link
-              to={`/${post.creator?.username}/`}
+              to={`/g/${post?.group._id}/`}
               style={{
                 marginRight: 10,
                 position: "inherit",
@@ -360,14 +361,12 @@ const GroupPost = forwardRef(({ post }, ref) => {
             >
               <img
                 style={{ width: "40px", height: "40px", borderRadius: "10px" }}
-                src={avatarUrl}
+                src={getGroupCoverUrl(post?.group.cover)}
                 className={cx("group__cover")}
                 alt=""
               />
             </Link>
-            <Link
-              to={`/${post.creator?.username}/`}
-            >
+            <Link to={`/${post.creator?.username}/`}>
               <img
                 style={{ width: "24px", height: "24px", borderRadius: "50%" }}
                 src={avatarUrl}
@@ -379,27 +378,31 @@ const GroupPost = forwardRef(({ post }, ref) => {
           &nbsp;
           <div className={cx("postInfo__info")}>
             <Link
-              to={`/${post.creator?.username}/`}
+              to={`/g/${post?.group._id}/`}
               className={cx("chatInfo__group")}
             >
-              {post.creator?.username}
+              {post?.group.name}
             </Link>
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex" }}>
               <Link
                 to={`/${post.creator?.username}/`}
                 className={cx("chatInfo__user")}
               >
                 {post.creator?.username}
               </Link>
-              
-              <span style={{color: "#A8A8A8", fontSize: "12px",fontWeight: 400,
-                fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
-              }}>
+
+              <span
+                style={{
+                  color: "#A8A8A8",
+                  fontSize: "12px",
+                  fontWeight: 400,
+                  fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+                }}
+              >
                 • <TimeAgo type="short" created_at={post.created_at} />
               </span>
             </div>
           </div>
-          
         </div>
         <MoreHorizIcon onClick={toggleMore} className={cx("post__more")} />
       </div>
@@ -676,7 +679,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
                   <div className={cx("postInfo-user")}>
                     <div style={{ padding: 6 }}>
                       <Link
-                        to={`/${post.creator?.username}/`}
+                        to={`/g/${post?.group._id}/`}
                         className={cx("postInfo-user-avatar")}
                         style={{
                           position: "inherit",
@@ -685,15 +688,19 @@ const GroupPost = forwardRef(({ post }, ref) => {
                         }}
                       >
                         <img
-                          style={{ width: "30px", height: "30px", borderRadius: "10px" }}
-                          src={avatarUrl}
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            borderRadius: "10px",
+                          }}
+                          src={getGroupCoverUrl(post?.group.cover)}
                           alt={post.creator.username + " avatar"}
                         />
                       </Link>
                     </div>
                     <div className={cx("postInfo-user-info")}>
                       <Link
-                        to={`/${post.creator?.username}/`}
+                        to={`/g/${post?.group._id}/`}
                         style={{
                           position: "inherit",
                           textDecoration: "none",
@@ -701,7 +708,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
                         }}
                       >
                         <span className={cx("postInfo-username")}>
-                          {post.creator.username}
+                          {post?.group.name}
                         </span>
                       </Link>
                     </div>

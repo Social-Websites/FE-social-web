@@ -72,9 +72,17 @@ const TimeLine = () => {
             </div>
           ) : postsArray.length > 0 ? (
             postsArray.map(([postId, post], i) => {
-              if (postsArray.length === i + 1)
-                return <GroupPost ref={lastPostRef} key={postId} post={post} />;
-              return <GroupPost key={postId} post={post} />;
+              if (post?.group) {
+                if (postsArray.length === i + 1)
+                  return (
+                    <GroupPost ref={lastPostRef} key={postId} post={post} />
+                  );
+                return <GroupPost key={postId} post={post} />;
+              } else {
+                if (postsArray.length === i + 1)
+                  return <Post ref={lastPostRef} key={postId} post={post} />;
+                return <Post key={postId} post={post} />;
+              }
             })
           ) : (
             <div className={cx("no__post")}>
