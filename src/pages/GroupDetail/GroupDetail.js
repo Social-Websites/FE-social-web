@@ -14,29 +14,17 @@ import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import WestIcon from "@mui/icons-material/West";
 import GridOnIcon from "@mui/icons-material/GridOn";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
-import { Alert, Backdrop, CircularProgress, Snackbar } from "@mui/material";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import Button from "@mui/material/Button";
 import EmojiPicker from "emoji-picker-react";
 import UserRequestGroup from "../../components/UserRequestGroup";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 import getAvatarUrl from "../../shared/util/getAvatarUrl";
 import { StateContext } from "../../context/StateContext";
-import { createPost } from "../../services/postServices";
-import { addCreatedPost } from "../../context/StateAction";
-import {
-  getFriendRequestsList,
-  getUserByUsername,
-  getUserFriendsListByUsername,
-  removeAddFriend,
-  reportUser,
-  sendAddFriend,
-  unFriend,
-} from "../../services/userService";
 
 import {
   getDownloadURL,
@@ -144,6 +132,7 @@ function GroupDetail() {
       try {
         setGroupDetailLoading(true);
         const data = await getGroupDetail(id, privateHttpClient.privateRequest);
+        console.log(data);
 
         if (data) {
           setGroupDetail(data.group_detail);
@@ -233,28 +222,37 @@ function GroupDetail() {
     }
     try {
       let editData = null;
+      let urlString = cover;
       if (promise !== null) {
         const url = await Promise.allSettled([promise]);
-        const urlString = url[0].value.toString();
+        urlString = url[0].value.toString();
         editData = {
           name: name,
           description: bio,
           cover: urlString,
-          groupId: groupDetail._id,
+          groupId: id,
         };
       } else {
         editData = {
           name: name,
           description: bio,
           cover: cover,
+          groupId: id,
         };
       }
+      console.log(editData);
       const result = await editGroup(
         editData,
         privateHttpClient.privateRequest
       );
       if (result) {
         setEditingGroup(false);
+        setGroupDetail((prev) => ({
+          ...prev,
+          name: name,
+          description: bio,
+          cover: urlString,
+        }));
         toggleEdit();
         setCoverChange(null);
       }
@@ -739,8 +737,8 @@ function GroupDetail() {
                   className={cx("choose")}
                   style={
                     subPath === "pending-posts"
-                      ? { color: "white", borderTop: "white solid 1px" }
-                      : null
+                      ? { color: "white", borderTop: "white solid 1px", marginLeft: "50px" }
+                      : { marginLeft: "50px" }
                   }
                   onClick={() => {
                     setPosts([]);
@@ -865,6 +863,7 @@ function GroupDetail() {
                     user={user}
                     setUser={setUserRequests}
                     setGroupDetail={setGroupDetail}
+                    groupOwner={groupDetail?.created_by}
                     type={1}
                   />
                 );
@@ -906,6 +905,7 @@ function GroupDetail() {
                     setUser={setUserRequests}
                     setGroupDetail={setGroupDetail}
                     isGroupAdmin={groupDetail?.is_group_admin}
+                    groupOwner={groupDetail?.created_by}
                     type={2}
                   />
                 );
@@ -941,6 +941,7 @@ function GroupDetail() {
             </div>
             <div className={cx("group-modal-content")}>
               {userRequests.map((user) => {
+                console.log(user);
                 return (
                   <UserRequestGroup
                     user={user}
@@ -995,9 +996,7 @@ function GroupDetail() {
                         ? "brightness(70%)"
                         : "brightness(100%)",
                     }}
-                    src={getAvatarUrl(
-                      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
-                    )}
+                    src={getAvatarUrl(cover)}
                     alt=""
                   />
                   {uploadProfileImgLoading && (

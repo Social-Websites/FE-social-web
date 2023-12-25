@@ -36,6 +36,7 @@ import ProfilePost from "../../components/Post/ProfilePost";
 import { useContext } from "react";
 import { StateContext } from "../../context/StateContext";
 import Error404Page from "../AuthPage/Error404Page";
+import ProfileLoading from "../../components/ProfileLoading";
 
 const cx = classNames.bind(styles);
 
@@ -485,8 +486,8 @@ function Profile() {
         <Sidenav />
       </div>
       <div className={cx("profile__right")} style={{ color: "white" }}>
-        {/* !profileLoading && */}
-        {notFound ? (
+        {profileLoading ? <ProfileLoading/> : (
+        notFound ? (
           <Error404Page notAuthPage={true} />
         ) : (
           <div className={cx("profile__content")}>
@@ -674,7 +675,7 @@ function Profile() {
               {profilePostsLoading && <CircularProgress size={50} />}
             </div>
           </div>
-        )}
+        ))}
       </div>
       {unFQuestion && (
         <div className={cx("profile-modal active-profile-modal")}>
