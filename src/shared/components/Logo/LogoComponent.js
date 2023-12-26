@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames/bind";
 import styles from "./Logo.scss";
-import logo from "./NESTME-2.png";
+import logo from "./NESTME-3.jpg";
 
 const cx = classNames.bind(styles);
 
