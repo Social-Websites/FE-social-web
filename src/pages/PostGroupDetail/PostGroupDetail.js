@@ -750,6 +750,7 @@ function PostGroupDetail() {
         setIsLiked(response.post.is_user_liked);
         setReactsCount(response.post.reacts_count);
         setIsSaved(response.post.is_saved);
+        window.scrollTo(0, document.documentElement.scrollHeight);
       }
     } catch (err) {
       console.error("Error loading post: ", err);
@@ -1133,7 +1134,6 @@ function PostGroupDetail() {
                       <div className={cx("post-comment-user")}>
                         <div
                           className={cx("post-comment-user-avatar")}
-                          style={{ display: "flex", alignItems: "center" }}
                         >
                           <img
                             style={{ width: "30px", height: "30px" }}
@@ -1141,20 +1141,22 @@ function PostGroupDetail() {
                             alt={post?.creator.username + " avatar"}
                           />
                         </div>
-
                         <div
-                          className={cx("post-comment-user-info")}
-                          style={{ display: "flex", alignItems: "center" }}
+                          style={{display: "flex", alignItems: "center"}}
                         >
-                          <span
-                            className={cx("post-comment-username")}
-                            style={{ marginBottom: 0 }}
+                          <div
+                            className={cx("post-comment-user-info")}
                           >
-                            {post?.creator.username}
-                          </span>
-                          <span className={cx("post-comment-content")}>
-                            {post?.content}
-                          </span>
+                            <span
+                              className={cx("post-comment-username")}
+                              style={{ marginBottom: 0 }}
+                            >
+                              {post?.creator.username}
+                            </span>
+                            <span className={cx("post-comment-content")}>
+                              {post?.content}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}

@@ -11,6 +11,16 @@ export const createGroup = async (formData, sendRequest) => {
   }
 };
 
+export const get1Group = async (group, sendRequest) => {
+  try {
+    const response = await sendRequest(`/groups?group=${group}`);
+
+    return response?.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const getAdminGroups = async (sendRequest) => {
   try {
     const response = await sendRequest(`/groups/admin`);

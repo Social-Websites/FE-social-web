@@ -506,7 +506,6 @@ const PostDetailPage = () => {
                   <div className={cx("post-comment-user")}>
                     <div
                       className={cx("post-comment-user-avatar")}
-                      style={{ display: "flex", alignItems: "center" }}
                     >
                       <img
                         style={{ width: "30px", height: "30px" }}
@@ -516,18 +515,23 @@ const PostDetailPage = () => {
                     </div>
 
                     <div
-                      className={cx("post-comment-user-info")}
-                      style={{ display: "flex", alignItems: "center" }}
-                    >
-                      <span
-                        className={cx("post-comment-username")}
-                        style={{ marginBottom: 0 }}
+                        style={{display: "flex", alignItems: "center"}}
                       >
-                        {post?.creator.username}
-                      </span>
-                      <span className={cx("post-comment-content")}>
-                        {post?.content}
-                      </span>
+                      <div
+                        className={cx("post-comment-user-info")}
+                      >
+                        <span
+                          className={cx("post-comment-username")}
+                          style={{ marginBottom: 0 }}
+                        >
+                          {post?.creator.username}
+                        </span>
+                        <span 
+                        className={cx("post-comment-content")} 
+                        >
+                          {post?.content}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}

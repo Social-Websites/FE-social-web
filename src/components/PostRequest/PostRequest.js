@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./PostRequest.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { approveGroupPost, rejectGroupPost } from "../../services/groupService";
+import { StateContext } from "../../context/StateContext";
 import usePrivateHttpClient from "../../shared/hook/http-hook/private-http-hook";
 
 const cx = classNames.bind(styles);
@@ -15,6 +16,7 @@ function PostRequest({ post, setPosts }) {
       : post.creator.profile_picture;
 
   const privateHttpClient = usePrivateHttpClient();
+  const {socket} = useContext(StateContext);
 
   const [decisionLoading, setDecisionLoading] = useState(false);
 
@@ -58,24 +60,20 @@ function PostRequest({ post, setPosts }) {
         post._id,
         privateHttpClient.privateRequest
       );
-
       if (response.message) {
         setPosts((prev) => prev.filter((item) => item._id !== post._id));
-
         setDecisionLoading(false);
+        socket.current.emit("sendNotification", {
+          sender_id: post.creator._id,
+          content_id: post._id,
+          group_id: post.group,
+          type: "postGroup",
+        });
       }
     } catch (err) {
       console.error("accept ", err);
       setDecisionLoading(false);
     }
-    //  finally {
-    //   socket.current.emit("sendNotification", {
-    //     sender_id: user?._id,
-    //     receiver_id: [props.item._id],
-    //     reponse: true,
-    //     type: "accept",
-    //   });
-    // }
   };
   const handleReject = async () => {
     try {
@@ -213,7 +211,10 @@ function PostRequest({ post, setPosts }) {
           ))}
         </div>
       </div>
-      <div style={{ color: "white" }}>{post.content}</div>
+      <div style={{ color: "white", fontWeight: 500, marginTop: "10px", marginLeft: "7px", wordWrap: "break-word",
+        fontSize: "14px",
+        fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,Arial, sans-serif`  
+      }}>{post.content}</div>
       <div className={cx("post__footer")}>
         <button
           className={cx("footer__button__accept")}

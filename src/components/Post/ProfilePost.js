@@ -513,7 +513,6 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                     <div className={cx("post-comment-user")}>
                       <div
                         className={cx("post-comment-user-avatar")}
-                        style={{ display: "flex", alignItems: "center" }}
                       >
                         <img
                           style={{ width: "30px", height: "30px" }}
@@ -521,20 +520,22 @@ const ProfilePost = forwardRef(({ post, creator }, ref) => {
                           alt={creator.username + " avatar"}
                         />
                       </div>
-
                       <div
-                        className={cx("post-comment-user-info")}
-                        style={{ display: "flex", alignItems: "center" }}
+                        style={{display: "flex", alignItems: "center"}}
                       >
-                        <span
-                          className={cx("post-comment-username")}
-                          style={{ marginBottom: 0 }}
+                        <div
+                          className={cx("post-comment-user-info")}
                         >
-                          {creator.username}
-                        </span>
-                        <span className={cx("post-comment-content")}>
-                          {post.content}
-                        </span>
+                          <span
+                            className={cx("post-comment-username")}
+                            style={{ marginBottom: 0 }}
+                          >
+                            {creator.username}
+                          </span>
+                          <span className={cx("post-comment-content")}>
+                            {post.content}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     {comments.length > 0 &&

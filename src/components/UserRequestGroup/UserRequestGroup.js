@@ -83,9 +83,10 @@ function GroupInvited({
       if (response.message) {
         setUser((prev) => prev.filter((item) => item._id !== user._id));
 
+        
         setGroupDetail((prev) => ({
           ...prev,
-          members_count: prev.members_count - 1,
+          requests_count: prev.requests_count - 1,
         }));
 
         setDecisionLoading(false);
@@ -117,7 +118,7 @@ function GroupInvited({
 
         setGroupDetail((prev) => ({
           ...prev,
-          requests_count: prev.requests_count - 1,
+          members_count: prev.members_count - 1,
         }));
 
         setDecisionLoading(false);
