@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import GroupItem from "../../components/GroupItem";
 import Button from "@mui/material/Button";
 import { CircularProgress } from "@mui/material";
@@ -15,11 +15,16 @@ import {
   getInvitedGroups,
   createGroup,
   searchGroups,
+  get1Group,
 } from "../../services/groupService";
+import { StateContext } from "../../context/StateContext";
 
 const cx = classNames.bind(styles);
 
 function GroupPage() {
+
+  const { socket } = useContext(StateContext);
+
   const privateHttpRequest = usePrivateHttpClient();
   const [createModal, setCreateModal] = useState(false);
   const [modal, setModal] = useState(false);
@@ -53,6 +58,7 @@ function GroupPage() {
 
   const getAdminGroup = useCallback(async () => {
     try {
+      setIsLoadingSearch(true);
       const data = await getAdminGroups(privateHttpRequest.privateRequest);
       setAdminGroups(data.groups);
       console.log(data);
@@ -73,15 +79,21 @@ function GroupPage() {
   const getInvitedGroup = useCallback(async () => {
     try {
       const data = await getInvitedGroups(privateHttpRequest.privateRequest);
-      setInvitedGroups(data.groups);
+      if(data){
+        setInvitedGroups(data.groups);
+        setIsLoadingSearch(false);
+      }
+      
     } catch (err) {
       console.error(err);
     }
   }, []);
   useEffect(() => {
+    
     getAdminGroup();
     getMemberGroup();
     getInvitedGroup();
+    
   }, []);
 
   const handleCreateGroup = async () => {
@@ -143,6 +155,46 @@ function GroupPage() {
   };
   const debouncedSearchGroups = debounce(searchGroup, 500);
 
+
+  // useEffect(() => {
+  //   const handleGetNotification = async (data) => {
+  //     console.log("Nhận được thông báo:", data);
+  //     if (data.content == " You has been a member group") {
+  //       // Tìm nhóm trong mảng searchedGroups
+  //       const updatedSearchedGroups = searchedGroups.map((group) => {
+  //         if (group._id === data.group_id) {
+  //           return { ...group, status: "MEMBER" };
+  //         }
+  //         return group;
+  //       });
+
+  //       // Cập nhật mảng searchedGroups với nhóm đã được chỉnh sửa
+  //       setSearchedGroups(updatedSearchedGroups);
+
+  //       const g = await get1Group(data.group_id, privateHttpRequest.privateRequest);
+  //       console.log(g);
+  //       setMemberGroups((prevGroups) => [...prevGroups, g]);
+  //     } else if(data.content == " reject your member request"){
+  //       const updatedSearchedGroups = searchedGroups.map((group) => {
+  //         if (group._id === data.group_id) {
+  //           return { ...group, status: null };
+  //         }
+  //         return group;
+  //       });
+
+  //       // Cập nhật mảng searchedGroups với nhóm đã được chỉnh sửa
+  //       setSearchedGroups(updatedSearchedGroups);
+  //     }
+  //   };
+
+  //   socket?.current.on("getNotification", handleGetNotification);
+
+  //   return () => {
+  //     // Hủy đăng ký sự kiện khi component unmount
+  //     socket?.current.off("getNotification", handleGetNotification);
+  //   };
+  // }, [socket?.current]);
+
   return (
     <div
       className={cx("group")}
@@ -167,7 +219,7 @@ function GroupPage() {
                 style={{ marginRight: 10 }}
                 className={cx("create__button")}
               >
-                <span>Invitation</span>
+                <span>{invitedGroups?.length > 0 ? `Invitation (${invitedGroups?.length})` : "Invitation"}</span>
               </button>
               <button onClick={toggleCreate} className={cx("create__button")}>
                 <span>+ Create</span>
@@ -207,7 +259,9 @@ function GroupPage() {
               </div>
             ))}
 
-          {!isSearching &&
+          {!isSearching && (isLoadingSearch ? <div className={cx("groups")}>
+            <SearchGroupLoading />
+          </div> :
             (adminGroups?.length > 0 || memberGroups?.length > 0 ? (
               <div>
                 {adminGroups.length > 0 && (
@@ -242,7 +296,7 @@ function GroupPage() {
                       </div>
                       <div className={cx("group__items")}>
                         {memberGroups?.map((group) => (
-                          <GroupItem group={group} />
+                          <GroupItem group={group} key={group._id} />
                         ))}
                       </div>
                     </div>
@@ -264,7 +318,7 @@ function GroupPage() {
                   You haven't joined the groups yet.
                 </span>
               </div>
-            ))}
+            )))}
         </div>
       </div>
       {createModal && (

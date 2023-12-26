@@ -64,7 +64,7 @@ function PostRequest({ post, setPosts }) {
         setPosts((prev) => prev.filter((item) => item._id !== post._id));
         setDecisionLoading(false);
         socket.current.emit("sendNotification", {
-          sender_id: post.creator,
+          sender_id: post.creator._id,
           content_id: post._id,
           group_id: post.group,
           type: "postGroup",
@@ -211,7 +211,10 @@ function PostRequest({ post, setPosts }) {
           ))}
         </div>
       </div>
-      <div style={{ color: "white" }}>{post.content}</div>
+      <div style={{ color: "white", fontWeight: 500, marginTop: "10px", marginLeft: "7px", wordWrap: "break-word",
+        fontSize: "14px",
+        fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,Arial, sans-serif`  
+      }}>{post.content}</div>
       <div className={cx("post__footer")}>
         <button
           className={cx("footer__button__accept")}
