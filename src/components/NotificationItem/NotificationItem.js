@@ -168,7 +168,7 @@ function NotificationItem({ n }) {
         className={cx("open__user")}
         onClick={() => {
           if (n.content_id) {
-            navigate(`g/${n.group_id}/p/${n.content_id}`, { replace: true });
+            navigate(`/g/${n.group_id}/p/${n.content_id}`, { replace: true });
           }
         }}
       >
