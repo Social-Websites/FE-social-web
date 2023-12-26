@@ -58,6 +58,7 @@ function GroupPage() {
 
   const getAdminGroup = useCallback(async () => {
     try {
+      setIsLoadingSearch(true);
       const data = await getAdminGroups(privateHttpRequest.privateRequest);
       setAdminGroups(data.groups);
       console.log(data);
@@ -78,15 +79,21 @@ function GroupPage() {
   const getInvitedGroup = useCallback(async () => {
     try {
       const data = await getInvitedGroups(privateHttpRequest.privateRequest);
-      setInvitedGroups(data.groups);
+      if(data){
+        setInvitedGroups(data.groups);
+        setIsLoadingSearch(false);
+      }
+      
     } catch (err) {
       console.error(err);
     }
   }, []);
   useEffect(() => {
+    
     getAdminGroup();
     getMemberGroup();
     getInvitedGroup();
+    
   }, []);
 
   const handleCreateGroup = async () => {
@@ -252,7 +259,9 @@ function GroupPage() {
               </div>
             ))}
 
-          {!isSearching &&
+          {!isSearching && (isLoadingSearch ? <div className={cx("groups")}>
+            <SearchGroupLoading />
+          </div> :
             (adminGroups?.length > 0 || memberGroups?.length > 0 ? (
               <div>
                 {adminGroups.length > 0 && (
@@ -309,7 +318,7 @@ function GroupPage() {
                   You haven't joined the groups yet.
                 </span>
               </div>
-            ))}
+            )))}
         </div>
       </div>
       {createModal && (

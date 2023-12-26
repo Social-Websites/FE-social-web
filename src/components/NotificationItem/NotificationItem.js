@@ -119,7 +119,7 @@ function NotificationItem({ n }) {
           sender_id: user?._id,
           receiver_id: [n.sender_id],
           group_id: n.group_id,
-          reponse: false,
+          reponse: true,
           type: "acceptMember",
         });
       }
@@ -181,7 +181,7 @@ function NotificationItem({ n }) {
             }}
           >
             <div className={cx("open__user_avatar")}>
-              {n?.reponse ||  n?.content === " want to join " ?
+              {n?.content === " has been a member of your group" ||  n?.content === " want to join " ?
                 <img
                   style={{ width: "44px", height: "44px" }}
                   src={!n.img ? "/static-resources/default-avatar.jpg" : n.img}
@@ -208,7 +208,7 @@ function NotificationItem({ n }) {
               </a> : <a
                 className={cx("open__username")}
                 onClick={() => {
-                  navigate(`/${n.group_id}`, { replace: true });
+                  navigate(`/g/${n.group_id}`, { replace: true });
                 }}
               >
                 {n.group_name}
