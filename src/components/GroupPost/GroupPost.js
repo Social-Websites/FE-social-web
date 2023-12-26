@@ -222,7 +222,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
     }
     //setHadMounted(!modal);
     if (document.body.style.overflow !== "hidden") {
-      window.history.replaceState(null, null, `/p/${post._id}`);
+      window.history.replaceState(null, null, `/g/${post.group._id}/p/${post._id}`);
       document.body.style.overflow = "hidden";
     } else {
       window.history.replaceState(null, null, `/`);

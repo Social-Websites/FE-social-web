@@ -750,6 +750,7 @@ function PostGroupDetail() {
         setIsLiked(response.post.is_user_liked);
         setReactsCount(response.post.reacts_count);
         setIsSaved(response.post.is_saved);
+        window.scrollTo(0, document.documentElement.scrollHeight);
       }
     } catch (err) {
       console.error("Error loading post: ", err);
