@@ -86,7 +86,10 @@ const CommentInput = forwardRef((props, ref) => {
             privateHttpRequest.privateRequest
           );
           if (response) {
-            props.addReplyComment(response.comment.parent, response.comment);
+            props.addReplyComment(
+              response.comment.parent._id,
+              response.comment
+            );
             props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
@@ -101,7 +104,7 @@ const CommentInput = forwardRef((props, ref) => {
         }
       } catch (err) {
         console.error("Error while post comment: ", err);
-      } 
+      }
     }
   };
 
