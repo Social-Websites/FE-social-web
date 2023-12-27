@@ -16,7 +16,7 @@ function PostRequest({ post, setPosts }) {
       : post.creator.profile_picture;
 
   const privateHttpClient = usePrivateHttpClient();
-  const {socket} = useContext(StateContext);
+  const {user, socket} = useContext(StateContext);
 
   const [decisionLoading, setDecisionLoading] = useState(false);
 
@@ -64,7 +64,7 @@ function PostRequest({ post, setPosts }) {
         setPosts((prev) => prev.filter((item) => item._id !== post._id));
         setDecisionLoading(false);
         socket.current.emit("sendNotification", {
-          sender_id: post.creator._id,
+          sender_id: user._id,
           content_id: post._id,
           group_id: post.group,
           type: "postGroup",
