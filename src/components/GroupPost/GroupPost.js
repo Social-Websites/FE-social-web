@@ -559,6 +559,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
       <CommentInput
         postId={post._id}
         userId={post.creator._id}
+        group={post.group._id}
         setComments={setComments}
         setInitialText={setInitialText}
         initialText={initialText}
@@ -884,6 +885,7 @@ const GroupPost = forwardRef(({ post }, ref) => {
                     <CommentInput
                       ref={inputRef}
                       postId={post._id}
+                      group={post.group._id}
                       userId={post.creator._id}
                       initialText={initialText}
                       setInitialText={setInitialText}
