@@ -104,6 +104,7 @@ function GroupPage() {
           name: name,
           description: bio,
           cover: "/static-resources/default-cover.jpg",
+          status: "ADMIN",
         },
         privateHttpRequest.privateRequest
       );

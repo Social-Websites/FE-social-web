@@ -168,7 +168,7 @@ function NotificationItem({ n }) {
         className={cx("open__user")}
         onClick={() => {
           if (n.content_id) {
-            navigate(`g/${n.group_id}/p/${n.content_id}`, { replace: true });
+            navigate(`/g/${n.group_id}/p/${n.content_id}`, { replace: true });
           }
         }}
       >
@@ -197,7 +197,7 @@ function NotificationItem({ n }) {
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <div className={cx("open__user__info")}>
-            {n?.reponse ||  n?.content === " want to join " ?
+            {n?.content === " has been a member of your group" ||  n?.content === " want to join " ?
               <a
                 className={cx("open__username")}
                 onClick={() => {
