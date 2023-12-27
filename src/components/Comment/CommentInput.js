@@ -87,13 +87,13 @@ const CommentInput = forwardRef((props, ref) => {
             privateHttpRequest.privateRequest
           );
           if (response) {
-            props.addReplyComment(response.comment.parent, response.comment);
+            props.addReplyComment(response.comment.parent._id, response.comment);
             props.setReplyCommentId("");
             setText("");
             props.setInitialText("");
             socket.current.emit("sendNotification", {
               sender_id: user?._id,
-              receiver_id: [response.comment.user],
+              receiver_id: [response.comment.parent.user],
               content_id: props.postId,
               group_id: props?.group,
               type: "reply",
