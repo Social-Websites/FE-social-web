@@ -85,6 +85,7 @@
     display: flex;
     overflow: hidden;
     flex: 0.8;
+    align-items: center;
     max-width: 900px;
     max-height: 750px;
     .img-post-slider {
@@ -256,6 +257,7 @@
       .image-post {
         display: flex;
         overflow: hidden;
+        align-items: center;
         flex: 0.8;
         max-width: 900px;
         max-height: 750px;
