@@ -7,6 +7,8 @@ import Messages from "../../components/Messages";
 import Input from "../../components/InputMessage";
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CallIcon from '@mui/icons-material/Call';
+import VideocamIcon from '@mui/icons-material/Videocam';
 import CloseIcon from "@mui/icons-material/Close";
 import { StateContext } from "../../context/StateContext"
 import {calculatedTime} from "../../shared/util/calculatedTime"
@@ -29,6 +31,24 @@ function ChatPage() {
     const handleIsSelectedFile = (height) => {
         setIsSelectedFile(height);
     };
+
+    const handleVoiceCall = () => {
+        dispatch({ type: "SET_VOICE_CALL", payload: {
+            ...currentChat,
+            type: "out-going",
+            callType: "voice",
+            roomId: Date.now(),
+        }});
+    }
+
+    const handleVideoCall = () => {
+        dispatch({ type: "SET_VIDEO_CALL", payload: {
+            ...currentChat,
+            type: "out-going",
+            callType: "video",
+            roomId: Date.now(),
+        }});
+    }
     
     useLayoutEffect(() => {
         setTimeout(() => {
@@ -157,6 +177,8 @@ function ChatPage() {
                     </div>
                 </div>
                 <div>
+                    <CallIcon style={{marginRight: "10px", cursor: "pointer"}} onClick={handleVoiceCall}/>
+                    <VideocamIcon style={{marginRight: "10px", cursor: "pointer"}} onClick={handleVideoCall}/>
                     <ErrorOutlineIcon style={{color: "white", cursor: "pointer"}} onClick={toggleMore}/>
                 </div>
             </div>): (<div className={cx("chatpage__messages__main")}>

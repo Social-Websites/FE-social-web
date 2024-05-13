@@ -516,6 +516,8 @@ function NavBar({ onScrollToTop }) {
   const handleCreatePost = async () => {
     setCreatingPost(true);
     const promises = images.map((image) => {
+      console.log(image);
+      console.log(image.file);
       const name = Date.now();
       const storageRef = ref(storage, `images/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, image.file);

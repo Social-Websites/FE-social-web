@@ -66,6 +66,31 @@ const GroupItem = ({ group }) => {
     }
   };
 
+  const handleRemoveDeleteToGroup = async () => {
+    setLoading(true);
+    try {
+      const respone = await deleteToGroup(
+        group._id,
+        privateHttpRequest.privateRequest
+      );
+      if (respone !== null) {
+        setStatus(null);
+        socket.current.emit("sendNotification", {
+          sender_id: user._id,
+          receiver_id: [group.owner],
+          group_id: group._id,
+          reponse: false,
+          type: "rejectGroup",
+          remove: true
+        });
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
   const handleAcceptToGroup = async () => {
     setLoading(true);
     try {
@@ -96,7 +121,7 @@ const GroupItem = ({ group }) => {
         if (status === "ADMIN" || status === "MEMBER") {
           navigate(`/g/${group._id}/`, { replace: true });
         } else if (status === "REQUESTED") {
-          handleDeleteToGroup();
+          handleRemoveDeleteToGroup();
         }
       } else {
         handleRequestToGroup();

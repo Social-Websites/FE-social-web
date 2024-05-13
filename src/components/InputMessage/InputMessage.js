@@ -216,9 +216,15 @@ function InputMessage ({onSelectedFile}) {
               last_msg = result?.content;
             }
             console.log(text, last_msg);
+            const isDeleted = currentChat.is_deleted.map(deletedItem => {
+              if (deletedItem.user_id === currentChat.userIds[0]) {
+                return { ...deletedItem, deleted: false };
+              }
+              return deletedItem;
+            });
             const con = {_id: currentChat._id, userIds: [user._id], name: user.full_name, img: user.profile_picture, 
               msg_id: result._id, lastMsg: last_msg, unread: true, online: true, last_online: currentChat.last_online,
-              is_deleted: currentChat.is_deleted,recieve_ids: currentChat.userIds,
+              is_deleted: isDeleted, recieve_ids: currentChat.userIds,
             };
             console.log(con);
             conversationService.returnConversation(data);

@@ -280,7 +280,34 @@ const StateReducer = (state, action) => {
         ...state,
         otpToken: action.payload,
       };
-
+    case "SET_VIDEO_CALL":
+      return {
+        ...state,
+        videoCall: action.payload,
+      };
+    case "SET_VOICE_CALL":
+      return {
+        ...state,
+        voiceCall: action.payload,
+      };
+    case "SET_INCOMING_VOICE_CALL":
+      return {
+        ...state,
+        incomingVoiceCall: action.payload,
+      };
+    case "SET_INCOMING_VIDEO_CALL":
+      return {
+        ...state,
+        incomingVideoCall: action.payload,
+      };
+    case "END_CALL":
+      return {
+        ...state,
+        voiceCall: undefined,
+        videoCall: undefined,
+        incomingVideoCall: undefined,
+        incomingVoiceCall: undefined,
+      };
     default:
       return state;
   }

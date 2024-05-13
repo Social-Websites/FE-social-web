@@ -15,6 +15,10 @@ const INITIAL_STATE = {
   messages: [],
   messageRemoves: [],
   socket: undefined,
+  voiceCall: undefined,
+  videoCall: undefined,
+  incomingVideoCall: undefined,
+  incomingVoiceCall: undefined,
 };
 
 export const StateContext = createContext(INITIAL_STATE);
@@ -45,6 +49,10 @@ export const StateContextProvider = ({ children }) => {
         messages: state.messages,
         messageRemoves: state.messageRemoves,
         socket: state.socket,
+        voiceCall: state.voiceCall,
+        videoCall: state.videoCall,
+        incomingVideoCall: state.incomingVideoCall,
+        incomingVoiceCall: state.incomingVoiceCall,
         dispatch,
         setAuth,
       }}

@@ -204,7 +204,7 @@ function NotificationItem({ n }) {
                   navigate(`/${n.senderName}`, { replace: true });
                 }}
               >
-                {n.senderName}
+                {n.senderName} {n._id}
               </a> : <a
                 className={cx("open__username")}
                 onClick={() => {
@@ -255,7 +255,6 @@ function NotificationItem({ n }) {
           ))}
       </div>
       ) : (
-        
         <div
           className={cx("open__user")}
           onClick={() => {
